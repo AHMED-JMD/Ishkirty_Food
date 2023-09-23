@@ -30,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     bottomLeft: Radius.circular(100))),
             child: Center(
                 child: Image.asset(
-              'assets/images/iskirty_logo.jpeg',
+              'assets/images/iskirty_logo.png',
             )),
           ),
           centerTitle: true,
