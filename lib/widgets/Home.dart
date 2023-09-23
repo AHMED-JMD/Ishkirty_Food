@@ -31,6 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Center(
                 child: Image.asset(
               'assets/images/iskirty_logo.png',
+                  width: 400,
             )),
           ),
           centerTitle: true,

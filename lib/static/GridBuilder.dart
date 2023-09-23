@@ -25,6 +25,9 @@ class GridViewBuilder extends StatelessWidget {
                 onPressed: () {
                   Order_Modal(context, speices);
                 },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple
+                ),
                 child: Text('فاتورة'))
           ],
         ),
