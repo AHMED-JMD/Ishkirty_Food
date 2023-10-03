@@ -6,7 +6,7 @@ class GridViewBuilder extends StatelessWidget {
   final List data;
   GridViewBuilder({super.key, required this.data});
 
-  //card Widget
+  //card Widget holding the image and width and height and data
   Widget _card(BuildContext context, speices, double widths, double height) {
     return Container(
       child: TransparentImageCard(
@@ -37,17 +37,21 @@ class GridViewBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //layout builder for making the app responsive on diffrent screen sizes
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         if (constraints.maxWidth > 1200) {
+          //the row of data shown on the screen with gridView builder widget
           return GridView.builder(
               shrinkWrap: true,
               physics: ScrollPhysics(),
               itemCount: data.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                //amount of data you want on a row
                 crossAxisCount: 4,
               ),
               itemBuilder: (context, index) =>
+              //call the card widget and set custom height and width !!default height best 200!!!
                   _card(context, data[index], 300.0, 200));
         } else {
           if (constraints.maxWidth > 1000) {

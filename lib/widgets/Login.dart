@@ -39,7 +39,7 @@ class _LoginState extends State<Login> {
                     children: [
                       Container(
                         width: 600,
-                        height: 460,
+                        height: 470,
                         decoration: BoxDecoration(
                             color: Color.fromRGBO(255, 255, 255, 0.8),
                             borderRadius: BorderRadius.circular(13)

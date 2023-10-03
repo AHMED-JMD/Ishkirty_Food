@@ -18,7 +18,9 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Scaffold(
         backgroundColor: Colors.grey[200],
         appBar: AppBar(
+          //custom button in folder static
           leading: LeadingDrawerBtn(),
+
           toolbarHeight: 120,
           title: Container(
             height: MediaQuery.of(context).size.height / 5.5,
@@ -38,6 +40,9 @@ class _MyHomePageState extends State<MyHomePage> {
           elevation: 0,
           backgroundColor: Colors.transparent,
         ),
+
+        //custom drawer in static folder
+
         drawer: MyDrawer(),
         body: SingleChildScrollView(
           child: Center(
@@ -47,6 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 SizedBox(
                   height: 40,
                 ),
+
+                //custom nav in static folder
                 SpiecesNav(),
               ],
             ),

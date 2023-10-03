@@ -16,10 +16,14 @@ class _ClientsState extends State<Clients> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
+          //custom leading button in folder statics
           leading: LeadingDrawerBtn(),
+
           title: Text("العملاء", style: TextStyle(fontSize: 25),),
         ),
+        //custom my drawer in static folder
         drawer: MyDrawer(),
+
         body: Center(
           child: Text('clients'),
         ),

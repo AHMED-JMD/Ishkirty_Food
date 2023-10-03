@@ -11,7 +11,7 @@ class MyDrawer extends StatelessWidget {
           Container(
             width: double.infinity,
             height: 200,
-            color: Colors.blueGrey,
+            color: Colors.deepPurple,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(

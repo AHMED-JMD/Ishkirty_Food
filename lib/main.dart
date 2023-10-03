@@ -21,8 +21,10 @@ class MyApp extends StatelessWidget {
 
       ),
       routes: {
-        '/': (context) => Login(),
-        '/home' : (context) => MyHomePage(),
+        //on development mode !--- when on production change default "/" to Login() widget ---!
+        // and change MyHomePage() widget to "/home"
+        // '/': (context) => Login(),
+        '/' : (context) => MyHomePage(),
         '/orders' : (context) => Orders(),
         '/sales' : (context) => Sales(),
         '/speices' : (context) => Speices(),
