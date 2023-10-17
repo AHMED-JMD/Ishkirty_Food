@@ -54,7 +54,7 @@ class MyDrawer extends StatelessWidget {
               ),
               InkWell(
                 onTap: (){
-                  Navigator.pushReplacementNamed(context, '/sales');
+                  Navigator.pushReplacementNamed(context, '/bills');
                 },
                 child: const ListTile(
                   leading: Icon(

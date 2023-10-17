@@ -1,4 +1,4 @@
-import 'package:ashkerty_food/Components/tables/SalesTable.dart';
+import 'package:ashkerty_food/Components/tables/BillTable.dart';
 import 'package:ashkerty_food/static/SearchDates.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -6,14 +6,14 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
 
-class Sales extends StatefulWidget {
-  const Sales({super.key});
+class Bills extends StatefulWidget {
+  const Bills({super.key});
 
   @override
-  State<Sales> createState() => _SalesState();
+  State<Bills> createState() => _BillsState();
 }
 
-class _SalesState extends State<Sales> {
+class _BillsState extends State<Bills> {
 
   GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   DateTime? start_date = DateTime.now();
@@ -63,7 +63,7 @@ class _SalesState extends State<Sales> {
                   const SizedBox(height: 20,),
                   Container(
                     color: Colors.grey[100],
-                      child: SalesTable(data: [],)
+                      child: BillTable(data: [],)
                   ),
                 ],
               ),
