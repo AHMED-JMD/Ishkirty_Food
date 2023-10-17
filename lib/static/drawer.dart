@@ -12,12 +12,12 @@ class MyDrawer extends StatelessWidget {
             width: double.infinity,
             height: 200,
             color: Colors.deepPurple,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
+            child: const Padding(
+              padding: EdgeInsets.all(30),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
                     'مرحبا',
                     style: TextStyle(
@@ -36,32 +36,33 @@ class MyDrawer extends StatelessWidget {
           Column(
             children: [
               const SizedBox(height: 20),
+
               InkWell(
                 onTap: (){
-                  Navigator.pushReplacementNamed(context, '/home');
+                  Navigator.pushReplacementNamed(context, '/orders');
                 },
-                child: ListTile(
-                  leading: Icon(
-                    Icons.home_work_rounded,
+                child: const ListTile(
+                  leading:  Icon(
+                    Icons.local_mall,
                     color: Colors.blue,
                   ),
-                  title: const Text(
-                    'الرئيسية',
+                  title: Text(
+                    'المبيعات',
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
               ),
               InkWell(
                 onTap: (){
-                  Navigator.pushReplacementNamed(context, '/orders');
+                  Navigator.pushReplacementNamed(context, '/sales');
                 },
-                child: ListTile(
+                child: const ListTile(
                   leading: Icon(
-                    Icons.shopping_cart,
+                    Icons.view_list_rounded,
                     color: Colors.blue,
                   ),
-                  title: const Text(
-                    'الطلبات',
+                  title: Text(
+                    'الفواتير',
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
@@ -70,12 +71,12 @@ class MyDrawer extends StatelessWidget {
                 onTap: (){
                   Navigator.pushReplacementNamed(context, '/speices');
                 },
-                child: ListTile(
+                child: const ListTile(
                   leading: Icon(
-                    Icons.menu,
+                    Icons.fastfood_sharp,
                     color: Colors.blue,
                   ),
-                  title: const Text(
+                  title: Text(
                     'الاصناف',
                     style: TextStyle(fontSize: 18),
                   ),
@@ -85,42 +86,28 @@ class MyDrawer extends StatelessWidget {
                 onTap: (){
                   Navigator.pushReplacementNamed(context, '/clients');
                 },
-                child: ListTile(
+                child: const ListTile(
                   leading: Icon(
                     Icons.person,
                     color: Colors.blue,
                   ),
-                  title: const Text(
+                  title: Text(
                     'العملاء',
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
               ),
-              InkWell(
-                onTap: (){
-                  Navigator.pushReplacementNamed(context, '/sales');
-                },
-                child: ListTile(
-                  leading: Icon(
-                    Icons.local_mall,
-                    color: Colors.blue,
-                  ),
-                  title: const Text(
-                    'المبيعات',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
+
               InkWell(
                 onTap: (){
                   Navigator.pushReplacementNamed(context, '/');
                 },
-                child: ListTile(
+                child: const ListTile(
                   leading: Icon(
                     Icons.power_settings_new_outlined,
                     color: Colors.blue,
                   ),
-                  title: const Text(
+                  title: Text(
                     'تسجيل الخروج',
                     style: TextStyle(fontSize: 18),
                   ),

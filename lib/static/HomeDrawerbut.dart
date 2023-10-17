@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class LeadingDrawerBtn extends StatelessWidget {
-  const LeadingDrawerBtn ({super.key});
+class HomeDrawerbut extends StatelessWidget {
+  const HomeDrawerbut ({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +11,7 @@ class LeadingDrawerBtn extends StatelessWidget {
           icon: const Icon(
             Icons.menu,
             size: 35,
-            color: Colors.white,
+            color: Colors.black,
           ),
           onPressed: () {
             Scaffold.of(context).openEndDrawer();

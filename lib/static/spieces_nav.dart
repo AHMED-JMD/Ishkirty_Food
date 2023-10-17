@@ -1,4 +1,3 @@
-import 'package:ashkerty_food/Components/buftake.dart';
 import 'package:ashkerty_food/Components/juicies.dart';
 import 'package:ashkerty_food/Components/meat.dart';
 import 'package:ashkerty_food/Components/traditional.dart';
@@ -7,34 +6,32 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
 class SpiecesNav extends StatefulWidget {
-  const SpiecesNav({super.key});
+   const SpiecesNav({super.key});
 
   @override
+
   State<SpiecesNav> createState() => _SpiecesNavState();
 }
 
 class _SpiecesNavState extends State<SpiecesNav> {
 
   List Pages = [
-    {'widget': Column(
+    {'widget': const Column(
       children: [
         Traditional(),
         Meat(),
-        BufTakes(),
         Juicies()
       ],
     ), 'name': 'الكل'},
     {'widget': Traditional(), 'name': 'تقليدي'},
     {'widget': Meat(), 'name': 'اللحوم'},
-    {'widget': BufTakes(), 'name': 'البفتيك'},
     {'widget': Juicies(), 'name': 'العصائر'},
   ];
 
-  Object? selectedPage = Column(
+  Object? selectedPage = const Column(
     children: [
       Traditional(),
       Meat(),
-      BufTakes(),
       Juicies()
     ],
   );
@@ -43,11 +40,11 @@ class _SpiecesNavState extends State<SpiecesNav> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
+        SizedBox(
           width: 500,
           child: FormBuilderDropdown(
             name: 'spieces',
-            decoration: InputDecoration(labelText: 'تصنيف'),
+            decoration: const InputDecoration(labelText: 'تصنيف'),
             onChanged: (val) {
                setState(() {
                  selectedPage = val;

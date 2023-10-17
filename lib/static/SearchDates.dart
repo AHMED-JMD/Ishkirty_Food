@@ -84,9 +84,9 @@ class _SearchInDatesState extends State<SearchInDates> {
                   width: 100,
                   height: 50,
                   child: ElevatedButton(
-                    child: Text('ارسال'),
+                    child: const Text('بحث',style: TextStyle(fontSize: 22,color: Colors.white),),
                     style: ElevatedButton.styleFrom(
-                        primary: Colors.blueGrey,
+                        primary: Color(0xff194867),
                         textStyle: TextStyle(fontSize: 18)
                     ),
                     onPressed: () {
