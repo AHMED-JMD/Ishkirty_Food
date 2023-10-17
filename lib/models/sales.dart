@@ -1,42 +1,55 @@
 //speices class for storing the data coming from the database
 class Sales {
   Sales({
-    required this.id,
+    required this.Bill_Number,
+    required this.Payment_Method,
     required this.name,
     required this.type,
     required this.price,
     required this.date,
+    required this.quantity,
   });
-
-  late final String id;
+  late final String Payment_Method;
+  late final String Bill_Number;
   late final String name;
   late final String type;
+  late final int quantity;
   late final int price;
   late final String date;
 
   Sales.fromJson(Map<String, dynamic> json){
-    id = json['id'];
+    Bill_Number = json['id'];
     name = json['name'];
     type = json['type'];
     price = json['price'];
     date = json['date'];
+    quantity=json['quantity'];
+    Payment_Method=json['Payment_Method'];
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['id'] = id;
-    _data['name'] = name;
-    _data['type'] = type;
-    _data['price'] = price;
-    _data['date'] = date;
-    return _data;
+    final data = <String, dynamic>{};
+    data['id'] = Bill_Number;
+    data['name'] = name;
+    data['type'] = type;
+    data['quantity'] = quantity;
+    data['price'] = price;
+    data['date'] = date;
+    data['Payment_Method']=Payment_Method;
+
+    return data;
   }
 }
 //get data mock from database
 List<Sales> sales = [
-  Sales(id : '1', name: "برتقال", type: "juice", price: 500, date: "02-10-2023"),
-  Sales(id : '2', name: "بيرقر", type: "meat", price: 300, date: "02-10-2023"),
-  Sales(id : '3', name: "طعمية", type: "traditional", price: 800, date: "02-10-2023"),
-  Sales(id : '4', name: "كريسبي", type: "bufteak", price: 1000, date: "02-10-2023"),
-  Sales(id : '5', name: "اناناس", type: "juice", price: 1100, date: "02-10-2023"),
+  Sales(Bill_Number : '1', name: "برتقال", type: "juice", price: 600, date: "16-10-2023",quantity:2,Payment_Method:'bankak'),
+  Sales(Bill_Number : '2', name: "بيرقر", type: "meat", price: 2000, date: "16-10-2023",quantity:2,Payment_Method:'bankak'),
+  Sales(Bill_Number : '4', name: "كريسبي", type: "bufteak", price: 2500, date: "16-10-2023",quantity:3,Payment_Method:'bankak'),
+  Sales(Bill_Number : '5', name: "اناناس", type: "juice", price: 1000, date: "16-10-2023",quantity:3,Payment_Method:'bankak'),
+];
+List<Sales> sales2 = [
+  Sales(Bill_Number : '1', name: "برتقال", type: "juice", price: 600, date: "16-10-2023",quantity:2,Payment_Method:'bankak'),
+  Sales(Bill_Number : '2', name: "بيرقر", type: "meat", price: 2000, date: "16-10-2023",quantity:1,Payment_Method:'bankak'),
+  Sales(Bill_Number : '4', name: "كريسبي", type: "bufteak", price: 2500, date: "16-10-2023",quantity:2,Payment_Method:'bankak'),
+
 ];
