@@ -1,7 +1,7 @@
 import 'package:ashkerty_food/static/drawer.dart';
-import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:ashkerty_food/static/spieces_nav.dart';
 import 'package:flutter/material.dart';
+import '../static/HomeDrawerbut.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -12,6 +12,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
+
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -19,32 +20,27 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.grey[200],
         appBar: AppBar(
           //custom button in folder static
-          leading: LeadingDrawerBtn(),
+          leading: IconButton(
+            icon: const Icon(
+              Icons.home_sharp,
+              size: 37,
+              color: Colors.black,
+            ),
+            onPressed: (){
+              Navigator.pushReplacementNamed(context, '/home');
+            },
+          ),
 
           toolbarHeight: 120,
-          title: Container(
-            height: MediaQuery.of(context).size.height / 5.5,
-            width: MediaQuery.of(context).size.width / 3.8,
-            decoration: BoxDecoration(
-                color: Colors.deepPurple,
-                borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(100),
-                    bottomLeft: Radius.circular(100))),
-            child: Center(
-                child: Image.asset(
-              'assets/images/iskirty_logo.png',
-                  width: 400,
-            )),
-          ),
+
           centerTitle: true,
           elevation: 0,
           backgroundColor: Colors.transparent,
+          actions: const [HomeDrawerbut(),]
         ),
-
         //custom drawer in static folder
-
-        drawer: MyDrawer(),
-        body: SingleChildScrollView(
+        endDrawer: const MyDrawer(),
+        body:  const SingleChildScrollView(
           child: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,

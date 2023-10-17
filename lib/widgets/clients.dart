@@ -1,6 +1,7 @@
-import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
+import '../Components/tables/ClientTable.dart';
+import '../static/drawer.dart';
 
 class Clients extends StatefulWidget {
   const Clients({super.key});
@@ -15,17 +16,45 @@ class _ClientsState extends State<Clients> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(
-          //custom leading button in folder statics
-          leading: LeadingDrawerBtn(),
+        appBar: AppBar(backgroundColor: const Color(0xff083434),
+//custom button in static folder
+        leading: IconButton(
+        icon: const Icon(
+        Icons.home_sharp,
+        size: 37,
+        color: Colors.white,
+    ),
+    onPressed: (){
+    Navigator.pushReplacementNamed(context, '/');
+    },
+    ),
 
-          title: Text("العملاء", style: TextStyle(fontSize: 25),),
-        ),
+    title: const Center(child: Text("العملاء", style: TextStyle(fontSize: 25),)),
+    actions: const [LeadingDrawerBtn(),],
+    ),
         //custom my drawer in static folder
-        drawer: MyDrawer(),
+        endDrawer: const MyDrawer(),
 
-        body: Center(
-          child: Text('clients'),
+        body: ListView(
+            children:[
+              Container(
+
+                decoration: BoxDecoration(
+                    color: Colors.grey[100]
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  //custom widget in static folder for showing search bar responsive
+                  const SizedBox(height: 20,),
+                  Container(
+                      color: Colors.grey[100],
+                      child: ClientTable(data: [],)
+                  ),
+                ],
+              ),
+            ]
         ),
       ),
     );

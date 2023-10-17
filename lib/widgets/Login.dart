@@ -11,8 +11,12 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
+  final String username='محمد';
+  final String password='1a2b3c4d';
+
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +24,7 @@ class _LoginState extends State<Login> {
       body: Stack(
           children:[
             Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage(
                     'assets/images/resturant2.jpg',
@@ -41,7 +45,7 @@ class _LoginState extends State<Login> {
                         width: 600,
                         height: 470,
                         decoration: BoxDecoration(
-                            color: Color.fromRGBO(255, 255, 255, 0.8),
+                            color: const Color.fromRGBO(255, 255, 255, 0.8),
                             borderRadius: BorderRadius.circular(13)
                         ),
                         child: Padding(
@@ -50,9 +54,9 @@ class _LoginState extends State<Login> {
                             key: _formKey,
                             child: Column(
                               children: [
-                                Center(
+                                const Center(
                                   child: Text(
-                                    'مطعم اشكرتي للمأكولات ',
+                                    'مطعم اشكرتي  ',
                                     style: TextStyle(
                                         fontSize: 25,
                                         fontWeight: FontWeight.bold,
@@ -60,28 +64,20 @@ class _LoginState extends State<Login> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 30,),
-                                Center(
-                                  child: Text('تسجيل الدخول',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black
-                                    ),
-                                  ),
-                                ),
+                                const SizedBox(height: 20,),
+
                                 FormBuilderTextField(
                                   name: 'username',
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     labelText: 'الاسم',
                                     icon: Icon(Icons.person),
                                   ),
                                   validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                 ),
-                                SizedBox(height: 20,),
+                                const SizedBox(height: 20,),
                                 FormBuilderTextField(
                                   name: 'password',
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       labelText: 'كلمة السر',
                                       icon: Icon(Icons.password),
                                       focusColor: Colors.deepPurple
@@ -89,10 +85,10 @@ class _LoginState extends State<Login> {
                                   obscureText: true,
                                   validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
                                 ),
-                                SizedBox(height: 30,),
+                                const SizedBox(height: 50,),
                                 SizedBox(
                                   height: 40,
-                                  width: 100,
+                                  width: 180,
                                   child: ElevatedButton(
                                     onPressed: (){
                                       if(_formKey.currentState!.saveAndValidate()){
@@ -102,10 +98,11 @@ class _LoginState extends State<Login> {
                                         //call to server
                                       }
                                     },
-                                    child: Text('ارسال', style: TextStyle(fontSize: 16, color: Colors.black)),
                                     style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.grey,
+
+                                        backgroundColor: const Color(0xff000000),
                                     ),
+                                    child: const Text('تسجيل الدخول', style: TextStyle(fontSize: 20, color: Colors.white)),
                                   ),
                                 )
                               ],
