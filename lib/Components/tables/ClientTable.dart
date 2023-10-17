@@ -1,21 +1,21 @@
-import 'package:ashkerty_food/models/sales.dart';
+import 'package:ashkerty_food/models/Client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:ashkerty_food/static/deleteModal.dart';
 
-class SalesTable extends StatefulWidget {
+class ClientTable extends StatefulWidget {
   final List data;
-  SalesTable({Key? key, required this.data}) : super(key: key);
+  ClientTable({Key? key, required this.data}) : super(key: key);
 
   @override
-  State<SalesTable> createState() => _SalesTableState(data: data);
+  State<ClientTable> createState() => _ClientTableState(data: data);
 }
 
-class _SalesTableState extends State<SalesTable> {
+class _ClientTableState extends State<ClientTable> {
   List data;
-  _SalesTableState({required this.data});
+  _ClientTableState({required this.data});
 
 
   var rowsPerPage = 10;
@@ -90,14 +90,13 @@ class _SalesTableState extends State<SalesTable> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-
             const SizedBox(height: 20,),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
               showFirstLastButtons: true,
               rowsPerPage: rowsPerPage,
-              availableRowsPerPage: [ 5, 10, 25],
+              availableRowsPerPage: const [ 5, 10, 25],
               onRowsPerPageChanged: (newRowsPerPage) {
                 if (newRowsPerPage != null) {
                   setState(() {
@@ -107,25 +106,17 @@ class _SalesTableState extends State<SalesTable> {
               },
               columns: const [
                 DataColumn(
-                  label: Text('رقم الفاتورة'),
+                  label: Center(child: Text('الرقم',style: TextStyle(fontSize: 20),)),
                 ),
                 DataColumn(
-                  label: Text('اسم الصنف'),
+                  label: Center(child: Text('الاسم',style: TextStyle(fontSize: 20),)),
                 ),
                 DataColumn(
-                  label: Text('الكمية'),
+                  label: Center(child: Text('الحساب',style: TextStyle(fontSize: 20),)),
                 ),
                 DataColumn(
-                  label: Text('السعر'),
-                ),
-                DataColumn(
-                  label: Text('التاريخ'),
-                ),
-                DataColumn(
-                  label: Text('الدفع'),
-                ),
-                DataColumn(
-                  label: Text('0',style: TextStyle(color: Colors.white),),
+                   label: Center(child: Text('',style: TextStyle(color: Color(0xffffffff)),))
+                
                 ),
               ],
             ),
@@ -136,7 +127,7 @@ class _SalesTableState extends State<SalesTable> {
   }
 }
 
-class ExampleSource extends AdvancedDataTableSource<Sales> {
+class ExampleSource extends AdvancedDataTableSource<Client> {
   List data;
   BuildContext context;
   ExampleSource({required this.data, required this.context});
@@ -147,35 +138,28 @@ class ExampleSource extends AdvancedDataTableSource<Sales> {
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
+
         cells: [
           DataCell(
-              Text(currentRowData.Bill_Number,)
+               Text(currentRowData.id,style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
-              Text(currentRowData.name,)
+              Text(currentRowData.name,style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
-            Text(currentRowData.quantity.toString()),
+            Text(currentRowData.account.toString(),style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
-            Text((currentRowData.price*currentRowData.quantity).toString(),),
-          ),
-          DataCell(
-            Text(currentRowData.date,),
-          ),
-          DataCell(
-            Text(currentRowData.Payment_Method,),
-          ),
-          DataCell(
-            Padding(
-              padding: const EdgeInsets.all(0),
-              child: ButtonBar(
-                children: [
-                  IconButton(onPressed: (){} ,icon:const Icon(Icons.mode_edit_outline),tooltip: 'تعديل',),
-                  IconButton(onPressed: (){}, icon: const Icon(Icons.delete_rounded),tooltip: 'حذف'),
-                ],
-              ),
-            ),
+                Padding(
+                  padding: const EdgeInsets.all(0),
+                  child: ButtonBar(
+                    children: [
+                      IconButton(onPressed: (){} ,icon:const Icon(Icons.add_box_sharp),tooltip: 'إضافة',),
+                      IconButton(onPressed: (){}, icon:const Icon(Icons.remove_circle_sharp),tooltip: 'خصم'),
+                      IconButton(onPressed: (){}, icon: const Icon(Icons.delete_rounded),tooltip: 'حذف'),
+                    ],
+                  ),
+                ),
 
           ),
           // DataCell(
@@ -208,18 +192,18 @@ class ExampleSource extends AdvancedDataTableSource<Sales> {
   }
 
   @override
-  Future<RemoteDataSourceDetails<Sales>> getNextPage(
+  Future<RemoteDataSourceDetails<Client>> getNextPage(
       NextPageRequest pageRequest) async {
 
     await Future.delayed(const Duration(seconds: 1));
     return RemoteDataSourceDetails(
-      sales.length,
-      sales
+      Clients.length,
+      Clients
           .skip(pageRequest.offset)
           .take(pageRequest.pageSize)
           .toList(),
       filteredRows: lastSearchTerm.isNotEmpty
-          ? sales.length
+          ? Clients.length
           : null, //again in a real world example you would only get the right amount of rows
     );
   }
