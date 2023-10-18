@@ -4,6 +4,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:ashkerty_food/static/deleteModal.dart';
+import 'package:intl/intl.dart';
 class SpeiciesTable extends StatefulWidget {
   final List data;
 
@@ -92,6 +93,7 @@ class ExampleSource extends AdvancedDataTableSource<Spiecies> {
   String lastSearchTerm = '';
 
   @override
+  NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
@@ -101,7 +103,10 @@ class ExampleSource extends AdvancedDataTableSource<Spiecies> {
               Text(currentRowData.name,style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
-              Text(currentRowData.price,style: const TextStyle(fontSize: 20),)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8,8,5,8),
+                child: Text(myFormat.format(currentRowData.price),style: const TextStyle(fontSize: 20),),
+              )
           ),
           DataCell(
               Text(currentRowData.imageLink ,style: const TextStyle(fontSize: 20),)

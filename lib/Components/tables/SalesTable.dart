@@ -4,7 +4,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:ashkerty_food/static/deleteModal.dart';
-
+import '../../widgets/BilDeatles.dart';
+import 'package:intl/intl.dart';
 class SalesTable extends StatefulWidget {
   final List data;
   SalesTable({Key? key, required this.data}) : super(key: key);
@@ -90,14 +91,13 @@ class _SalesTableState extends State<SalesTable> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-
             const SizedBox(height: 20,),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
               showFirstLastButtons: true,
               rowsPerPage: rowsPerPage,
-              availableRowsPerPage: [ 5, 10, 25],
+              availableRowsPerPage: const [ 5, 10, 25],
               onRowsPerPageChanged: (newRowsPerPage) {
                 if (newRowsPerPage != null) {
                   setState(() {
@@ -107,26 +107,19 @@ class _SalesTableState extends State<SalesTable> {
               },
               columns: const [
                 DataColumn(
-                  label: Text('رقم الفاتورة'),
+                  label: Center(child: Text('الصنف ',style: TextStyle(fontSize: 20),)),
                 ),
                 DataColumn(
-                  label: Text('اسم الصنف'),
+                  label: Center(child: Text('الكمية',style: TextStyle(fontSize: 20),)),
                 ),
                 DataColumn(
-                  label: Text('الكمية'),
+                  label: Center(child: Text('سعر الوحدة ',style: TextStyle(fontSize: 20),)),
                 ),
                 DataColumn(
-                  label: Text('السعر'),
+                  label: Center(child: Text('السعر الكلي ',style: TextStyle(fontSize: 20),)),
                 ),
-                DataColumn(
-                  label: Text('التاريخ'),
-                ),
-                DataColumn(
-                  label: Text('الدفع'),
-                ),
-                DataColumn(
-                  label: Text('0',style: TextStyle(color: Colors.white),),
-                ),
+
+
               ],
             ),
           ],
@@ -144,40 +137,34 @@ class ExampleSource extends AdvancedDataTableSource<Sales> {
   String lastSearchTerm = '';
 
   @override
+  NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
+
         cells: [
           DataCell(
-              Text(currentRowData.Bill_Number,)
+              Text(currentRowData.name,style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
-              Text(currentRowData.name,)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8,8,25,8),
+                child: Text(myFormat.format(currentRowData.quantity),style: const TextStyle(fontSize: 20),),
+              )
           ),
           DataCell(
-            Text(currentRowData.quantity.toString()),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8,8,25,8),
+                child: Text(myFormat.format(currentRowData.price),style: const TextStyle(fontSize: 20),),
+              )
           ),
           DataCell(
-            Text((currentRowData.price*currentRowData.quantity).toString(),),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8,8,25,8),
+                child: Text(myFormat.format(currentRowData.totall),style: const TextStyle(fontSize: 20),),
+              )
           ),
-          DataCell(
-            Text(currentRowData.date,),
-          ),
-          DataCell(
-            Text(currentRowData.Payment_Method,),
-          ),
-          DataCell(
-            Padding(
-              padding: const EdgeInsets.all(0),
-              child: ButtonBar(
-                children: [
-                  IconButton(onPressed: (){} ,icon:const Icon(Icons.mode_edit_outline),tooltip: 'تعديل',),
-                  IconButton(onPressed: (){}, icon: const Icon(Icons.delete_rounded),tooltip: 'حذف'),
-                ],
-              ),
-            ),
 
-          ),
           // DataCell(
           //   InkWell(
           //     onTap: (){

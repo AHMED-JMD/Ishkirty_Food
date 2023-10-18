@@ -1,11 +1,11 @@
 import 'package:ashkerty_food/static/modal.dart';
 import 'package:flutter/material.dart';
 import 'package:image_card/image_card.dart';
-
+import 'package:intl/intl.dart';
 class GridViewBuilder extends StatelessWidget {
   final List data;
   GridViewBuilder({super.key, required this.data});
-
+  NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
   //card Widget holding the image and width and height and data
   Widget _card(BuildContext context, speices, double widths, double height) {
     return Container(
@@ -19,7 +19,7 @@ class GridViewBuilder extends StatelessWidget {
         description: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('السعر :${speices.price}جنيه ',
+            Text('السعر :${myFormat.format(speices.price)}جنيه ',
                 style: TextStyle(color: Colors.white, fontSize: 18)),
             ElevatedButton(
                 onPressed: () {

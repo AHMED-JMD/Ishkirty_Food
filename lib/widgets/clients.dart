@@ -16,7 +16,7 @@ class _ClientsState extends State<Clients> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(backgroundColor: const Color(0xff083434),
+        appBar: AppBar(backgroundColor: const Color(0xff4b4b20),
 //custom button in static folder
         leading: IconButton(
         icon: const Icon(

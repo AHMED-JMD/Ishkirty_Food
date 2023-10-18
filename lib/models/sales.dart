@@ -1,4 +1,7 @@
 //speices class for storing the data coming from the database
+
+
+
 class Sales {
   Sales({
     required this.name,
@@ -11,6 +14,7 @@ class Sales {
   late final String type;
   late final int quantity;
   late final int price;
+  late final int totall = price * quantity;
 
   Sales.fromJson(Map<String, dynamic> json){
     name = json['name'];

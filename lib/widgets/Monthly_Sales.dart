@@ -18,7 +18,7 @@ class _MonthlySales extends State<MonthlySales> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xff083434),
+          backgroundColor: const Color(0xff4b4b20),
           leading:  IconButton(
             icon: const Icon(
               Icons.arrow_back,

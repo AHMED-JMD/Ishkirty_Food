@@ -4,11 +4,10 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:ashkerty_food/static/deleteModal.dart';
-
+import 'package:intl/intl.dart';
 class ClientTable extends StatefulWidget {
   final List data;
   ClientTable({Key? key, required this.data}) : super(key: key);
-
   @override
   State<ClientTable> createState() => _ClientTableState(data: data);
 }
@@ -106,10 +105,13 @@ class _ClientTableState extends State<ClientTable> {
               },
               columns: const [
                 DataColumn(
-                  label: Center(child: Text('الرقم',style: TextStyle(fontSize: 20),)),
+                  label: Center(child: Text('رقم العميل',style: TextStyle(fontSize: 20),)),
                 ),
                 DataColumn(
-                  label: Center(child: Text('الاسم',style: TextStyle(fontSize: 20),)),
+                  label:  Padding(
+                    padding: EdgeInsets.fromLTRB(8,8,35,8),
+                    child: Text('الأسم',style: TextStyle(fontSize: 20),),
+                  )
                 ),
                 DataColumn(
                   label: Center(child: Text('الحساب',style: TextStyle(fontSize: 20),)),
@@ -135,19 +137,26 @@ class ExampleSource extends AdvancedDataTableSource<Client> {
   String lastSearchTerm = '';
 
   @override
+  NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
 
         cells: [
           DataCell(
-               Text(currentRowData.id,style: const TextStyle(fontSize: 20),)
+               Padding(
+                 padding: const EdgeInsets.fromLTRB(8,8,50,8),
+                 child: Text(currentRowData.id,style: const TextStyle(fontSize: 20),),
+               )
           ),
           DataCell(
               Text(currentRowData.name,style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
-            Text(currentRowData.account.toString(),style: const TextStyle(fontSize: 20),)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8,8,11,8),
+              child: Text(myFormat.format(currentRowData.account),style: const TextStyle(fontSize: 20),),
+            )
           ),
           DataCell(
                 Padding(

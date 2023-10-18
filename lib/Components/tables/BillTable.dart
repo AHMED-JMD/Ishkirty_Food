@@ -4,18 +4,21 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:ashkerty_food/static/deleteModal.dart';
+import 'package:intl/intl.dart';
+import '../../widgets/BilDeatles.dart';
 
-class BillTable extends StatefulWidget {
+class billTable extends StatefulWidget {
   final List data;
-  BillTable({Key? key, required this.data}) : super(key: key);
+  billTable({Key? key, required this.data}) : super(key: key);
 
   @override
-  State<BillTable> createState() => _BillTableState(data: data);
+  State<billTable> createState() => _billTableState(data: data);
+
 }
 
-class _BillTableState extends State<BillTable> {
+class _billTableState extends State<billTable> {
   List data;
-  _BillTableState({required this.data});
+  _billTableState({required this.data});
 
 
   var rowsPerPage = 10;
@@ -90,14 +93,13 @@ class _BillTableState extends State<BillTable> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-
             const SizedBox(height: 20,),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
               showFirstLastButtons: true,
               rowsPerPage: rowsPerPage,
-              availableRowsPerPage: [ 5, 10, 25],
+              availableRowsPerPage: const [ 5, 10, 25],
               onRowsPerPageChanged: (newRowsPerPage) {
                 if (newRowsPerPage != null) {
                   setState(() {
@@ -107,28 +109,23 @@ class _BillTableState extends State<BillTable> {
               },
               columns: const [
                 DataColumn(
-                  label: Text('رقم الفاتورة'),
+                  label: Text('رقم الفاتورة',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
-                  label: Text('اسم الصنف'),
+                  label: Text('تفاصيل الفاتورة',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
-                  label: Text('الكمية'),
+                  label:  Text('تاريخ الفاتورة',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
-                  label: Text('السعر'),
+                  label:  Text(' قيمة الفاتورة ',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
-                  label: Text('التاريخ'),
+                  label:  Text(' طريقة الدفع',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
-                  label: Text('الدفع'),
-                ),
-                DataColumn(
-                  label: Text('الفاتورة الكلية'),
-                ),
-                DataColumn(
-                  label: Text('0',style: TextStyle(color: Colors.white),),
+                    label:  Text('',style: TextStyle(color: Color(0xffffffff)),)
+
                 ),
               ],
             ),
@@ -139,7 +136,7 @@ class _BillTableState extends State<BillTable> {
   }
 }
 
-class ExampleSource extends AdvancedDataTableSource<Bill> {
+class ExampleSource extends AdvancedDataTableSource<bill> {
   List data;
   BuildContext context;
   ExampleSource({required this.data, required this.context});
@@ -147,37 +144,51 @@ class ExampleSource extends AdvancedDataTableSource<Bill> {
   String lastSearchTerm = '';
 
   @override
+  NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
+
         cells: [
           DataCell(
-              Text(currentRowData.BillNumber.toString(),)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8,8,50,8),
+                child: Text(myFormat.format(currentRowData.BillNumber),style: const TextStyle(fontSize: 20),),
+              )
           ),
           DataCell(
-              Text(currentRowData.SalesList[index].name,)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8,8,20,0),
+                child: ElevatedButton(onPressed: () {
+                  Navigator.push(
+                    context,
+                     MaterialPageRoute(
+                      builder: (context) => BillDeatles(),
+                    ),
+                  ); }, child: const Text('التفاصيل',style:TextStyle(fontSize: 20)),),
+              ),
           ),
           DataCell(
-            Text(currentRowData.SalesList[index].quantity.toString()),
+              Text(currentRowData.BillDate,style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
-            Text((currentRowData.SalesList[index].price*currentRowData.SalesList[index].quantity).toString(),),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 8, 35, 8),
+                child: Text(myFormat.format(currentRowData.BillTotal),style: const TextStyle(fontSize: 20),),
+              )
           ),
           DataCell(
-            Text(currentRowData.BillDate,),
-          ),
-          DataCell(
-            Text(currentRowData.PaymentMethod,),
-          ),
-          DataCell(
-            Text(currentRowData.BillTotal.toString(),),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8,8,20,8),
+                child: Text(currentRowData.PaymentMethod,style: const TextStyle(fontSize: 20),),
+              )
           ),
           DataCell(
             Padding(
               padding: const EdgeInsets.all(0),
               child: ButtonBar(
                 children: [
-                  IconButton(onPressed: (){} ,icon:const Icon(Icons.mode_edit_outline),tooltip: 'تعديل',),
+                  IconButton(onPressed: (){} ,icon:const Icon(Icons.edit_rounded),tooltip: 'تعديل',),
                   IconButton(onPressed: (){}, icon: const Icon(Icons.delete_rounded),tooltip: 'حذف'),
                 ],
               ),
@@ -212,23 +223,23 @@ class ExampleSource extends AdvancedDataTableSource<Bill> {
     lastSearchTerm = filterQuery.toLowerCase().trim();
     setNextView();
   }
+
   @override
-  Future<RemoteDataSourceDetails<Bill>> getNextPage(
+  Future<RemoteDataSourceDetails<bill>> getNextPage(
       NextPageRequest pageRequest) async {
 
     await Future.delayed(const Duration(seconds: 1));
     return RemoteDataSourceDetails(
-      Bill.length,
-      Bill
+      bill1.length,
+      bill1
           .skip(pageRequest.offset)
           .take(pageRequest.pageSize)
           .toList(),
       filteredRows: lastSearchTerm.isNotEmpty
-          ? Bill.length
+          ? bill1.length
           : null, //again in a real world example you would only get the right amount of rows
     );
   }
-
 }
 //selected list goes here
 List<String> selectedIds = [];

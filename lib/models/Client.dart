@@ -1,5 +1,8 @@
 //speices class for storing the data coming from the database
+
+
 class Client {
+
   Client({
     required this.id,
     required this.name,
