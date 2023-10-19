@@ -1,8 +1,6 @@
 import 'package:ashkerty_food/static/drawer.dart';
-import 'package:ashkerty_food/static/enddrawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
-import 'package:ashkerty_food/static/EndBut.dart';
 import '../static/SalesCard.dart';
 import 'Sales_Graphs.dart';
 class Orders extends StatefulWidget {
@@ -21,7 +19,7 @@ class _OrdersState extends State<Orders> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xff4b4b20),
+          backgroundColor: const Color(0xff251c1c),
             leading:  IconButton(
                 icon: const Icon(
                   Icons.home,
@@ -37,37 +35,36 @@ class _OrdersState extends State<Orders> {
           actions: const [LeadingDrawerBtn(),],
 
         ),
-        drawer:const EndDrawer(),
         endDrawer: const MyDrawer(),
-        body:
-        Column(
+        body:SingleChildScrollView(
+        child:Column(
           children: [
-            const SizedBox(height: 20,),
+            const SizedBox(height: 10,),
             const Text('إجمالي الإيرادات لليوم',style: TextStyle(fontSize: 30),),
             const Text('695,000',style: TextStyle(fontSize: 30),),
-            const SizedBox(height: 40,),
+            const SizedBox(height: 10,),
             Container(
                   decoration: BoxDecoration(
                     color: const Color(0xffefecec),
                     border: Border.all(
                       width: 2,
                     ),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(0),
                   ),
                child: SalesCard(Period: 'إيرادات الوردية الصباحية',CashAmount: 540000,BankakAmount: 15000,AccountsAmount: 4000,),),
-              const SizedBox(height: 100,),
+              const SizedBox(height: 70,),
             Container(
               decoration: BoxDecoration(
                 color: const Color(0xffefecec),
                 border: Border.all(
                   width: 2,
                 ),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(0),
               ),
                child: SalesCard(Period: 'إيرادات الوردية المسائية',CashAmount: 100000,BankakAmount: 20000,AccountsAmount: 16000,),),
           ],
         ),
-
+        ),
 bottomNavigationBar:   BottomAppBar(
   height: 60,
   color: const Color(0xffefecec),
@@ -108,10 +105,19 @@ bottomNavigationBar:   BottomAppBar(
 
           ),
         ),
-      const Padding(
-        padding: EdgeInsets.fromLTRB(8,0,8,8),
-        child: EndBut(),
-      ),
+    PopupMenuButton(icon:Icon(Icons.menu,size: 36,),
+      onSelected: (value){
+
+      },
+      itemBuilder: (BuildContext context) { return[
+      PopupMenuItem(child:  Text('إيرادات الإسبوع', style: TextStyle(fontSize: 20,color: Colors.black),),value: 'week',),
+      PopupMenuItem(child:  Text('إيرادات الشهر', style: TextStyle(fontSize: 20,color: Colors.black),),value: 'month',),
+      PopupMenuItem(child:  Text('إيرادات السنة', style: TextStyle(fontSize: 20,color: Colors.black),),value: 'year',),
+
+            ];
+            },
+    ),
+
           ],
 ),
 ),

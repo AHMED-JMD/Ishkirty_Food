@@ -18,7 +18,7 @@ class _SpeicesState extends State<Speices> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(backgroundColor: const Color(0xff4b4b20),
+        appBar: AppBar(backgroundColor: const Color(0xff251c1c),
           leading: IconButton(
             icon: const Icon(
               Icons.home_sharp,
@@ -57,7 +57,7 @@ class _SpeicesState extends State<Speices> {
         bottomNavigationBar: BottomAppBar(
           child:Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [Text('عدد الاصناف=$number_of_spiecies',style: const TextStyle(fontSize: 24),),],
+            children: [SizedBox(width:200,height:70,child: Text('عدد الاصناف=$number_of_spiecies',style: const TextStyle(fontSize: 24),)),],
           ),
         ),
       ),

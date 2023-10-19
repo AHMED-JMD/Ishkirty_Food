@@ -2,14 +2,14 @@ import 'package:ashkerty_food/models/speicies.dart';
 import 'package:ashkerty_food/static/GridBuilder.dart';
 import 'package:flutter/material.dart';
 
-class Traditional extends StatefulWidget {
-  const Traditional({super.key});
+class Toppings extends StatefulWidget {
+  const Toppings({super.key});
 
   @override
-  State<Traditional> createState() => _TraditionalState();
+  State<Toppings> createState() => _ToppingsState();
 }
 
-class _TraditionalState extends State<Traditional> {
+class _ToppingsState extends State<Toppings> {
 
   //get data mock from database
 
@@ -23,14 +23,14 @@ class _TraditionalState extends State<Traditional> {
               padding: EdgeInsets.only(right: 28.0),
               child: Row(mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('تقليدي',textAlign: TextAlign.right ,style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),),
+                  Text('إضافات',textAlign: TextAlign.right ,style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),),
                 ],
               ),
             ),
-            const SizedBox(height: 20,),
+            SizedBox(height: 20,),
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              child: GridViewBuilder(data: traditional,),
+              child: GridViewBuilder(data: toppings,),
             ),
           ],
         )

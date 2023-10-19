@@ -1,25 +1,24 @@
-import 'package:ashkerty_food/models/Client.dart';
+import 'package:ashkerty_food/models/Bill.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:ashkerty_food/static/deleteModal.dart';
 import 'package:intl/intl.dart';
-
-import '../../widgets/ClientTransactios.dart';
-import '../Forms/AddAccountForm.dart';
-import '../Forms/DeleteAccountForm.dart';
-import '../Forms/ReductAccountForm.dart';
-class ClientTable extends StatefulWidget {
+import '../../widgets/BilDeatles.dart';
+import 'package:ashkerty_food/Components/Forms/DeleteBill.dart';
+class ClientBillTable extends StatefulWidget {
   final List data;
-  ClientTable({Key? key, required this.data}) : super(key: key);
+  ClientBillTable({Key? key, required this.data}) : super(key: key);
+
   @override
-  State<ClientTable> createState() => _ClientTableState(data: data);
+  State<ClientBillTable> createState() => _ClientBillTableState(data: data);
+
 }
 
-class _ClientTableState extends State<ClientTable> {
+class _ClientBillTableState extends State<ClientBillTable> {
   List data;
-  _ClientTableState({required this.data});
+  _ClientBillTableState({required this.data});
 
 
   var rowsPerPage = 10;
@@ -110,24 +109,21 @@ class _ClientTableState extends State<ClientTable> {
               },
               columns: const [
                 DataColumn(
-                  label: Center(child: Text('رقم العميل',style: TextStyle(fontSize: 20),)),
+                    label: Text('رقم الفاتورة',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
-                  label:  Padding(
-                    padding: EdgeInsets.fromLTRB(8,8,35,8),
-                    child: Text('الأسم',style: TextStyle(fontSize: 20),),
-                  )
+                    label: Text('تفاصيل الفاتورة',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
-                  label: Center(child: Text('الحساب',style: TextStyle(fontSize: 20),)),
+                    label:  Text('وقت الفاتورة',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
-                  label: Center(child: Text('المعاملات',style: TextStyle(fontSize: 20),)),
+                    label:  Text(' قيمة الفاتورة ',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
-                   label: Center(child: Text('',style: TextStyle(color: Color(0xffffffff)),))
-                
+                    label:  Text(' الوردية',style: TextStyle(fontSize: 20),)
                 ),
+
               ],
             ),
           ],
@@ -137,7 +133,7 @@ class _ClientTableState extends State<ClientTable> {
   }
 }
 
-class ExampleSource extends AdvancedDataTableSource<Client> {
+class ExampleSource extends AdvancedDataTableSource<bill> {
   List data;
   BuildContext context;
   ExampleSource({required this.data, required this.context});
@@ -152,44 +148,39 @@ class ExampleSource extends AdvancedDataTableSource<Client> {
 
         cells: [
           DataCell(
-               Padding(
-                 padding: const EdgeInsets.fromLTRB(8,8,50,8),
-                 child: Text(currentRowData.id,style: const TextStyle(fontSize: 20),),
-               )
-          ),
-          DataCell(
-              Text(currentRowData.name,style: const TextStyle(fontSize: 20),)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8,8,50,8),
+                child: Text(myFormat.format(currentRowData.BillNumber),style: const TextStyle(fontSize: 20),),
+              )
           ),
           DataCell(
             Padding(
-              padding: const EdgeInsets.fromLTRB(8,8,11,8),
-              child: Text(myFormat.format(currentRowData.account),style: const TextStyle(fontSize: 20),),
-            )
+              padding: const EdgeInsets.fromLTRB(8,8,16,0),
+              child: ElevatedButton(onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BillDeatles(),
+                  ),
+                ); }, child: const Text('التفاصيل',style:TextStyle(fontSize: 20)),),
+            ),
           ),
           DataCell(
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8,8,20,8),
-                    child: IconButton(onPressed: (){Navigator.push(
-                      context,
-                       MaterialPageRoute(
-                        builder: (context) => ClientTransactios(),
-                      ),
-                    );} ,icon:const Icon(Icons.feed_outlined,color: Color(0xffb2a011),),tooltip: 'معاملات',),
-                  ),
+              Text(currentRowData.BillDate,style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
-                Padding(
-                  padding: const EdgeInsets.all(0),
-                  child: ButtonBar(
-                    children: [
-                      IconButton(onPressed: (){AddAccount(context,'u]d');} ,icon:const Icon(Icons.add_box_sharp,color: Color(0xff0d4f0c),),tooltip: 'إضافة',),
-                      IconButton(onPressed: (){ReductAccount(context,'ugd');}, icon:const Icon(Icons.remove_circle_sharp,color: Color(0xff65090c),),tooltip: 'خصم'),
-                      IconButton(onPressed: (){deleteAccount(context,'عدي عباس');}, icon: const Icon(Icons.delete_rounded,color: Color(0xff060d48)),tooltip: 'حذف'),
-                    ],
-                  ),
-                ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 8, 35, 8),
+                child: Text(myFormat.format(currentRowData.BillTotal),style: const TextStyle(fontSize: 20),),
+              )
+          ),
+          DataCell(
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8,8,5,8),
+                child: Text(currentRowData.shift,style: const TextStyle(fontSize: 20),),
+              )
+          ),
 
-          ),
           // DataCell(
           //   InkWell(
           //     onTap: (){
@@ -220,18 +211,18 @@ class ExampleSource extends AdvancedDataTableSource<Client> {
   }
 
   @override
-  Future<RemoteDataSourceDetails<Client>> getNextPage(
+  Future<RemoteDataSourceDetails<bill>> getNextPage(
       NextPageRequest pageRequest) async {
 
     await Future.delayed(const Duration(seconds: 1));
     return RemoteDataSourceDetails(
-      Clients.length,
-      Clients
+      bill1.length,
+      bill1
           .skip(pageRequest.offset)
           .take(pageRequest.pageSize)
           .toList(),
       filteredRows: lastSearchTerm.isNotEmpty
-          ? Clients.length
+          ? bill1.length
           : null, //again in a real world example you would only get the right amount of rows
     );
   }

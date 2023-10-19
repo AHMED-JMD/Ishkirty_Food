@@ -10,7 +10,7 @@ class  BillDeatles extends StatelessWidget {
     return Directionality(textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xff4b4b20),
+          backgroundColor: const Color(0xff251c1c),
           leading:  IconButton(
             icon: const Icon(
               Icons.arrow_back,
@@ -21,7 +21,7 @@ class  BillDeatles extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => Bills(),
+                  builder: (context) => const Bills(),
                 ),
               );
             },

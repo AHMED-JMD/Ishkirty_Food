@@ -18,15 +18,15 @@ class _JuiciesState extends State<Juicies> {
         textDirection: TextDirection.rtl,
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 28.0),
-              child: Row(
+            const Padding(
+              padding: EdgeInsets.only(right: 28.0),
+              child: Row(mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('العصائر : ',textAlign: TextAlign.right ,style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),),
+                  Text('العصائر',textAlign: TextAlign.right ,style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),),
                 ],
               ),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: GridViewBuilder(data: juices,),

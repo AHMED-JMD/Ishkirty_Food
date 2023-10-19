@@ -19,15 +19,15 @@ class _MeatState extends State<Meat> {
         textDirection: TextDirection.rtl,
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 28.0),
-              child: Row(
+            const Padding(
+              padding: EdgeInsets.only(right: 28.0),
+              child: Row(mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('اللحوم: ',textAlign: TextAlign.right ,style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),),
+                  Text('اللحوم',textAlign: TextAlign.right ,style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),),
                 ],
               ),
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: GridViewBuilder(data: meat,),

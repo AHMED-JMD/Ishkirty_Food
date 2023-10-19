@@ -5,6 +5,8 @@ import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:ashkerty_food/static/deleteModal.dart';
 import 'package:intl/intl.dart';
+import '../Forms/DeleteSpeicies.dart';
+import '../Forms/EditSpeiciesForm.dart';
 class SpeiciesTable extends StatefulWidget {
   final List data;
 
@@ -119,8 +121,8 @@ class ExampleSource extends AdvancedDataTableSource<Spiecies> {
             padding: const EdgeInsets.all(0),
             child: ButtonBar(
               children: [
-                IconButton(onPressed: (){} ,icon:const Icon(Icons.mode_edit_outline),tooltip: 'تعديل',),
-                IconButton(onPressed: (){}, icon: const Icon(Icons.delete_rounded),tooltip: 'حذف'),
+                IconButton(onPressed: (){EditSpeicies_Modal(context,Spiecies(name: "مشكل", type: "juice", price: 1300, imageLink: "juice.jpg"),);} ,icon:const Icon(Icons.mode_edit_outline),tooltip: 'تعديل',),
+                IconButton(onPressed: (){deletespeices(context,'as');}, icon: const Icon(Icons.delete_rounded),tooltip: 'حذف'),
               ],
             ),
           ),

@@ -17,7 +17,7 @@ class _WeeklySales extends State<WeeklySales> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xff4b4b20),
+          backgroundColor: const Color(0xff251c1c),
           leading:  IconButton(
             icon: const Icon(
               Icons.arrow_back,
@@ -33,8 +33,8 @@ class _WeeklySales extends State<WeeklySales> {
 
         ),
         endDrawer: const MyDrawer(),
-        body:
-         Column(
+        body:SingleChildScrollView(
+         child:Column(
           children: [
             const SizedBox(height: 20,),
            const Text('إجمالي الإيرادات للإسبوع',style: TextStyle(fontSize: 30),),
@@ -62,7 +62,7 @@ class _WeeklySales extends State<WeeklySales> {
 
           ],
         ),
-
+    ),
 
 
 

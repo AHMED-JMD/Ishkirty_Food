@@ -1,16 +1,16 @@
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
-import '../Components/tables/ClientTable.dart';
+import '../Components/tables/ClientBillTable.dart';
 import '../static/drawer.dart';
 
-class Clients extends StatefulWidget {
-  const Clients({super.key});
+class ClientTransactios extends StatefulWidget {
+  const ClientTransactios({super.key});
 
   @override
-  State<Clients> createState() => _ClientsState();
+  State<ClientTransactios> createState() => _ClientTransactiosState();
 }
 
-class _ClientsState extends State<Clients> {
+class _ClientTransactiosState extends State<ClientTransactios> {
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -18,20 +18,20 @@ class _ClientsState extends State<Clients> {
       child: Scaffold(
         appBar: AppBar(backgroundColor: const Color(0xff251c1c),
 //custom button in static folder
-        leading: IconButton(
-        icon: const Icon(
-        Icons.home_sharp,
-        size: 37,
-        color: Colors.white,
-    ),
-    onPressed: (){
-    Navigator.pushReplacementNamed(context, '/home');
-    },
-    ),
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              size: 37,
+              color: Colors.white,
+            ),
+            onPressed: (){
+              Navigator.pushReplacementNamed(context, '/clients');
+            },
+          ),
 
-    title: const Center(child: Text("العملاء", style: TextStyle(fontSize: 25),)),
-    actions: const [LeadingDrawerBtn(),],
-    ),
+          title: const Center(child: Text("المعاملات", style: TextStyle(fontSize: 25),)),
+          actions: const [LeadingDrawerBtn(),],
+        ),
         //custom my drawer in static folder
         endDrawer: const MyDrawer(),
 
@@ -50,7 +50,7 @@ class _ClientsState extends State<Clients> {
                   const SizedBox(height: 20,),
                   Container(
                       color: Colors.grey[100],
-                      child: ClientTable(data: [],)
+                      child: ClientBillTable(data: [],)
                   ),
                 ],
               ),

@@ -8,7 +8,7 @@ class  SalesGRaphs extends StatelessWidget {
     return Directionality(textDirection: TextDirection.rtl,
     child: Scaffold(
   appBar: AppBar(
-  backgroundColor: const Color(0xff4b4b20),
+  backgroundColor: const Color(0xff251c1c),
   leading:  IconButton(
   icon: const Icon(
   Icons.arrow_back,
@@ -24,7 +24,9 @@ class  SalesGRaphs extends StatelessWidget {
 
   ),
   endDrawer:const MyDrawer(),
-    ),
+),
+
+
   );
   }
 }

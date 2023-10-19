@@ -11,7 +11,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-
   @override
 
   Widget build(BuildContext context) {
@@ -24,7 +23,7 @@ class MyApp extends StatelessWidget {
       routes: {
         //on development mode !--- when on production change default "/" to Login() widget ---!
         // and change MyHomePage() widget to "/home"
-        '/': (context) => const Login(),
+        '/': (context) => Login(),
         '/home' : (context) => const MyHomePage(),
         '/orders' : (context) => const Orders(),
         '/bills' : (context) => const Bills(),

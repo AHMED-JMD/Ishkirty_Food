@@ -26,7 +26,7 @@ class MyDrawer extends StatelessWidget {
                         fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'اشكرتي ادمن',
+                    'أدمن الوردية',
                     style: TextStyle(color: Colors.white, fontSize: 32),
                   ),
                 ],
@@ -105,7 +105,7 @@ class MyDrawer extends StatelessWidget {
                 child: const ListTile(
                   leading: Icon(
                     Icons.power_settings_new_outlined,
-                    color: Colors.blue,
+                    color: Color(0xffdc0a19),
                   ),
                   title: Text(
                     'تسجيل الخروج',

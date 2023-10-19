@@ -40,8 +40,10 @@ List<Spiecies> juices = [
   Spiecies(name: "مانجا بالحليب", type: "juice", price: 1000, imageLink: "juice.jpg"),
   Spiecies(name: "برتقال 2*1", type: "juice", price: 800, imageLink: "juice.jpg"),
   Spiecies(name: "برتقال 1*1", type: "juice", price: 600, imageLink: "juice.jpg"),
-  Spiecies(name: "موز باللبن", type: "juice", price: 800, imageLink: "juice.jpg"),
+  Spiecies(name: "موز باللبن", type: "juice", price: 600, imageLink: "juice.jpg"),
   Spiecies(name: "ليمون", type: "juice", price: 500, imageLink: "juice.jpg"),
+  Spiecies(name: "مياه معدنية", type: "juice", price: 300, imageLink: "juice.jpg"),
+  Spiecies(name: "مشروبات غازية", type: "juice", price: 700, imageLink: "juice.jpg"),
 ];
 //get data mock from database
 List<Spiecies> traditional = [
@@ -52,7 +54,7 @@ List<Spiecies> traditional = [
 ];
 //get data mock from database
 List<Spiecies> meat = [
-  Spiecies(name: "شاورما", type: "meat", price: 2000, imageLink: "meat.png"),
+  Spiecies(name: "شاورما", type: "meat", price: 2500, imageLink: "meat.png"),
   Spiecies(name: "بيرقر", type: "meat", price: 1400, imageLink: "meat.png"),
   Spiecies(name: "اقاشي", type: "meat", price: 1500, imageLink: "meat.png"),
   Spiecies(name: "شيش طاووق", type: "meat", price: 2000, imageLink: "meat.png"),
@@ -60,8 +62,18 @@ List<Spiecies> meat = [
   Spiecies(name: "بوفتيك", type: "meat", price: 1000, imageLink: "meat.png"),
   Spiecies(name: "كرسبي", type: "meat", price: 2500, imageLink: "sandwich.jpg"),
   Spiecies(name: "زنجر", type: "meat", price: 2500, imageLink: "sandwich.jpg"),
+  Spiecies(name: "سمك", type: "meat", price: 1800, imageLink: "sandwich.jpg"),
 ];
+List<Spiecies> toppings = [
+  Spiecies(name: "جبنة", type: "topping", price: 300, imageLink: "meat.png"),
+  Spiecies(name: "بيض", type: "topping", price: 200, imageLink: "meat.png"),
+  Spiecies(name: "فول ", type: "topping", price: 100, imageLink: "meat.png"),
+  Spiecies(name: "شيبس ", type: "topping", price: 200, imageLink: "meat.png"),
+  Spiecies(name: "فطيرة", type: "topping", price: 100, imageLink: "meat.png"),
+  Spiecies(name: "بيض باللحمة", type: "topping", price: 300, imageLink: "sandwich.jpg"),
+];
+
 //get data mock from database
 
-final int number_of_spiecies=  meat.length + traditional.length + juices.length;
-List<Spiecies> All =   meat + traditional + juices ;
+final int number_of_spiecies=  meat.length + traditional.length + juices.length + toppings.length;
+List<Spiecies> All =   meat + traditional + toppings + juices;

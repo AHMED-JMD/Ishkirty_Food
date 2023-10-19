@@ -4,7 +4,7 @@ import 'package:ashkerty_food/Components/traditional.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-
+import 'package:ashkerty_food/Components/Toppings.dart';
 class SpiecesNav extends StatefulWidget {
    const SpiecesNav({super.key});
 
@@ -20,19 +20,25 @@ class _SpiecesNavState extends State<SpiecesNav> {
       children: [
         Traditional(),
         Meat(),
-        Juicies()
+        Toppings(),
+        Juicies(),
+
       ],
     ), 'name': 'الكل'},
     {'widget': Traditional(), 'name': 'تقليدي'},
     {'widget': Meat(), 'name': 'اللحوم'},
+    {'widget':Toppings(),'name':'إضافات'},
     {'widget': Juicies(), 'name': 'العصائر'},
+
   ];
 
   Object? selectedPage = const Column(
     children: [
       Traditional(),
       Meat(),
-      Juicies()
+      Toppings(),
+      Juicies(),
+
     ],
   );
 

@@ -45,3 +45,9 @@ List<Sales> sales2 = [
   Sales( name: "كريسبي", type: "bufteak", price: 2500,quantity:2,),
 
 ];
+List<Sales> sales3 = [
+  Sales( name: "ليمون", type: "juice", price: 500,quantity:2,),
+  Sales(  name: "طعمية", type: "meat", price: 500,quantity:2,),
+  Sales( name: "فطيرة", type: "Toppings", price: 100,quantity:2,),
+
+];

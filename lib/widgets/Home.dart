@@ -32,7 +32,11 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
 
           toolbarHeight: 120,
+title: Image.asset("assets/images/ef1.jpg",
+width: 250,
+  height: 290,
 
+),
           centerTitle: true,
           elevation: 0,
           backgroundColor: Colors.transparent,

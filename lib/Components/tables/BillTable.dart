@@ -6,7 +6,9 @@ import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:ashkerty_food/static/deleteModal.dart';
 import 'package:intl/intl.dart';
 import '../../widgets/BilDeatles.dart';
+import 'package:ashkerty_food/Components/Forms/DeleteBill.dart';
 
+import '../Forms/AccountSelector.dart';
 class billTable extends StatefulWidget {
   final List data;
   billTable({Key? key, required this.data}) : super(key: key);
@@ -115,13 +117,16 @@ class _billTableState extends State<billTable> {
                   label: Text('تفاصيل الفاتورة',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
-                  label:  Text('تاريخ الفاتورة',style: TextStyle(fontSize: 20),)
+                  label:  Text('وقت الفاتورة',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
                   label:  Text(' قيمة الفاتورة ',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
                   label:  Text(' طريقة الدفع',style: TextStyle(fontSize: 20),)
+                ),
+                DataColumn(
+                    label:  Text(' الوردية',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
                     label:  Text('',style: TextStyle(color: Color(0xffffffff)),)
@@ -158,7 +163,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
           ),
           DataCell(
               Padding(
-                padding: const EdgeInsets.fromLTRB(8,8,20,0),
+                padding: const EdgeInsets.fromLTRB(8,8,16,0),
                 child: ElevatedButton(onPressed: () {
                   Navigator.push(
                     context,
@@ -184,12 +189,18 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
               )
           ),
           DataCell(
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8,8,5,8),
+                child: Text(currentRowData.shift,style: const TextStyle(fontSize: 20),),
+              )
+          ),
+          DataCell(
             Padding(
               padding: const EdgeInsets.all(0),
               child: ButtonBar(
                 children: [
-                  IconButton(onPressed: (){} ,icon:const Icon(Icons.edit_rounded),tooltip: 'تعديل',),
-                  IconButton(onPressed: (){}, icon: const Icon(Icons.delete_rounded),tooltip: 'حذف'),
+                  IconButton(onPressed: (){SelectAccount(context);} ,icon:const Icon(Icons.edit_rounded),tooltip: 'تعديل',),
+                  IconButton(onPressed: (){deleteBill(context,'dog');}, icon: const Icon(Icons.delete_rounded),tooltip: 'حذف'),
                 ],
               ),
             ),
