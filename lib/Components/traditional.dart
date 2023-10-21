@@ -27,7 +27,7 @@ class _TraditionalState extends State<Traditional> {
                 ],
               ),
             ),
-            const SizedBox(height: 20,),
+            const SizedBox(height: 30,),
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: GridViewBuilder(data: traditional,),

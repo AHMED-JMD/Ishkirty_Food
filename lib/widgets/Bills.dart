@@ -46,21 +46,13 @@ class _BillsState extends State<Bills> {
 
         body: ListView(
             children:[
-                Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100]
-                  ),
-                ),
-
-              const SizedBox(height: 100,),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   //custom widget in static folder for showing search bar responsive
                   const SearchInDates(),
 
-                  const SizedBox(height: 20,),
+                  const SizedBox(height: 10,),
                   Container(
                     color: Colors.grey[100],
                       child: billTable(data: [],)

@@ -31,10 +31,11 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           ),
 
-          toolbarHeight: 120,
+          toolbarHeight: 100,
 title: Image.asset("assets/images/ef1.jpg",
-width: 250,
-  height: 290,
+width: 200,
+  height: 150,
+
 
 ),
           centerTitle: true,

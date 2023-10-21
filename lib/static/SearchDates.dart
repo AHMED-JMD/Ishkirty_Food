@@ -78,13 +78,13 @@ class _SearchInDatesState extends State<SearchInDates> {
                     inputType: InputType.date,
                   ),
                 ),
-                SizedBox(width: 20,),
+                SizedBox(width: 30,),
                 // Add a submit button
                 SizedBox(
-                  width: 100,
-                  height: 50,
+                  width: 70,
+                  height: 30,
                   child: ElevatedButton(
-                    child: const Text('بحث',style: TextStyle(fontSize: 22,color: Colors.white),),
+                    child: const Text('بحث',style: TextStyle(fontSize: 20,color: Colors.white),),
                     style: ElevatedButton.styleFrom(
                         primary: Color(0xff194867),
                         textStyle: TextStyle(fontSize: 18)

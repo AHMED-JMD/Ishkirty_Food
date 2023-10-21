@@ -47,6 +47,7 @@ class _SpiecesNavState extends State<SpiecesNav> {
     return Column(
       children: [
         SizedBox(
+
           width: 500,
           child: FormBuilderDropdown(
             name: 'spieces',
@@ -64,6 +65,7 @@ class _SpiecesNavState extends State<SpiecesNav> {
             validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
           ),
         ),
+        SizedBox(height: 20,),
         selectedPage as Widget
       ],
     );

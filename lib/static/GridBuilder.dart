@@ -30,20 +30,8 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
         description: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(width: 10,),
+            const SizedBox(width: 15,),
             IconButton(onPressed: (){
-                Container(width:350,height: 70, decoration: BoxDecoration(
-                color: const Color(0xffffffff),
-                border: Border.all(
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(100),
-              ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8,0,30,12),
-                  child:   PaymentMethodSelector(),
-                ),
-              );
             }, icon: const Icon(Icons.add_box,color: Color(0xffffffff),size: 27,),tooltip: 'إضافة',),
             const SizedBox(width: 40,),
             Text('${myFormat.format(speices.price)} ',
