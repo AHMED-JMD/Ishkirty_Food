@@ -30,7 +30,7 @@ class _BufTakesState extends State<BufTakes> {
             SizedBox(height: 20,),
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              child: GridViewBuilder(data: buftake,),
+              child: GridViewBuilder(data: toppings,),
             ),
           ],
         )
