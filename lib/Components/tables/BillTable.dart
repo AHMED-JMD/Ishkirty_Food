@@ -120,10 +120,16 @@ class _billTableState extends State<billTable> {
                   label:  Text('وقت الفاتورة',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
-                  label:  Text(' قيمة الفاتورة ',style: TextStyle(fontSize: 20),)
+                  label:  Padding(
+                    padding: EdgeInsets.only(right: 35),
+                    child: Text(' قيمة الفاتورة ',style: TextStyle(fontSize: 20),),
+                  )
                 ),
                 DataColumn(
-                  label:  Text(' طريقة الدفع',style: TextStyle(fontSize: 20),)
+                  label:  Padding(
+                    padding: EdgeInsets.only(right: 30),
+                    child: Text(' طريقة الدفع',style: TextStyle(fontSize: 20),),
+                  )
                 ),
                 DataColumn(
                     label:  Text(' الوردية',style: TextStyle(fontSize: 20),)
@@ -178,14 +184,14 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
           ),
           DataCell(
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 35, 8),
-                child: Text(myFormat.format(currentRowData.BillTotal),style: const TextStyle(fontSize: 20),),
+                padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
+                child: Center(child: Text(myFormat.format(currentRowData.BillTotal),style: const TextStyle(fontSize: 20),)),
               )
           ),
           DataCell(
               Padding(
                 padding: const EdgeInsets.fromLTRB(8,8,20,8),
-                child: Text(currentRowData.PaymentMethod,style: const TextStyle(fontSize: 20),),
+                child: Center(child: Text(currentRowData.PaymentMethod,style: const TextStyle(fontSize: 20),)),
               )
           ),
           DataCell(
@@ -199,8 +205,8 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
               padding: const EdgeInsets.all(0),
               child: ButtonBar(
                 children: [
-                  IconButton(onPressed: (){SelectAccount(context);} ,icon:const Icon(Icons.edit_rounded),tooltip: 'تعديل',),
-                  IconButton(onPressed: (){deleteBill(context,'dog');}, icon: const Icon(Icons.delete_rounded),tooltip: 'حذف'),
+                  IconButton(onPressed: (){SelectAccount(context);} ,icon:const Icon(Icons.edit_rounded,color: Color(0xff0d4f0c),),tooltip: 'تعديل',),
+                  IconButton(onPressed: (){deleteBill(context,'dog');}, icon: const Icon(Icons.delete_rounded,color: Color(0xff65090c),),tooltip: 'حذف'),
                 ],
               ),
             ),

@@ -1,6 +1,3 @@
-import 'package:ashkerty_food/widgets/Monthly_Sales.dart';
-import 'package:ashkerty_food/widgets/Weekly_Sales.dart';
-import 'package:ashkerty_food/widgets/Yearly_Sales.dart';
 import 'package:flutter/material.dart';
 import '';
 class EndDrawer extends StatelessWidget {
@@ -18,12 +15,7 @@ class EndDrawer extends StatelessWidget {
             const SizedBox(height: 50,),
             InkWell(
               onTap: (){
-                Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                    builder: (context) => new WeeklySales(),
-                  ),
-                );
+
               },
               child: const Text(
                 'إيرادات الإسبوع',
@@ -33,12 +25,7 @@ class EndDrawer extends StatelessWidget {
             const SizedBox(height: 50,),
             InkWell(
               onTap: (){
-                Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                    builder: (context) => new MonthlySales(),
-                  ),
-                );
+
               },
               child: const Text(
                 'إيرادات الشهر',
@@ -48,12 +35,7 @@ class EndDrawer extends StatelessWidget {
             const SizedBox(height: 50,),
             InkWell(
               onTap: (){
-                Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                    builder: (context) => new YearlySales(),
-                  ),
-                );
+
               },
               child: const Text(
                 'إيرادات السنة',

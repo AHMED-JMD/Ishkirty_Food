@@ -34,43 +34,48 @@ class Spiecies {
 }
 //get data mock from database
 List<Spiecies> juices = [
-  Spiecies(name: "مشكل", type: "juice", price: 1300, imageLink: "juice.jpg"),
-  Spiecies(name: "فراولة بالحليب", type: "juice", price: 1100, imageLink: "juice.jpg"),
-  Spiecies(name: " اناناس بالحليب", type: "juice", price: 1000, imageLink: "juice.jpg"),
-  Spiecies(name: "مانجا بالحليب", type: "juice", price: 1000, imageLink: "juice.jpg"),
-  Spiecies(name: "برتقال 2*1", type: "juice", price: 800, imageLink: "juice.jpg"),
-  Spiecies(name: "برتقال 1*1", type: "juice", price: 600, imageLink: "juice.jpg"),
-  Spiecies(name: "موز باللبن", type: "juice", price: 600, imageLink: "juice.jpg"),
-  Spiecies(name: "ليمون", type: "juice", price: 500, imageLink: "juice.jpg"),
-  Spiecies(name: "مياه معدنية", type: "juice", price: 300, imageLink: "juice.jpg"),
-  Spiecies(name: "مشروبات غازية", type: "juice", price: 700, imageLink: "juice.jpg"),
+  Spiecies(name: "مشكل", type: "juice", price: 1300, imageLink: "cocktail.jpg"),
+  Spiecies(name: "فراولة بالحليب", type: "juice", price: 1100, imageLink: "smj.jpg"),
+  Spiecies(name: " اناناس بالحليب", type: "juice", price: 1000, imageLink: "ananas-milk.jpg"),
+  Spiecies(name: "مانجا بالحليب", type: "juice", price: 1000, imageLink: "mango-smoothie.jpg"),
+  Spiecies(name: "برتقال 2*1", type: "juice", price: 800, imageLink: "orange.gif"),
+  Spiecies(name: "مشروبات غازية", type: "juice", price: 700, imageLink: "pepsi.jpg"),
+  Spiecies(name: "برتقال 1*1", type: "juice", price: 600, imageLink: "orange1x1.jpg"),
+  Spiecies(name: "موز باللبن", type: "juice", price: 600, imageLink: "banana-milk.jpg"),
+  Spiecies(name: "ليمون", type: "juice", price: 500, imageLink: "lemon.jpg"),
+  Spiecies(name: "مياه معدنية", type: "juice", price: 300, imageLink: "water.jpg"),
+
 ];
 //get data mock from database
 List<Spiecies> traditional = [
+  Spiecies(name: "ميكس اشكرتي", type: "traditional", price: 1200, imageLink: "mix.jpg"),
+  Spiecies(name: "شبس", type: "traditional", price: 600, imageLink: "fries.jpg"),
   Spiecies(name: "طعمية", type: "traditional", price: 500, imageLink: "traditional.jpg"),
-  Spiecies(name: "بيض", type: "traditional", price: 500, imageLink: "traditional.jpg"),
-  Spiecies(name: "شبس", type: "traditional", price: 600, imageLink: "traditional.jpg"),
-  Spiecies(name: "ميكس اشكرتي", type: "traditional", price: 1200, imageLink: "traditional.jpg"),
+  Spiecies(name: "بيض", type: "traditional", price: 500, imageLink: "egg.jpg"),
+  Spiecies(name: "فول ", type: "traditional", price: 400, imageLink: "fool.jpg"),
+
+
 ];
 //get data mock from database
 List<Spiecies> meat = [
-  Spiecies(name: "شاورما", type: "meat", price: 2500, imageLink: "meat.png"),
-  Spiecies(name: "بيرقر", type: "meat", price: 1400, imageLink: "meat.png"),
-  Spiecies(name: "اقاشي", type: "meat", price: 1500, imageLink: "meat.png"),
-  Spiecies(name: "شيش طاووق", type: "meat", price: 2000, imageLink: "meat.png"),
-  Spiecies(name: "بيرقر جامبو", type: "meat", price: 2000, imageLink: "meat.png"),
-  Spiecies(name: "بوفتيك", type: "meat", price: 1000, imageLink: "meat.png"),
-  Spiecies(name: "كرسبي", type: "meat", price: 2500, imageLink: "sandwich.jpg"),
-  Spiecies(name: "زنجر", type: "meat", price: 2500, imageLink: "sandwich.jpg"),
-  Spiecies(name: "سمك", type: "meat", price: 1800, imageLink: "sandwich.jpg"),
+  Spiecies(name: "كرسبي", type: "meat", price: 2500, imageLink: "krispy.jpg"),
+  Spiecies(name: "زنجر", type: "meat", price: 2500, imageLink: "zinger.jpg"),
+  Spiecies(name: "شاورما", type: "meat", price: 2500, imageLink: "shawirma.jpg"),
+  Spiecies(name: "بيرقر جامبو", type: "meat", price: 2000, imageLink: "double-burger.jpg"),
+  Spiecies(name: "شيش طاووق", type: "meat", price: 2000, imageLink: "sheeshtawoog.jpg"),
+  Spiecies(name: "سمك", type: "meat", price: 1800, imageLink: "fish.jpg"),
+  Spiecies(name: "اقاشي", type: "meat", price: 1500, imageLink: "agashi.jpg"),
+  Spiecies(name: "بيرقر", type: "meat", price: 1400, imageLink: "burger.jpg"),
+  Spiecies(name: "بوفتيك", type: "meat", price: 1000, imageLink: "bufftake.jpg"),
+
 ];
 List<Spiecies> toppings = [
-  Spiecies(name: "جبنة", type: "topping", price: 300, imageLink: "meat.png"),
-  Spiecies(name: "بيض", type: "topping", price: 200, imageLink: "meat.png"),
-  Spiecies(name: "فول ", type: "topping", price: 100, imageLink: "meat.png"),
-  Spiecies(name: "شيبس ", type: "topping", price: 200, imageLink: "meat.png"),
-  Spiecies(name: "فطيرة", type: "topping", price: 100, imageLink: "meat.png"),
-  Spiecies(name: "بيض باللحمة", type: "topping", price: 300, imageLink: "sandwich.jpg"),
+  Spiecies(name: "جبنة", type: "topping", price: 300, imageLink: "cheese-topping.jpg"),
+  Spiecies(name: "بيض باللحمة", type: "topping", price: 300, imageLink: "egg-meat-topping.jpg"),
+  Spiecies(name: "شيبس ", type: "topping", price: 200, imageLink: "fries-topping.jpg"),
+  Spiecies(name: "بيض", type: "topping", price: 200, imageLink: "egg -topping.jpg"),
+  Spiecies(name: "فول ", type: "topping", price: 100, imageLink: "fool-topping.jpg"),
+  Spiecies(name: "فطيرة", type: "topping", price: 100, imageLink: "fatera.jpg"),
 ];
 
 //get data mock from database

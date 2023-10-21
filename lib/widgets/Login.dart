@@ -17,7 +17,7 @@ class _LoginState extends State<Login> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
   late String username='محمد';
-  late String password='12345';
+  late String password='ماعا1997';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,11 +72,11 @@ class _LoginState extends State<Login> {
                                     labelText: 'اسم المستخدم',
                                     icon: Icon(Icons.person),
                                   ),
-                                  // validator:(value){
-                                  //   if(value != username ){
-                                  //     return'اسم مستخدم خاطئ ';
-                                  //   }
-                                  // }
+                                   validator:(value){
+                                     if(value != username ){
+                                       return'اسم مستخدم خاطئ ';
+                                     }
+                                   }
                                 ),
                                 const SizedBox(height: 20,),
                                 FormBuilderTextField(
@@ -87,11 +87,11 @@ class _LoginState extends State<Login> {
                                       focusColor: Colors.deepPurple
                                   ),
                                   obscureText: true,
-                                    // validator:(value){
-                                    //   if(value != password ) {
-                                    //     return'كلمة سر خاطئة';
-                                    //   }
-                                    // }
+                                     validator:(value){
+                                      if(value != password ) {
+                                         return'كلمة سر خاطئة';
+                                       }
+                                     }
                                 ),
                                 const SizedBox(height: 60,),
                                 SizedBox(
