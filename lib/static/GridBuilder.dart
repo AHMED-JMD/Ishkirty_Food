@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'packa''ge:image_card/image_card.dart';
 import 'package:intl/intl.dart';
 
+import '../Components/Forms/CheckoutForm.dart';
 import 'PaymentMethodSelector.dart';
 class GridViewBuilder extends StatefulWidget {
   final List data;
@@ -31,13 +32,13 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const SizedBox(width: 15,),
-            IconButton(onPressed: (){
-            }, icon: const Icon(Icons.add_box,color: Color(0xffffffff),size: 27,),tooltip: 'إضافة',),
+            IconButton(onPressed: (){Checkout(context);},
+              icon: const Icon(Icons.add_box,color: Color(0xffffffff),size: 27,),tooltip: 'إضافة',),
             const SizedBox(width: 40,),
             Text('${myFormat.format(speices.price)} ',
                 style: const TextStyle(color: Colors.white, fontSize: 18)),
             const SizedBox(width: 40,),
-            IconButton(onPressed: (){}, icon: const Icon(Icons.remove_circle,color: Colors.white,size: 27,),tooltip: 'نقصان',),
+            IconButton(onPressed: (){Checkout(context);}, icon: const Icon(Icons.remove_circle,color: Colors.white,size: 27,),tooltip: 'نقصان',),
           ],
         ),
       ),

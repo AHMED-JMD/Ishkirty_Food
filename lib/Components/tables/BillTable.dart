@@ -176,7 +176,8 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
                      MaterialPageRoute(
                       builder: (context) => BillDeatles(),
                     ),
-                  ); }, child: const Text('التفاصيل',style:TextStyle(fontSize: 20)),),
+                  );
+                  }, child: const Text('التفاصيل',style:TextStyle(fontSize: 20)),),
               ),
           ),
           DataCell(

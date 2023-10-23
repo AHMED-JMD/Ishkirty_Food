@@ -39,7 +39,7 @@ List<Spiecies> juices = [
   Spiecies(name: " اناناس بالحليب", type: "juice", price: 1000, imageLink: "ananas-milk.jpg"),
   Spiecies(name: "مانجا بالحليب", type: "juice", price: 1000, imageLink: "mango-smoothie.jpg"),
   Spiecies(name: "برتقال 2*1", type: "juice", price: 800, imageLink: "orange.gif"),
-  Spiecies(name: "مشروبات غازية", type: "juice", price: 700, imageLink: "pepsi.jpg"),
+  Spiecies(name: "مشروبات غازية", type: "juice", price: 700, imageLink: "kinza.jpg"),
   Spiecies(name: "برتقال 1*1", type: "juice", price: 600, imageLink: "orange1x1.jpg"),
   Spiecies(name: "موز باللبن", type: "juice", price: 600, imageLink: "banana-milk.jpg"),
   Spiecies(name: "ليمون", type: "juice", price: 500, imageLink: "lemon.jpg"),
@@ -50,6 +50,7 @@ List<Spiecies> juices = [
 List<Spiecies> traditional = [
   Spiecies(name: "ميكس اشكرتي", type: "traditional", price: 1200, imageLink: "mix.jpg"),
   Spiecies(name: "شبس", type: "traditional", price: 600, imageLink: "fries.jpg"),
+  Spiecies(name: " بيض باللحمة", type: "traditional", price: 600, imageLink: "egg-meat.jpg"),
   Spiecies(name: "طعمية", type: "traditional", price: 500, imageLink: "traditional.jpg"),
   Spiecies(name: "بيض", type: "traditional", price: 500, imageLink: "egg.jpg"),
   Spiecies(name: "فول ", type: "traditional", price: 400, imageLink: "fool.jpg"),

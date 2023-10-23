@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import '../Components/tables/SalesTable.dart';
 import '../static/drawer.dart';
 import '../static/leadinButton.dart';
-
 class  BillDeatles extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Directionality(textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xff251c1c),
+          backgroundColor: const Color(0xff20491a),
           leading:  IconButton(
             icon: const Icon(
               Icons.arrow_back,

@@ -5,6 +5,7 @@ import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import 'package:ashkerty_food/static/deleteModal.dart';
 import 'package:intl/intl.dart';
+import '../Forms/AddSpeiciesForm.dart';
 import '../Forms/DeleteSpeicies.dart';
 import '../Forms/EditSpeiciesForm.dart';
 class SpeiciesTable extends StatefulWidget {
@@ -48,7 +49,31 @@ class _SpeiciesTableState extends State<SpeiciesTable> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 20,),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8,8,650,20),
+                  child: Container(height:50,width:250,
+                      decoration:BoxDecoration(
+                        color: const Color(0xffffffff),
+                        border: Border.all(
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      child: TextField(decoration: InputDecoration(
+                          suffixIcon: IconButton(onPressed: () {  }, icon: Icon(Icons.search_sharp,size: 24,color: Color(0xff090c2d),),)
+                      ),
+                      )
+
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8,0,8,10),
+                  child: IconButton(onPressed: (){AddSpeicies_Modal(context);}, icon: Icon(Icons.add_box_sharp,color: Color(0xff090c2d),size: 25,)),
+                ),
+              ],
+            ),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,

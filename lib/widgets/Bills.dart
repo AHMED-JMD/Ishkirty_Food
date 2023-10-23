@@ -24,7 +24,7 @@ class _BillsState extends State<Bills> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(backgroundColor: const Color(0xff251c1c),
+        appBar: AppBar(backgroundColor: const Color(0xff20491a),
           //custom button in static folder
           leading: IconButton(
             icon: const Icon(

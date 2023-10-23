@@ -19,7 +19,7 @@ class _OrdersState extends State<Orders> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xff251c1c),
+          backgroundColor: const Color(0xff20491a),
             leading:  IconButton(
                 icon: const Icon(
                   Icons.home,
@@ -96,7 +96,7 @@ bottomNavigationBar:   BottomAppBar(
 //border: UnderlineInputBorder(),
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
-                  icon:const Icon(Icons.arrow_drop_up,size: 25,color: Colors.black87,),
+                  icon:const Icon(Icons.search_sharp,size: 25,color: Colors.black87,),
                 onPressed: () {  },
 
 

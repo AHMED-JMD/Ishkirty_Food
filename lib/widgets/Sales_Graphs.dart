@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../static/drawer.dart';
 import '../static/leadinButton.dart';
+import 'SpeciesStats.dart';
 
 class  SalesGRaphs extends StatelessWidget {
   @override
@@ -8,7 +9,7 @@ class  SalesGRaphs extends StatelessWidget {
     return Directionality(textDirection: TextDirection.rtl,
     child: Scaffold(
   appBar: AppBar(
-  backgroundColor: const Color(0xff251c1c),
+  backgroundColor: const Color(0xff20491a),
   leading:  IconButton(
   icon: const Icon(
   Icons.arrow_back,
@@ -24,6 +25,7 @@ class  SalesGRaphs extends StatelessWidget {
 
   ),
   endDrawer:const MyDrawer(),
+
 ),
 
 

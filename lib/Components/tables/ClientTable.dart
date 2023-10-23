@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../../widgets/ClientTransactios.dart';
 import '../Forms/AddAccountForm.dart';
+import '../Forms/AddClientForm.dart';
 import '../Forms/DeleteAccountForm.dart';
 import '../Forms/ReductAccountForm.dart';
 class ClientTable extends StatefulWidget {
@@ -94,7 +95,32 @@ class _ClientTableState extends State<ClientTable> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 20,),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+               Padding(
+                 padding: const EdgeInsets.fromLTRB(8,8,650,20),
+                 child: Container(height:50,width:250,
+                   decoration:BoxDecoration(
+                     color: const Color(0xffffffff),
+                   border: Border.all(
+                     width: 1,
+                   ),
+                   borderRadius: BorderRadius.circular(0),
+                 ),
+                     child: TextField(decoration: InputDecoration(
+                         suffixIcon: IconButton(onPressed: () {  }, icon: Icon(Icons.person_search_sharp,size: 24,color: Color(0xff090c2d),),)
+                   ),
+                   )
+
+                 ),
+               ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8,0,8,10),
+                  child: IconButton(onPressed: (){AddClient_Modal(context);}, icon: Icon(Icons.add_box_sharp,color: Color(0xff090c2d),size: 25,)),
+                ),
+              ],
+            ),
+
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
