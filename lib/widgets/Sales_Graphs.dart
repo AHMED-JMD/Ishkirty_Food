@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import '../Components/Forms/CheckoutForm.dart';
 import '../static/drawer.dart';
 import '../static/leadinButton.dart';
+import '../static/my_icon_icons.dart';
 import 'SpeciesStats.dart';
 
 class  SalesGRaphs extends StatelessWidget {
+    List <String> PaymentMethod = ['CASH','BANKAK','ACCOUNT'];
+    late String CurrentPaymentMethod = PaymentMethod[0];
   @override
   Widget build(BuildContext context) {
     return Directionality(textDirection: TextDirection.rtl,
@@ -25,10 +29,7 @@ class  SalesGRaphs extends StatelessWidget {
 
   ),
   endDrawer:const MyDrawer(),
-
 ),
-
-
   );
   }
 }

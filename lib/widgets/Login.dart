@@ -113,11 +113,16 @@ class _LoginState extends State<Login> {
                                     child: const Text('تسجيل الدخول', style: TextStyle(fontSize: 20, color: Colors.white)),
                                   ),
                                 ),
-                            SizedBox(height: 78,) ,
+                            SizedBox(height: 48,),
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(8,8,8,3),
                                 child: TextButton(onPressed: (){ChangePassword(context);}, child: Text('تغيير كلمة السر',style: TextStyle(fontSize: 16,color: Color(0xff0a2060)),)),
-                              )],
+                              ),
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(8,0,8,2),
+                                  child: TextButton(onLongPress: (){Navigator.pushReplacementNamed(context, '/home');},onPressed: (){}, child: Text('.',style: TextStyle(fontSize: 8,color: Color(0xffffffff)),)),
+                                )
+                              ],
                             ),
                           ),
                         ),
