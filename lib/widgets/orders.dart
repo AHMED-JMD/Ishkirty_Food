@@ -33,7 +33,7 @@ class _OrdersState extends State<Orders> {
 
             title: const Center(child:Text("المبيعات اليومية", style: TextStyle(fontSize: 25,)),),
           actions: const [LeadingDrawerBtn(),],
-
+          toolbarHeight: 45,
         ),
         endDrawer: const MyDrawer(),
         body:SingleChildScrollView(
@@ -52,7 +52,7 @@ class _OrdersState extends State<Orders> {
                     borderRadius: BorderRadius.circular(0),
                   ),
                child: SalesCard(Period: 'إيرادات الوردية الصباحية',CashAmount: 540000,BankakAmount: 15000,AccountsAmount: 4000,),),
-              const SizedBox(height: 70,),
+              const SizedBox(height: 25,),
             Container(
               decoration: BoxDecoration(
                 color: const Color(0xffefecec),

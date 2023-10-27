@@ -1,6 +1,8 @@
+
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/spieces_nav.dart';
 import 'package:flutter/material.dart';
+import '../Components/Forms/TransactForm.dart';
 import '../static/HomeDrawerbut.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -31,17 +33,36 @@ class _MyHomePageState extends State<MyHomePage> {
             },
           ),
 
-          toolbarHeight: 100,
+          toolbarHeight: 50,
 title: Image.asset("assets/images/ef1.jpg",
-width: 200,
-  height: 150,
+width: 100,
+  height: 100,
 
 
 ),
           centerTitle: true,
           elevation: 0,
           backgroundColor: Colors.transparent,
-          actions: const [HomeDrawerbut(),]
+          actions:  [
+
+              SizedBox(
+                width: 77,height: 40,
+                child: ElevatedButton(onPressed:(){Transact(context);},
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                    side: BorderSide(color: Colors.transparent),
+
+        )
+      )
+    ),child: Text('تحويل',style: TextStyle(fontSize: 16,color: Colors.white),),),
+              ),
+
+
+            SizedBox(width: 30,),
+            HomeDrawerbut(),]
         ),
         //custom drawer in static folder
         endDrawer: const MyDrawer(),

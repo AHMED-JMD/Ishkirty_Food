@@ -67,10 +67,21 @@ class SalesCard extends StatelessWidget {
                 color: Color(0xff0c283f),
               ),
               Text(myFormat.format(AccountsAmount),style: TextStyle(fontSize: 30),),
+
+
             ]
         ),
           ],),
-      ],
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+              SizedBox(width: 10,),
+            Text("التحويلات",style: TextStyle(fontSize: 30),),
+            SizedBox(width: 600,),
+            Text('5,000',style: TextStyle(fontSize: 30),),
+          ],
+        ),  ],
     );
   }
 }

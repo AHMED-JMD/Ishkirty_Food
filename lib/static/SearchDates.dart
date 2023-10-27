@@ -1,3 +1,4 @@
+import 'package:ashkerty_food/widgets/DeletedBills.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -21,8 +22,9 @@ class _SearchInDatesState extends State<SearchInDates> {
         builder: (BuildContext context, BoxConstraints constraints){
           if(constraints.maxWidth > 700){
             return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                SizedBox(width: 483,),
                 Text('من : ', style: TextStyle(fontSize: 17),),
                 SizedBox(width: 10,),
                 Container(
@@ -102,7 +104,16 @@ class _SearchInDatesState extends State<SearchInDates> {
                     },
                   ),
                 ),
+                const SizedBox(width: 400,),
+                IconButton(onPressed: (){Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DeletedBills(),
+                  ),
+                );}, icon: Icon(Icons.delete_forever_sharp,size:30,color:Color(
+                    0xff0f2e46))),
               ],
+
             );
           } else {
             if(constraints.maxWidth> 500){

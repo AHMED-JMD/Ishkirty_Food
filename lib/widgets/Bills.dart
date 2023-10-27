@@ -39,6 +39,7 @@ class _BillsState extends State<Bills> {
 
           title: const Center(child: Text("الفواتير", style: TextStyle(fontSize: 25),)),
           actions: const [LeadingDrawerBtn(),],
+          toolbarHeight: 45,
         ),
 
         //custom drawer in static folder
