@@ -30,7 +30,7 @@ class _MeatState extends State<Meat> {
             const SizedBox(height: 20,),
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              child: GridViewBuilder(data: meat,),
+              // child: GridViewBuilder(data: meat,),
             ),
           ],
         )

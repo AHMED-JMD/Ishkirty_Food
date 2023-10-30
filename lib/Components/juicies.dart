@@ -29,7 +29,7 @@ class _JuiciesState extends State<Juicies> {
             const SizedBox(height: 20,),
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              child: GridViewBuilder(data: juices,),
+              // child: GridViewBuilder(data: juices,),
             ),
           ],
         )

@@ -1,41 +1,36 @@
-//speices class for storing the data coming from the database
-
-
 class Client {
-
   Client({
     required this.id,
     required this.name,
+    required this.phoneNum,
     required this.account,
-
+    required this.createdAt,
+    required this.updatedAt,
   });
-
-  late final String id;
+  late final int id;
   late final String name;
+  late final int phoneNum;
   late final int account;
-
+  late final String createdAt;
+  late final String updatedAt;
 
   Client.fromJson(Map<String, dynamic> json){
     id = json['id'];
     name = json['name'];
+    phoneNum = json['phoneNum'];
     account = json['account'];
-
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
   }
 
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
     _data['id'] = id;
     _data['name'] = name;
+    _data['phoneNum'] = phoneNum;
     _data['account'] = account;
-
+    _data['createdAt'] = createdAt;
+    _data['updatedAt'] = updatedAt;
     return _data;
   }
 }
-//get data mock from database
-List<Client> Clients = [
-  Client(id : '1', name: "عدي عباس", account: 2000),
-  Client(id : '2', name: "عبدالسلام عوض", account: 3000),
-  Client(id : '3', name: "أحمدعبد الرحمن", account:4000 ),
-  Client(id : '4', name: "محمد خير عبدالرحيم", account: 5000),
-  Client(id : '5', name: "عدي عبدالمنعم", account: 6000),
-];

@@ -3,7 +3,7 @@ import 'package:http/http.dart';
 
 String apiUrl = 'http://localhost:3000/api/admin';
 
-class API_Auth {
+class APIAuth {
   static Future Login (data) async {
     try{
       Map<String, String> ConfigHeaders = {

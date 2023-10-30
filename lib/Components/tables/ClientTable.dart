@@ -1,16 +1,14 @@
+import 'package:ashkerty_food/API/Client.dart';
 import 'package:ashkerty_food/models/Client.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:ashkerty_food/static/deleteModal.dart';
-import 'package:intl/intl.dart';
 
-import '../../widgets/ClientTransactios.dart';
-import '../Forms/AddAccountForm.dart';
-import '../Forms/AddClientForm.dart';
-import '../Forms/DeleteAccountForm.dart';
-import '../Forms/ReductAccountForm.dart';
+import 'package:ashkerty_food/widgets/ClientTransactios.dart';
+import 'package:ashkerty_food/Components/Forms/AddAccountForm.dart';
+import 'package:ashkerty_food/Components/Forms/DeleteAccountForm.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 class ClientTable extends StatefulWidget {
   final List data;
   ClientTable({Key? key, required this.data}) : super(key: key);
@@ -19,22 +17,10 @@ class ClientTable extends StatefulWidget {
 }
 
 class _ClientTableState extends State<ClientTable> {
+
   List data;
   _ClientTableState({required this.data});
 
-
-  var rowsPerPage = 10;
-  late final source = ExampleSource(data: data, context: context);
-  final _searchController = TextEditingController();
-
-  bool isLoading = false;
-
-
-  @override
-  void initState() {
-    super.initState();
-    _searchController.text = '';
-  }
   //server side Functions ------------------
   //------delete--
   Future deleteBank() async {
@@ -82,9 +68,79 @@ class _ClientTableState extends State<ClientTable> {
     //   );
     // }
   }
+  //modify account
+  Future Modify (data) async {
+    setState(() {
+      isLoading = true;
+    });
+    // call server
+    final response = await APIClient.Modify(data);
+
+    setState(() {
+      isLoading = false;
+    });
+    if(response == true){
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Center(child: Text('تمت تعديل البيانات بنجاح', style: TextStyle(fontSize: 19) ,)),
+            backgroundColor: Colors.green,
+          )
+      );
+      await Future.delayed( Duration(seconds: 1));
+      Navigator.pushReplacementNamed(context, '/clients');
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Center(child: Text('$response', style: TextStyle(fontSize: 19) ,)),
+            backgroundColor: Colors.red,
+          )
+      );
+    }
+  }
+  //modify account
+  Future Delete (data) async {
+    setState(() {
+      isLoading = true;
+    });
+    // call server
+    final response = await APIClient.Delete(data);
+
+    setState(() {
+      isLoading = false;
+    });
+    if(response == true){
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Center(child: Text('تمت الحذف بنجاح', style: TextStyle(fontSize: 19) ,)),
+            backgroundColor: Colors.green,
+          )
+      );
+      await Future.delayed(Duration(seconds: 1));
+      Navigator.pushReplacementNamed(context, '/clients');
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Center(child: Text('$response', style: TextStyle(fontSize: 19) ,)),
+            backgroundColor: Colors.red,
+          )
+      );
+    }
+  }
 //-------------------------------------
 
-  //delete modal
+  var rowsPerPage = 10;
+  late final source = ExampleSource(data: data, context: context, modify: Modify, delete: Delete);
+  final _searchController = TextEditingController();
+
+  bool isLoading = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.text = '';
+  }
+
 
 //--------------------------------------------------------
 
@@ -95,32 +151,11 @@ class _ClientTableState extends State<ClientTable> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-               Padding(
-                 padding: const EdgeInsets.fromLTRB(8,8,650,20),
-                 child: Container(height:50,width:250,
-                   decoration:BoxDecoration(
-                     color: const Color(0xffffffff),
-                   border: Border.all(
-                     width: 1,
-                   ),
-                   borderRadius: BorderRadius.circular(0),
-                 ),
-                     child: TextField(decoration: InputDecoration(
-                         suffixIcon: IconButton(onPressed: () {  }, icon: Icon(Icons.person_search_sharp,size: 24,color: Color(0xff090c2d),),)
-                   ),
-                   )
-
-                 ),
-               ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8,0,8,10),
-                  child: IconButton(onPressed: (){AddClient_Modal(context);}, icon: Icon(Icons.add_box_sharp,color: Color(0xff090c2d),size: 25,)),
-                ),
-              ],
-            ),
-
+            isLoading == true ?
+            SpinKitWave(
+              color: Colors.green,
+              size: 40.0,
+            ): Text(''),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
@@ -166,21 +201,21 @@ class _ClientTableState extends State<ClientTable> {
 class ExampleSource extends AdvancedDataTableSource<Client> {
   List data;
   BuildContext context;
-  ExampleSource({required this.data, required this.context});
+  final Function(Map) modify;
+  final Function(Map) delete;
+  ExampleSource({required this.data, required this.context, required this.modify,required this.delete});
 
   String lastSearchTerm = '';
 
   @override
-  NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
-
         cells: [
           DataCell(
                Padding(
                  padding: const EdgeInsets.fromLTRB(8,8,50,8),
-                 child: Text(currentRowData.id,style: const TextStyle(fontSize: 20),),
+                 child: Text(currentRowData.id.toString(),style: const TextStyle(fontSize: 20),),
                )
           ),
           DataCell(
@@ -189,7 +224,7 @@ class ExampleSource extends AdvancedDataTableSource<Client> {
           DataCell(
             Padding(
               padding: const EdgeInsets.fromLTRB(8,8,11,8),
-              child: Text(myFormat.format(currentRowData.account),style: const TextStyle(fontSize: 20),),
+              child: Text(currentRowData.account.toString(),style: const TextStyle(fontSize: 20),),
             )
           ),
           DataCell(
@@ -208,23 +243,26 @@ class ExampleSource extends AdvancedDataTableSource<Client> {
                   padding: const EdgeInsets.all(0),
                   child: ButtonBar(
                     children: [
-                      IconButton(onPressed: (){AddAccount(context,'u]d');} ,icon:const Icon(Icons.add_box_sharp,color: Color(0xff0d4f0c),),tooltip: 'إضافة',),
-                      IconButton(onPressed: (){ReductAccount(context,'ugd');}, icon:const Icon(Icons.remove_circle_sharp,color: Color(0xff65090c),),tooltip: 'خصم'),
-                      IconButton(onPressed: (){deleteAccount(context,'عدي عباس');}, icon: const Icon(Icons.delete_rounded,color: Color(0xff060d48)),tooltip: 'حذف'),
+                      TextButton.icon(
+                        onPressed: (){
+                          AddAccount(data: currentRowData,Modify: modify,).AddModal(context);
+                          },
+                        label: Text('تعديل الحساب'),
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.grey[300],
+                            primary: Colors.black
+                          ),
+                        icon: Icon(Icons.edit,)
+                      ),
+                      IconButton(onPressed: (){
+                        DeleteAccount(data: currentRowData,Delete: delete,).Modal(context);
+                        },
+                          icon: const Icon(Icons.delete_rounded,color: Color(0xff060d48)),tooltip: 'حذف'),
                     ],
                   ),
                 ),
 
           ),
-          // DataCell(
-          //   InkWell(
-          //     onTap: (){
-          //       Navigator.push(context, MaterialPageRoute(
-          //           builder: (context) => BanksDetails(banks_id: currentRowData.banks_id)));
-          //     },
-          //     child: Icon(Icons.remove_red_eye, color:  Colors.grey.shade500,),
-          //   ),
-          // ),
         ]);
   }
 
@@ -249,15 +287,16 @@ class ExampleSource extends AdvancedDataTableSource<Client> {
   Future<RemoteDataSourceDetails<Client>> getNextPage(
       NextPageRequest pageRequest) async {
 
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 400));
     return RemoteDataSourceDetails(
-      Clients.length,
-      Clients
+      data.length,
+      (data as List<dynamic>)
+          .map((json) => Client.fromJson(json))
           .skip(pageRequest.offset)
           .take(pageRequest.pageSize)
           .toList(),
       filteredRows: lastSearchTerm.isNotEmpty
-          ? Clients.length
+          ? data.length
           : null, //again in a real world example you would only get the right amount of rows
     );
   }

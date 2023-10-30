@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../static/my_icon_icons.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+
 Checkout(BuildContext context){
   return showDialog(
     context: context,
@@ -9,95 +11,177 @@ Checkout(BuildContext context){
       return Padding(
         padding: const EdgeInsets.all(80),
         child: Dialog(
-          backgroundColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius:
-            BorderRadius.circular(20.0)),
+              borderRadius:
+              BorderRadius.circular(20.0)
+          ),
           child: Directionality(
             textDirection: TextDirection.rtl,
-              child: Container(
-                height: 350,width: 300,
-                child: Column(
+            child: Container(
+              height: 350,
+              width: 300,
+              child: Column(
                 children: [
-                  const SizedBox(height: 10,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                       ListTile(
-                         title: Icon(Icons.attach_money_rounded, color: Color(0xff1b3b0b), size: 30,),
-                         leading: Radio(
-                            value: PaymentMethod[0],
-                            groupValue: CurrentPaymentMethod,
-                            activeColor: Color(0xff000000), // Change the active radio button color here
-                            fillColor: MaterialStateProperty.all(Color(0xff1b3b0b)), // Change the fill color when selected
-                            splashRadius: 20, // Change the splash radius when clicked
-                            onChanged: (value) {
-                               {CurrentPaymentMethod = value.toString();
-                              }
-                            },
-                          ),
-                       ),
-                      ListTile(
-                        title: Icon(MyIcon.bankak, color: Color(0xffc90000), size: 30,),
-                        leading: Radio(
-                          value: PaymentMethod[1],
-                          groupValue: CurrentPaymentMethod,
-                          activeColor: Color(0xff000000), // Change the active radio button color here
-                          fillColor: MaterialStateProperty.all(Color(0xffc90000)), // Change the fill color when selected
-                          splashRadius: 20, // Change the splash radius when clicked
-                          onChanged: (value) {
-                            {
-                              CurrentPaymentMethod = value.toString();
-                            }
-                          },
+                      SizedBox(
+                        width: 100,
+                        child: FormBuilderRadioGroup(
+                          name: 'paymentMethod',
+                          decoration: InputDecoration(labelText: 'طريقة الدفع'),
+                          wrapDirection: Axis.horizontal,
+                          options: ['Cash', 'Bankk', 'Account']
+                              .map((option) => FormBuilderFieldOption(
+                            value: option,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children:[
+                                Text(option),
+                              ],
+                            ),
+                          )).toList(growable: false)),
                         ),
-                      ),
-                      ListTile(
-                        title:Icon(Icons.person_pin, size: 30, color: Color(0xff0c283f),),
-                        leading: Radio(
-                          value: PaymentMethod[2],
-                          groupValue: CurrentPaymentMethod,
-                          activeColor: Color(0xff000000), // Change the active radio button color here
-                          fillColor: MaterialStateProperty.all(Color(0xff0c283f)), // Change the fill color when selected
-                          splashRadius: 20, // Change the splash radius when clicked
-                          onChanged: (value) {
-                            {
-                              CurrentPaymentMethod = value.toString();
-                            }
-                          },
-                        ),
-                      ),
 
+                      // RadioListTile(
+                      //   value: PaymentMethod[0],
+                      //   groupValue: CurrentPaymentMethod,
+                      //   title: Text("cash"),
+                      //   subtitle: Text("Radio 2 Subtitle"),
+                      //   activeColor: Color(0xff000000), // Change the active radio button color here
+                      //   fillColor: MaterialStateProperty.all(Color(0xff0c283f)), // Change the fill color when selected
+                      //   splashRadius: 20, // Change the splash radius when clicked
+                      //   onChanged: (value) {
+                      //     {
+                      //       CurrentPaymentMethod = value.toString();
+                      //     }
+                      //   },
+                      // ),
+                      // RadioListTile(
+                      //   value: PaymentMethod[1],
+                      //   groupValue: CurrentPaymentMethod,
+                      //   title: Text("bankk"),
+                      //   subtitle: Text("Radio 2 Subtitle"),
+                      //   activeColor: Color(0xff000000), // Change the active radio button color here
+                      //   fillColor: MaterialStateProperty.all(Color(0xff0c283f)), // Change the fill color when selected
+                      //   splashRadius: 20, // Change the splash radius when clicked
+                      //   onChanged: (value) {
+                      //     {
+                      //       CurrentPaymentMethod = value.toString();
+                      //     }
+                      //   },
+                      // ),
+                      // RadioListTile(
+                      //   value: PaymentMethod[2],
+                      //   groupValue: CurrentPaymentMethod,
+                      //   title: Text("account"),
+                      //   subtitle: Text("Radio 2 Subtitle"),
+                      //   activeColor: Color(0xff000000), // Change the active radio button color here
+                      //   fillColor: MaterialStateProperty.all(Color(0xff0c283f)), // Change the fill color when selected
+                      //   splashRadius: 20, // Change the splash radius when clicked
+                      //   onChanged: (value) {
+                      //     {
+                      //       CurrentPaymentMethod = value.toString();
+                      //     }
+                      //   },
+                      // ),
                     ],
                   ),
-
-                Container(
-                  height: 40,
-                  width: 250,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffffffff),
-                    border: Border.all(
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      TextButton(onPressed: (){}, child: Text("دفع الفاتورة",style: TextStyle(color: Colors.black),)),
-                  Divider(color: Colors.black,thickness: 50,height: 3,),
-                  TextButton(onPressed: (){},  child: Text("عرض الفاتورة",style: TextStyle(color: Colors.black),)),
-                    ],
-                  ),
-                ),
                 ],
-                ),
               ),
-
+            ),
           ),
         ),
+        //Dialog(
+        //   backgroundColor: Colors.transparent,
+        //   shape: RoundedRectangleBorder(
+        //     borderRadius:
+        //     BorderRadius.circular(20.0)),
+        //   child: Directionality(
+        //     textDirection: TextDirection.rtl,
+        //       child: Container(
+        //         height: 350,width: 300,
+        //         child: Column(
+        //         children: [
+        //           const SizedBox(height: 10,),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //   children: <Widget>[
+                  //      ListTile(
+                  //        title: Icon(Icons.attach_money_rounded, color: Color(0xff1b3b0b), size: 30,),
+                  //        leading: Radio(
+                  //           value: PaymentMethod[0],
+                  //           groupValue: CurrentPaymentMethod,
+                  //           activeColor: Color(0xff000000), // Change the active radio button color here
+                  //           fillColor: MaterialStateProperty.all(Color(0xff1b3b0b)), // Change the fill color when selected
+                  //           splashRadius: 20, // Change the splash radius when clicked
+                  //           onChanged: (value) {
+                  //              {CurrentPaymentMethod = value.toString();
+                  //             }
+                  //           },
+                  //         ),
+                  //      ),
+                  //     ListTile(
+                  //       title: Icon(MyIcon.bankak, color: Color(0xffc90000), size: 30,),
+                  //       leading: Radio(
+                  //         value: PaymentMethod[1],
+                  //         groupValue: CurrentPaymentMethod,
+                  //         activeColor: Color(0xff000000), // Change the active radio button color here
+                  //         fillColor: MaterialStateProperty.all(Color(0xffc90000)), // Change the fill color when selected
+                  //         splashRadius: 20, // Change the splash radius when clicked
+                  //         onChanged: (value) {
+                  //           {
+                  //             CurrentPaymentMethod = value.toString();
+                  //           }
+                  //         },
+                  //       ),
+                  //     ),
+                  //     ListTile(
+                  //       title:Icon(Icons.person_pin, size: 30, color: Color(0xff0c283f),),
+                  //       leading: Radio(
+                  //         value: PaymentMethod[2],
+                  //         groupValue: CurrentPaymentMethod,
+                  //         activeColor: Color(0xff000000), // Change the active radio button color here
+                  //         fillColor: MaterialStateProperty.all(Color(0xff0c283f)), // Change the fill color when selected
+                  //         splashRadius: 20, // Change the splash radius when clicked
+                  //         onChanged: (value) {
+                  //           {
+                  //             CurrentPaymentMethod = value.toString();
+                  //           }
+                  //         },
+                  //       ),
+                  //     ),
+                  //
+                  //   ],
+                  // ),
+        //
+        //         Container(
+        //           height: 40,
+        //           width: 250,
+        //           decoration: BoxDecoration(
+        //             color: const Color(0xffffffff),
+        //             border: Border.all(
+        //               width: 2,
+        //             ),
+        //             borderRadius: BorderRadius.circular(100),
+        //           ),
+        //           child: Row(
+        //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        //             crossAxisAlignment: CrossAxisAlignment.start,
+        //             mainAxisSize: MainAxisSize.max,
+        //             children: [
+        //               TextButton(onPressed: (){}, child: Text("دفع الفاتورة",style: TextStyle(color: Colors.black),)),
+        //           Divider(color: Colors.black,thickness: 50,height: 3,),
+        //           TextButton(onPressed: (){},  child: Text("عرض الفاتورة",style: TextStyle(color: Colors.black),)),
+        //             ],
+        //           ),
+        //         ),
+        //         ],
+        //         ),
+        //       ),
+        //
+        //   ),
+        // ),
       );
     },
   );

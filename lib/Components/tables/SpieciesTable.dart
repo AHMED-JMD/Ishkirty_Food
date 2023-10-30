@@ -1,13 +1,12 @@
 import 'package:ashkerty_food/models/speicies.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:ashkerty_food/static/deleteModal.dart';
 import 'package:intl/intl.dart';
 import '../Forms/AddSpeiciesForm.dart';
 import '../Forms/DeleteSpeicies.dart';
 import '../Forms/EditSpeiciesForm.dart';
+
 class SpeiciesTable extends StatefulWidget {
   final List data;
 
@@ -49,31 +48,6 @@ class _SpeiciesTableState extends State<SpeiciesTable> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8,8,650,20),
-                  child: Container(height:50,width:250,
-                      decoration:BoxDecoration(
-                        color: const Color(0xffffffff),
-                        border: Border.all(
-                          width: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(0),
-                      ),
-                      child: TextField(decoration: InputDecoration(
-                          suffixIcon: IconButton(onPressed: () {  }, icon: Icon(Icons.search_sharp,size: 24,color: Color(0xff090c2d),),)
-                      ),
-                      )
-
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8,0,8,10),
-                  child: IconButton(onPressed: (){AddSpeicies_Modal(context);}, icon: Icon(Icons.add_box_sharp,color: Color(0xff090c2d),size: 25,)),
-                ),
-              ],
-            ),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
@@ -112,7 +86,7 @@ class _SpeiciesTableState extends State<SpeiciesTable> {
   }
 }
 
-class ExampleSource extends AdvancedDataTableSource<Spiecies> {
+class ExampleSource extends AdvancedDataTableSource<Spieces> {
   List data;
   BuildContext context;
   ExampleSource({required this.data, required this.context});
@@ -120,7 +94,6 @@ class ExampleSource extends AdvancedDataTableSource<Spiecies> {
   String lastSearchTerm = '';
 
   @override
-  NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
@@ -132,22 +105,30 @@ class ExampleSource extends AdvancedDataTableSource<Spiecies> {
           DataCell(
               Padding(
                 padding: const EdgeInsets.fromLTRB(8,8,5,8),
-                child: Text(myFormat.format(currentRowData.price),style: const TextStyle(fontSize: 20),),
+                child: Text(currentRowData.price.toString(),style: const TextStyle(fontSize: 20),),
               )
           ),
           DataCell(
-              Text(currentRowData.imageLink ,style: const TextStyle(fontSize: 20),)
+              Text(currentRowData.ImgLink ,style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
-              Text(currentRowData.type ,style: const TextStyle(fontSize: 20),),
+              Text(currentRowData.category ,style: const TextStyle(fontSize: 20),),
 
           ),
     DataCell(Padding(
             padding: const EdgeInsets.all(0),
             child: ButtonBar(
               children: [
-                IconButton(onPressed: (){EditSpeicies_Modal(context,Spiecies(name: "مشكل", type: "juice", price: 1300, imageLink: "juice.jpg"),);} ,icon:const Icon(Icons.mode_edit_outline,color: Color(0xff0d4f0c),),tooltip: 'تعديل',),
-                IconButton(onPressed: (){deletespeices(context,'as');}, icon: const Icon(Icons.delete_rounded,color: Color(0xff65090c),),tooltip: 'حذف'),
+                IconButton(onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (context) => EditSpieces(data: currentRowData,))
+                  );
+                  },
+                  icon: Icon(Icons.mode_edit_outline,color: Color(0xff0d4f0c),),tooltip: 'تعديل',),
+                IconButton(onPressed: (){
+                  DeleteSpices().deletespeices(context);
+                  },
+                    icon: const Icon(Icons.delete_rounded,color: Color(0xff65090c),),tooltip: 'حذف'),
               ],
             ),
           ),
@@ -173,18 +154,19 @@ class ExampleSource extends AdvancedDataTableSource<Spiecies> {
   }
 
   @override
-  Future<RemoteDataSourceDetails<Spiecies>> getNextPage(
+  Future<RemoteDataSourceDetails<Spieces>> getNextPage(
       NextPageRequest pageRequest) async {
 
     await Future.delayed(const Duration(seconds: 1));
     return RemoteDataSourceDetails(
-      All.length,
-      All
+      data.length,
+      (data as List<dynamic>)
+          .map((json) => Spieces.fromJson(json))
           .skip(pageRequest.offset)
-          .take(pageRequest.pageSize).cast<Spiecies>()
+          .take(pageRequest.pageSize)
           .toList(),
       filteredRows: lastSearchTerm.isNotEmpty
-          ? All.length
+          ? data.length
           : null, //again in a real world example you would only get the right amount of rows
     );
   }

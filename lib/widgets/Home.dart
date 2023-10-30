@@ -30,14 +30,11 @@ class _MyHomePageState extends State<MyHomePage> {
               Navigator.pushReplacementNamed(context, '/home');
             },
           ),
-
           toolbarHeight: 100,
-title: Image.asset("assets/images/ef1.jpg",
-width: 200,
-  height: 150,
-
-
-),
+          title: Image.asset("assets/images/ef1.jpg",
+            width: 200,
+            height: 150,
+          ),
           centerTitle: true,
           elevation: 0,
           backgroundColor: Colors.transparent,
@@ -59,6 +56,12 @@ width: 200,
               ],
             ),
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: (){},
+          child: Icon(Icons.shopping_cart),
+          backgroundColor: Colors.green,
+          tooltip: 'السلة',
         ),
       ),
     );

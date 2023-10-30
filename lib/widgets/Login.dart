@@ -43,7 +43,7 @@ class _LoginState extends State<Login> {
                     children: [
                       Container(
                         width: 600,
-                        height: 570,
+                        height: 490,
                         decoration: BoxDecoration(
                             color: const Color.fromRGBO(255, 255, 255, 0.8),
                             borderRadius: BorderRadius.circular(13)
@@ -72,11 +72,11 @@ class _LoginState extends State<Login> {
                                     labelText: 'اسم المستخدم',
                                     icon: Icon(Icons.person),
                                   ),
-                                   validator:(value){
-                                     if(value != username ){
-                                       return'اسم مستخدم خاطئ ';
-                                     }
-                                   }
+                                   // validator:(value){
+                                   //   if(value != username ){
+                                   //     return'اسم مستخدم خاطئ ';
+                                   //   }
+                                   // }
                                 ),
                                 const SizedBox(height: 20,),
                                 FormBuilderTextField(
@@ -87,11 +87,11 @@ class _LoginState extends State<Login> {
                                       focusColor: Colors.deepPurple
                                   ),
                                   obscureText: true,
-                                     validator:(value){
-                                      if(value != password ) {
-                                         return'كلمة سر خاطئة';
-                                       }
-                                     }
+                                     // validator:(value){
+                                     //  if(value != password ) {
+                                     //     return'كلمة سر خاطئة';
+                                     //   }
+                                     // }
                                 ),
                                 const SizedBox(height: 60,),
                                 SizedBox(
@@ -113,10 +113,10 @@ class _LoginState extends State<Login> {
                                     child: const Text('تسجيل الدخول', style: TextStyle(fontSize: 20, color: Colors.white)),
                                   ),
                                 ),
-                            SizedBox(height: 48,),
+                            SizedBox(height: 20,),
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(8,8,8,3),
-                                child: TextButton(onPressed: (){ChangePassword(context);}, child: Text('تغيير كلمة السر',style: TextStyle(fontSize: 16,color: Color(0xff0a2060)),)),
+                                child: TextButton(onPressed: (){ChangePassword(context);}, child: Text('تغيير كلمة السر? اضغط هنا',style: TextStyle(fontSize: 16,color: Color(0xff0a2060)),)),
                               ),
                                 Padding(
                                   padding: const EdgeInsets.fromLTRB(8,0,8,2),

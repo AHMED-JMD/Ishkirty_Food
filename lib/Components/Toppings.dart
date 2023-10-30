@@ -30,7 +30,7 @@ class _ToppingsState extends State<Toppings> {
             SizedBox(height: 20,),
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              child: GridViewBuilder(data: toppings,),
+              // child: GridViewBuilder(data: toppings,),
             ),
           ],
         )
