@@ -23,7 +23,7 @@ Navigator.pushReplacementNamed(context, '/clients');
 
 title: const Center(child: Text("مبيعات صنف", style: TextStyle(fontSize: 25),)),
 actions: const [LeadingDrawerBtn(),],
-),
+  toolbarHeight: 45,),
 //custom my drawer in static folder
 endDrawer: const MyDrawer(),
 

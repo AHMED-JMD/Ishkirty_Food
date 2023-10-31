@@ -30,7 +30,7 @@ class _SalesState extends State<Sales> {
 
           backgroundColor: Color(0xff20491a),
           title: Text("المبيعات", style: TextStyle(fontSize: 25),),
-        ),
+          toolbarHeight: 45, ),
 
         //custom drawer in static folder
         drawer: MyDrawer(),

@@ -3,6 +3,7 @@ import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
 import '../static/SalesCard.dart';
 import 'Sales_Graphs.dart';
+import 'package:ashkerty_food/widgets/SpeciesStats.dart';
 class Orders extends StatefulWidget {
   const Orders({super.key});
 
@@ -33,7 +34,7 @@ class _OrdersState extends State<Orders> {
 
             title: const Center(child:Text("المبيعات اليومية", style: TextStyle(fontSize: 25,)),),
           actions: const [LeadingDrawerBtn(),],
-
+          toolbarHeight: 45,
         ),
         endDrawer: const MyDrawer(),
         body:SingleChildScrollView(
@@ -52,7 +53,7 @@ class _OrdersState extends State<Orders> {
                     borderRadius: BorderRadius.circular(0),
                   ),
                child: SalesCard(Period: 'إيرادات الوردية الصباحية',CashAmount: 540000,BankakAmount: 15000,AccountsAmount: 4000,),),
-              const SizedBox(height: 70,),
+              const SizedBox(height: 25,),
             Container(
               decoration: BoxDecoration(
                 color: const Color(0xffefecec),
@@ -97,7 +98,13 @@ bottomNavigationBar:   BottomAppBar(
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
                   icon:const Icon(Icons.search_sharp,size: 25,color: Colors.black87,),
-                onPressed: () {  },
+                onPressed: () { Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SpeciesStats(),
+                  ),
+                );
+                    },
 
 
               )

@@ -31,7 +31,7 @@ class _ClientTransactiosState extends State<ClientTransactios> {
 
           title: const Center(child: Text("المعاملات", style: TextStyle(fontSize: 25),)),
           actions: const [LeadingDrawerBtn(),],
-        ),
+          toolbarHeight: 45,),
         //custom my drawer in static folder
         endDrawer: const MyDrawer(),
 

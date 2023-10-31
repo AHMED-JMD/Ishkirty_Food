@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_card/image_card.dart';
 import 'package:intl/intl.dart';
 
-import '../Components/Forms/CheckoutForm.dart';
+import 'package:ashkerty_food/Components/Forms/CheckoutForm.dart';
 
 class GridViewBuilder extends StatefulWidget {
   final List data;
