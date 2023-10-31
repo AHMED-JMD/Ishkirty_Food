@@ -3,6 +3,7 @@ import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
 import '../static/SalesCard.dart';
 import 'Sales_Graphs.dart';
+import 'package:ashkerty_food/widgets/SpeciesStats.dart';
 class Orders extends StatefulWidget {
   const Orders({super.key});
 
@@ -97,7 +98,13 @@ bottomNavigationBar:   BottomAppBar(
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
                   icon:const Icon(Icons.search_sharp,size: 25,color: Colors.black87,),
-                onPressed: () {  },
+                onPressed: () { Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SpeciesStats(),
+                  ),
+                );
+                    },
 
 
               )

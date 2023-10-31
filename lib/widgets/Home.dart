@@ -47,12 +47,12 @@ width: 100,
 
               SizedBox(
                 width: 77,height: 40,
-                child: ElevatedButton(onPressed:(){Transact(context);},
+                child: FilledButton(onPressed:(){Transact(context);},
                   style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
+                    borderRadius: BorderRadius.circular(0),
                     side: BorderSide(color: Colors.transparent),
 
         )
