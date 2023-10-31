@@ -22,4 +22,42 @@ class APIAuth {
       throw e;
     }
   }
+
+  static Future Register (data) async {
+    try{
+      Map<String, String> ConfigHeaders = {
+        "Content-Type" : "application/json"
+      };
+
+      final url = Uri.parse('$apiUrl/login');
+      Response response = await post(url, headers: ConfigHeaders ,body: jsonEncode(data));
+
+      if(response.statusCode == 200){
+        return true;
+      }else{
+        return response.body;
+      }
+    }catch (e){
+      throw e;
+    }
+  }
+
+  static Future UpdatPassword (data) async {
+    try{
+      Map<String, String> ConfigHeaders = {
+        "Content-Type" : "application/json"
+      };
+
+      final url = Uri.parse('$apiUrl/login');
+      Response response = await post(url, headers: ConfigHeaders ,body: jsonEncode(data));
+
+      if(response.statusCode == 200){
+        return true;
+      }else{
+        return response.body;
+      }
+    }catch (e){
+      throw e;
+    }
+  }
 }
