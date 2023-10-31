@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart';
 
 String apiUrl = 'http://localhost:3000/api/spieces';
@@ -38,6 +37,46 @@ class APISpieces {
 
       final url = Uri.parse('$apiUrl/');
       Response response = await get(url, headers: ConfigHeaders);
+
+      if(response.statusCode == 200){
+        final data = jsonDecode(response.body);
+        return data;
+      }else{
+        return false;
+      }
+    }catch (e){
+      throw e;
+    }
+  }
+  //get by type data
+  static Future getByType (data) async {
+    try{
+      Map<String, String> ConfigHeaders = {
+        "Content-Type" : "application/json"
+      };
+
+      final url = Uri.parse('$apiUrl/type');
+      Response response = await post(url, headers: ConfigHeaders ,body: jsonEncode(data));
+
+      if(response.statusCode == 200){
+        final data = jsonDecode(response.body);
+        return data;
+      }else{
+        return false;
+      }
+    }catch (e){
+      throw e;
+    }
+  }
+  //get by type data
+  static Future findOne (data) async {
+    try{
+      Map<String, String> ConfigHeaders = {
+        "Content-Type" : "application/json"
+      };
+
+      final url = Uri.parse('$apiUrl/find_one');
+      Response response = await post(url, headers: ConfigHeaders ,body: jsonEncode(data));
 
       if(response.statusCode == 200){
         final data = jsonDecode(response.body);

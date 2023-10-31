@@ -1,17 +1,19 @@
+import 'package:ashkerty_food/API/Spieces.dart';
 import 'package:ashkerty_food/models/speicies.dart';
 import 'package:ashkerty_food/static/GridBuilder.dart';
 import 'package:flutter/material.dart';
 
 class Toppings extends StatefulWidget {
-  const Toppings({super.key});
+  final List toppings;
+  Toppings({super.key, required this.toppings});
 
   @override
-  State<Toppings> createState() => _ToppingsState();
+  State<Toppings> createState() => _ToppingsState(toppings: toppings);
 }
 
 class _ToppingsState extends State<Toppings> {
-
-  //get data mock from database
+  final List toppings;
+  _ToppingsState({required this.toppings});
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +32,8 @@ class _ToppingsState extends State<Toppings> {
             SizedBox(height: 20,),
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              // child: GridViewBuilder(data: toppings,),
-            ),
+              child: GridViewBuilder(data: toppings,),
+            )
           ],
         )
     );

@@ -61,6 +61,26 @@ class APIClient {
       throw e;
     }
   }
+  //modify data
+  static Future FindOne (data) async {
+    try{
+      Map<String, String> ConfigHeaders = {
+        "Content-Type" : "application/json"
+      };
+
+      final url = Uri.parse('$apiUrl/find_one');
+      Response response = await post(url, headers: ConfigHeaders ,body: jsonEncode(data));
+
+      if(response.statusCode == 200){
+        final data = jsonDecode(response.body);
+        return data;
+      }else{
+        return false;
+      }
+    }catch (e){
+      throw e;
+    }
+  }
   //delete data
   static Future Delete (data) async {
     try{

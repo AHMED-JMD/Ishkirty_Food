@@ -1,8 +1,11 @@
+import 'package:ashkerty_food/models/speicies.dart';
 import 'package:flutter/material.dart';
 //delete modal
 
 class DeleteSpices extends StatelessWidget {
-  const DeleteSpices({super.key});
+  final Function(Map) delete;
+  final Spieces data;
+  const DeleteSpices({super.key, required this.delete, required this.data});
 
   deletespeices(BuildContext context){
     return showDialog(
@@ -11,7 +14,7 @@ class DeleteSpices extends StatelessWidget {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: AlertDialog(
-            title: Center(child: Text('حذف صنف ')),
+            title: Center(child: Text('حذف صنف ${data.name} ')),
             content: Text('سيؤدي ذلك لضياع كل البيانات المتعلقة بالصنف',style: TextStyle(fontSize: 18,color: Color(0xffb00505),),),
             actions: [
               Padding(
@@ -27,7 +30,9 @@ class DeleteSpices extends StatelessWidget {
                             primary: Colors.white
                         ),
                         onPressed: (){
-                          Navigator.pushReplacementNamed(context, '/speices');
+                          //call server
+                          delete({'id': data.id});
+                          Navigator.of(context).pop();
                         }
                     ),
                   ),

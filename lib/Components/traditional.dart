@@ -1,17 +1,19 @@
+import 'package:ashkerty_food/API/Spieces.dart';
 import 'package:ashkerty_food/models/speicies.dart';
 import 'package:ashkerty_food/static/GridBuilder.dart';
 import 'package:flutter/material.dart';
 
 class Traditional extends StatefulWidget {
-  const Traditional({super.key});
+  final List traditional;
+  const Traditional({super.key, required this.traditional});
 
   @override
-  State<Traditional> createState() => _TraditionalState();
+  State<Traditional> createState() => _TraditionalState(traditional: traditional);
 }
 
 class _TraditionalState extends State<Traditional> {
-
-  //get data mock from database
+  final List traditional;
+  _TraditionalState({required this.traditional});
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +32,8 @@ class _TraditionalState extends State<Traditional> {
             const SizedBox(height: 30,),
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              // child: GridViewBuilder(data: traditional,),
-            ),
+              child: GridViewBuilder(data: traditional,),
+            )
           ],
         )
     );

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../Components/tables/ClientTable.dart';
 import '../static/drawer.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class Clients extends StatefulWidget {
   const Clients({super.key});
@@ -15,7 +17,11 @@ class Clients extends StatefulWidget {
 
 class _ClientsState extends State<Clients> {
   List data = [];
+  List<String> clients_names = [];
+  String? name;
   bool isLoading = false;
+
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   @override
   void initState() {
@@ -33,12 +39,9 @@ class _ClientsState extends State<Clients> {
     //call api
     final response = await APIClient.Get();
 
-    setState(() {
-      isLoading = false;
-    });
-
     if(response != false){
       setState(() {
+        isLoading = false;
         data = response;
       });
     }
@@ -74,10 +77,43 @@ class _ClientsState extends State<Clients> {
     getClients();
 
   }
+  //--find client
+  Future _OnSubmit(name) async {
+    setState(() {
+      isLoading = true;
+      data = [];
+    });
 
+    //call the api
+    final response = await APIClient.FindOne(name);
+
+    if(response != false){
+      setState(() {
+        isLoading = false;
+        data = response;
+      });
+    }
+
+  }
+
+  //function to extract clients names
+  Future extractName (List Clients) async {
+    List<String> names = [];
+    //iterate
+    Clients.map((map) => map['name']).forEach((value) {
+      names.add(value);
+    });
+
+    setState(() {
+      clients_names = names;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    //extract names from clients
+    extractName(data);
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -99,7 +135,6 @@ class _ClientsState extends State<Clients> {
     ),
         //custom my drawer in static folder
         endDrawer: const MyDrawer(),
-
         body: ListView(
             children:[
               Container(
@@ -114,21 +149,86 @@ class _ClientsState extends State<Clients> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(8,8,650,20),
-                        child: Container(height:50,width:250,
-                            decoration:BoxDecoration(
-                              color: const Color(0xffffffff),
-                              border: Border.all(
-                                width: 1,
+                      FormBuilder(
+                        key: _formKey,
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(8,8,40,20),
+                              child: Container(
+                                  height:50,
+                                  width:300,
+                                  decoration:BoxDecoration(
+                                    color: const Color(0xffffffff),
+                                    border: Border.all(
+                                      width: 1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: TypeAheadField(
+                                    textFieldConfiguration: TextFieldConfiguration(
+                                      autofocus: false,
+                                      decoration: InputDecoration(
+                                        label: Text('ابحث عن الاسم'),
+                                      ),
+                                    ),
+                                    suggestionsCallback: (pattern) async {
+                                      return clients_names.where((option) => option.toLowerCase().contains(pattern.toLowerCase()));
+                                    },
+                                    itemBuilder: (context, suggestion) {
+                                      return ListTile(
+                                        title: Text(suggestion),
+                                      );
+                                    },
+                                    onSuggestionSelected: (suggestion) {
+                                      name = suggestion;
+                                    },
+                                  )
                               ),
-                              borderRadius: BorderRadius.circular(0),
                             ),
-                            child: TextField(decoration: InputDecoration(
-                                suffixIcon: IconButton(onPressed: () {  }, icon: Icon(Icons.person_search_sharp,size: 24,color: Color(0xff090c2d),),)
+                            SizedBox(width: 25,),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: TextButton.icon(
+                                  onPressed: (){
+                                    if(_formKey.currentState!.saveAndValidate()){
+                                      //send to server
+                                      Map datas = {};
+                                      datas['name'] = name;
+                                      _OnSubmit(datas);
+                                      setState(() {
+                                        data = [];
+                                      });
+                                    }
+                                  },
+                                  icon: Icon(Icons.person_search),
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: Colors.grey,
+                                    primary: Colors.black,
+                                    minimumSize: Size(100, 50)
+                                  ),
+                                  label: Text('ابحث')
+                              ),
                             ),
-                            )
-
+                            SizedBox(width: 20,),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: TextButton.icon(
+                                onPressed: () {
+                                  getClients();
+                                  setState(() {
+                                    data = [];
+                                  });
+                                },
+                                style: TextButton.styleFrom(
+                                    backgroundColor: Colors.grey[300],
+                                    minimumSize: Size(70, 50)
+                                ),
+                                label: Text('الكل', style: TextStyle(color: Colors.black, fontSize: 17),),
+                                icon: const Icon(Icons.person_search_outlined, size: 30, color: Colors.red,),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       Padding(

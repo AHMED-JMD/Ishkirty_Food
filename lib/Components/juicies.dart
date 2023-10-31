@@ -1,16 +1,19 @@
+import 'package:ashkerty_food/API/Spieces.dart';
 import 'package:ashkerty_food/models/speicies.dart';
 import 'package:ashkerty_food/static/GridBuilder.dart';
 import 'package:flutter/material.dart';
 
 class Juicies extends StatefulWidget {
-  const Juicies({super.key});
+  final List juices;
+  const Juicies({super.key, required this.juices});
 
   @override
-  State<Juicies> createState() => _JuiciesState();
+  State<Juicies> createState() => _JuiciesState(juices: juices);
 }
 
 class _JuiciesState extends State<Juicies> {
-  //mock get data from db
+  final List juices;
+  _JuiciesState({required this.juices});
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +29,11 @@ class _JuiciesState extends State<Juicies> {
                 ],
               ),
             ),
-            const SizedBox(height: 20,),
+            SizedBox(height: 20,),
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              // child: GridViewBuilder(data: juices,),
-            ),
+              child: GridViewBuilder(data: juices,),
+            )
           ],
         )
     );

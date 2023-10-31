@@ -78,7 +78,7 @@ class _EditSpiecesState extends State<EditSpieces> {
                   children: [
                     CircleAvatar(
                       child: Image.network('http://localhost:3000/${widget.data.ImgLink}'),
-                      radius: 80,
+                      radius: 70,
                       backgroundColor: Colors.grey.shade300,
                     ),
                     isLoading == true? SpinKitWave(

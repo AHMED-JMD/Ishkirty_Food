@@ -4,10 +4,11 @@ import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 
 import '../Components/tables/SpieciesTable.dart';
-import '../models/speicies.dart';
 
 class Speices extends StatefulWidget {
   const Speices({super.key});
@@ -18,7 +19,11 @@ class Speices extends StatefulWidget {
 
 class _SpeicesState extends State<Speices> {
   List data = [];
+  List<String> spieces_names = [];
+  String? name;
   bool isLoading = false;
+
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   @override
   void initState() {
@@ -46,11 +51,43 @@ class _SpeicesState extends State<Speices> {
       });
     }
   }
+  //--find client
+  Future _OnSubmit(name) async {
+    setState(() {
+      isLoading = true;
+      data = [];
+    });
 
+    //call the api
+    final response = await APISpieces.findOne(name);
 
+    if(response != false){
+      setState(() {
+        isLoading = false;
+        data = response;
+      });
+    }
+
+  }
+
+  //function to extract clients names
+  Future extractName (List Clients) async {
+    List<String> names = [];
+    //iterate
+    Clients.map((map) => map['name']).forEach((value) {
+      names.add(value);
+    });
+
+    setState(() {
+      spieces_names = names;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    //extract names from clients
+    extractName(data);
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -84,21 +121,86 @@ class _SpeicesState extends State<Speices> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(8,8,650,20),
-                        child: Container(height:50,width:250,
-                            decoration:BoxDecoration(
-                              color: const Color(0xffffffff),
-                              border: Border.all(
-                                width: 1,
+                      FormBuilder(
+                        key: _formKey,
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(8,8,40,20),
+                              child: Container(
+                                  height:50,
+                                  width:300,
+                                  decoration:BoxDecoration(
+                                    color: const Color(0xffffffff),
+                                    border: Border.all(
+                                      width: 1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: TypeAheadField(
+                                    textFieldConfiguration: TextFieldConfiguration(
+                                      autofocus: false,
+                                      decoration: InputDecoration(
+                                        label: Text('ابحث عن الاسم'),
+                                      ),
+                                    ),
+                                    suggestionsCallback: (pattern) async {
+                                      return spieces_names.where((option) => option.toLowerCase().contains(pattern.toLowerCase()));
+                                    },
+                                    itemBuilder: (context, suggestion) {
+                                      return ListTile(
+                                        title: Text(suggestion),
+                                      );
+                                    },
+                                    onSuggestionSelected: (suggestion) {
+                                      name = suggestion;
+                                    },
+                                  )
                               ),
-                              borderRadius: BorderRadius.circular(0),
                             ),
-                            child: TextField(decoration: InputDecoration(
-                                suffixIcon: IconButton(onPressed: () {  }, icon: Icon(Icons.search_sharp,size: 24,color: Color(0xff090c2d),),)
+                            SizedBox(width: 25,),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: TextButton.icon(
+                                  onPressed: (){
+                                    if(_formKey.currentState!.saveAndValidate()){
+                                      //send to server
+                                      Map datas = {};
+                                      datas['name'] = name;
+                                      _OnSubmit(datas);
+                                      setState(() {
+                                        data = [];
+                                      });
+                                    }
+                                  },
+                                  icon: Icon(Icons.person_search),
+                                  style: TextButton.styleFrom(
+                                      backgroundColor: Colors.grey,
+                                      primary: Colors.black,
+                                      minimumSize: Size(100, 50)
+                                  ),
+                                  label: Text('ابحث')
+                              ),
                             ),
-                            )
-
+                            SizedBox(width: 20,),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: TextButton.icon(
+                                onPressed: () {
+                                  getSpieces();
+                                  setState(() {
+                                    data = [];
+                                  });
+                                },
+                                style: TextButton.styleFrom(
+                                    backgroundColor: Colors.grey[300],
+                                    minimumSize: Size(70, 50)
+                                ),
+                                label: Text('الكل', style: TextStyle(color: Colors.black, fontSize: 17),),
+                                icon: const Icon(Icons.person_search_outlined, size: 30, color: Colors.red,),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       Padding(
@@ -133,7 +235,13 @@ class _SpeicesState extends State<Speices> {
         bottomNavigationBar: BottomAppBar(
           child:Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            // children: [SizedBox(width:200,height:70,child: Text('عدد الاصناف=$number_of_spiecies',style: const TextStyle(fontSize: 24),)),],
+            children: [
+              SizedBox(
+                  width:200,
+                  height:70,
+                  child: Text('عدد الاصناف=${data.length}',style: const TextStyle(fontSize: 24),)
+              ),
+            ],
           ),
         ),
       ),

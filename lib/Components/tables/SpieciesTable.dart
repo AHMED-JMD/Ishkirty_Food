@@ -1,7 +1,9 @@
+import 'package:ashkerty_food/API/Spieces.dart';
 import 'package:ashkerty_food/models/speicies.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import '../Forms/AddSpeiciesForm.dart';
 import '../Forms/DeleteSpeicies.dart';
@@ -22,7 +24,7 @@ class _SpeiciesTableState extends State<SpeiciesTable> {
 
 
   var rowsPerPage = 10;
-  late final source = ExampleSource(data: data, context: context);
+  late final source = ExampleSource(data: data, context: context, delete: deleteSpieces);
   final _searchController = TextEditingController();
 
   bool isLoading = false;
@@ -35,10 +37,35 @@ class _SpeiciesTableState extends State<SpeiciesTable> {
   }
   //server side Functions ------------------
   //------delete--
-  Future deleteBank() async {
+  Future deleteSpieces(data) async {
     setState(() {
       isLoading = true;
     });
+    //call the api
+    final response = await APISpieces.Delete(data);
+    setState(() {
+      isLoading = false;
+    });
+
+    if(response == true){
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Center(child: Text('تمت حذف الصنف بنجاح', style: TextStyle(fontSize: 19) ,)),
+            backgroundColor: Colors.green,
+          )
+      );
+
+      await Future.delayed(Duration(milliseconds: 400));
+      Navigator.pushReplacementNamed(context, '/speices');
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Center(child: Text('$response', style: TextStyle(fontSize: 19) )),
+            backgroundColor: Colors.redAccent,
+          )
+      );
+    }
+
   }
 
   @override
@@ -48,6 +75,10 @@ class _SpeiciesTableState extends State<SpeiciesTable> {
       child: SingleChildScrollView(
         child: Column(
           children: [
+            isLoading == true? SpinKitWave(
+              color: Colors.green,
+              size: 50.0,
+            ) : Text(''),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
@@ -89,7 +120,8 @@ class _SpeiciesTableState extends State<SpeiciesTable> {
 class ExampleSource extends AdvancedDataTableSource<Spieces> {
   List data;
   BuildContext context;
-  ExampleSource({required this.data, required this.context});
+  final Function(Map) delete;
+  ExampleSource({required this.data, required this.context, required this.delete});
 
   String lastSearchTerm = '';
 
@@ -97,7 +129,6 @@ class ExampleSource extends AdvancedDataTableSource<Spieces> {
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
-
         cells: [
           DataCell(
               Text(currentRowData.name,style: const TextStyle(fontSize: 20),)
@@ -126,7 +157,7 @@ class ExampleSource extends AdvancedDataTableSource<Spieces> {
                   },
                   icon: Icon(Icons.mode_edit_outline,color: Color(0xff0d4f0c),),tooltip: 'تعديل',),
                 IconButton(onPressed: (){
-                  DeleteSpices().deletespeices(context);
+                  DeleteSpices(delete: delete, data: currentRowData,).deletespeices(context);
                   },
                     icon: const Icon(Icons.delete_rounded,color: Color(0xff65090c),),tooltip: 'حذف'),
               ],
