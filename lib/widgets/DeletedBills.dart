@@ -29,12 +29,12 @@ class _DeletedBillsState extends State<DeletedBills> {
           //custom button in static folder
           leading: IconButton(
             icon: const Icon(
-              Icons.home_sharp,
+              Icons.arrow_back,
               size: 37,
               color: Colors.white,
             ),
             onPressed: (){
-              Navigator.pushReplacementNamed(context, '/home');
+              Navigator.pushReplacementNamed(context, '/bills');
             },
           ),
 
