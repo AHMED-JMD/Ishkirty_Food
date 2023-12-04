@@ -1,14 +1,11 @@
 import 'package:ashkerty_food/models/Bill.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:ashkerty_food/static/deleteModal.dart';
 import 'package:intl/intl.dart';
 import '../../widgets/BilDeatles.dart';
-import 'package:ashkerty_food/Components/Forms/DeleteBill.dart';
 
-import '../Forms/AccountSelector.dart';
+
 class DeletedBillsTable extends StatefulWidget {
   final List data;
   DeletedBillsTable({Key? key, required this.data}) : super(key: key);

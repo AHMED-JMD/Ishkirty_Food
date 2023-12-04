@@ -13,11 +13,7 @@ class APIAuth {
       final url = Uri.parse('$apiUrl/login');
       Response response = await post(url, headers: ConfigHeaders ,body: jsonEncode(data));
 
-      if(response.statusCode == 200){
-        return true;
-      }else{
-        return response.body;
-      }
+      return response;
     }catch (e){
       throw e;
     }
@@ -29,7 +25,7 @@ class APIAuth {
         "Content-Type" : "application/json"
       };
 
-      final url = Uri.parse('$apiUrl/login');
+      final url = Uri.parse('$apiUrl/register');
       Response response = await post(url, headers: ConfigHeaders ,body: jsonEncode(data));
 
       if(response.statusCode == 200){
@@ -48,7 +44,7 @@ class APIAuth {
         "Content-Type" : "application/json"
       };
 
-      final url = Uri.parse('$apiUrl/login');
+      final url = Uri.parse('$apiUrl/update_password');
       Response response = await post(url, headers: ConfigHeaders ,body: jsonEncode(data));
 
       if(response.statusCode == 200){

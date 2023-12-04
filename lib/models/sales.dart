@@ -1,6 +1,3 @@
-//speices class for storing the data coming from the database
-
-
 
 class Sales {
   Sales({

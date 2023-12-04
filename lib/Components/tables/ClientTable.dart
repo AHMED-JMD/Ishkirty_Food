@@ -22,52 +22,6 @@ class _ClientTableState extends State<ClientTable> {
   _ClientTableState({required this.data});
 
   //server side Functions ------------------
-  //------delete--
-  Future deleteBank() async {
-    setState(() {
-      isLoading = true;
-    });
-    //send to server
-    // if (selectedIds.length != 0) {
-    //   final auth = await SharedServices.LoginDetails();
-    //   API_Bank.Delete_Bank(selectedIds, auth.token).then((response) async {
-    //     setState(() {
-    //       isLoading = false;
-    //     });
-    //
-    //     if (response == true) {
-    //       ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(
-    //           content: Text('تم الحذف بنجاح', textAlign: TextAlign.center,
-    //             style: TextStyle(fontSize: 17),),
-    //           backgroundColor: Colors.red,
-    //         ),
-    //       );
-    //       await Future.delayed(Duration(milliseconds: 600));
-    //       Navigator.pushReplacementNamed(context, '/banks');
-    //       selectedIds = [];
-    //     } else {
-    //       ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(
-    //           content: Text('$response', textAlign: TextAlign.center,
-    //             style: TextStyle(fontSize: 17),),
-    //           backgroundColor: Colors.red,
-    //         ),
-    //       );
-    //       selectedIds = [];
-    //     }
-    //   });
-    // } else {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text(
-    //         'الرجاء اختيار بنك من الجدول', textAlign: TextAlign.center,
-    //         style: TextStyle(fontSize: 17),),
-    //       backgroundColor: Colors.red,
-    //     ),
-    //   );
-    // }
-  }
   //modify account
   Future Modify (data) async {
     setState(() {

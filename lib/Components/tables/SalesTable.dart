@@ -1,12 +1,10 @@
 import 'package:ashkerty_food/models/sales.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:ashkerty_food/static/deleteModal.dart';
-import '../../widgets/BilDeatles.dart';
 import 'package:intl/intl.dart';
-import 'package:ashkerty_food/models/Bill.dart';
+
+
 class SalesTable extends StatefulWidget {
   final List data;
   SalesTable({Key? key, required this.data}) : super(key: key);

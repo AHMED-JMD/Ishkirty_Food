@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'my_icon_icons.dart';
+
 class SalesCard extends StatelessWidget {
   @override
   NumberFormat myFormat = NumberFormat.decimalPattern('en_us');

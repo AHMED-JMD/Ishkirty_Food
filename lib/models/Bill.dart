@@ -1,4 +1,5 @@
 import 'package:ashkerty_food/models/sales.dart';
+
 class bill{
   bill({
     required this.BillNumber,

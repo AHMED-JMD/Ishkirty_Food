@@ -146,6 +146,7 @@ class _SpiecesNavState extends State<SpiecesNav> {
           ),
         ),
         SizedBox(height: 20,),
+
         traditional.length !=0  && toppings.length !=0  &&
         juices.length !=0  && meat.length !=0 ?
         selectedPage as Widget
