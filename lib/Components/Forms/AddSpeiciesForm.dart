@@ -58,12 +58,12 @@ class _AddSpiecesState extends State<AddSpieces> {
         appBar: AppBar(backgroundColor: const Color(0xff20491a),
           leading: IconButton(
             icon: const Icon(
-              Icons.home_sharp,
+              Icons.arrow_back,
               size: 37,
               color: Colors.white,
             ),
             onPressed: (){
-              Navigator.pushReplacementNamed(context, '/home');
+              Navigator.pushReplacementNamed(context, '/speices');
             },
           ),
           title: const Center(child: Text("اضافة صنف", style: TextStyle(fontSize: 25),)),
