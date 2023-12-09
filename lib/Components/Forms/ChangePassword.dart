@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+
 late String password;
 late String newpassword;
 final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+
 ChangePassword (BuildContext context) {
   return showDialog(
     context: context,
@@ -43,7 +44,7 @@ ChangePassword (BuildContext context) {
                     ),
                     FormBuilderTextField(
                       name: 'price',
-                      decoration: InputDecoration(labelText: 'كرر كلمة السر الجديدة'),
+                      decoration: InputDecoration(labelText: 'تكرار كلمة السر'),
 
                       validator: (value){
                         if(value!=null)

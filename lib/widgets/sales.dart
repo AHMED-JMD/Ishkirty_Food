@@ -28,7 +28,7 @@ class _SalesState extends State<Sales> {
           //custom button in static folder
           leading: LeadingDrawerBtn(),
 
-          backgroundColor: Color(0xff20491a),
+          backgroundColor: Colors.teal,
           title: Text("المبيعات", style: TextStyle(fontSize: 25),),
           toolbarHeight: 45, ),
 

@@ -1,5 +1,6 @@
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/spieces_nav.dart';
+import 'package:ashkerty_food/widgets/Cart.dart';
 import 'package:flutter/material.dart';
 import '../Components/Forms/TransactForm.dart';
 import '../static/HomeDrawerbut.dart';
@@ -62,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               SizedBox(
-                width: 30,
+                width: 20,
               ),
               HomeDrawerbut(),
             ]),
@@ -84,7 +85,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => Cart()));
+          },
           child: Icon(Icons.shopping_cart),
           backgroundColor: Colors.green,
           tooltip: 'السلة',

@@ -20,7 +20,7 @@ class _OrdersState extends State<Orders> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xff20491a),
+          backgroundColor: Colors.teal,
             leading:  IconButton(
                 icon: const Icon(
                   Icons.home,

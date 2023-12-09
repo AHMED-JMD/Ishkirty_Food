@@ -23,8 +23,8 @@ class _BillsState extends State<Bills> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        appBar: AppBar(backgroundColor: const Color(0xff20491a),
-          //custom button in static folder
+        appBar: AppBar(
+          backgroundColor: Colors.teal,
           leading: IconButton(
             icon: const Icon(
               Icons.home_sharp,

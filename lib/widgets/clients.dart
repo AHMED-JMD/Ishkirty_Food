@@ -118,13 +118,11 @@ class _ClientsState extends State<Clients> {
     extractName(data);
 
     return Consumer<AuthProvider>(builder: (context, value, child) {
-      print(value.user['username']);
       return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: const Color(0xff20491a),
-//custom button in static folder
+            backgroundColor: Colors.teal,
             leading: IconButton(
               icon: const Icon(
                 Icons.home_sharp,
@@ -136,12 +134,12 @@ class _ClientsState extends State<Clients> {
               },
             ),
 
-            title: const Center(
+            title:  Center(
                 child: Text(
                   "العملاء",
                   style: TextStyle(fontSize: 25),
                 )),
-            actions: const [
+            actions: [
               LeadingDrawerBtn(),
             ],
           ),

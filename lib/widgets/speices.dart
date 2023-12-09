@@ -92,7 +92,7 @@ class _SpeicesState extends State<Speices> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xff20491a),
+          backgroundColor: Colors.teal,
           leading: IconButton(
             icon: const Icon(
               Icons.home_sharp,
@@ -104,9 +104,10 @@ class _SpeicesState extends State<Speices> {
             },
           ),
           title: const Center(child: Text("الاصناف", style: TextStyle(fontSize: 25),)),
-        actions: const [LeadingDrawerBtn(),],
-          toolbarHeight: 45,),
-        endDrawer: const MyDrawer(),
+          actions: const [LeadingDrawerBtn(),],
+          toolbarHeight: 45,
+        ),
+          endDrawer: const MyDrawer(),
         body: ListView(
             children:[
               Container(
@@ -207,13 +208,16 @@ class _SpeicesState extends State<Speices> {
                         padding: const EdgeInsets.fromLTRB(8,0,8,10),
                         child: ElevatedButton.icon(
                             onPressed: (){
-                          Navigator.push(context,
+                              Navigator.push(context,
                               MaterialPageRoute(
-                                  builder: (context) => AddSpieces())
-                          );
+                                  builder: (context) => AddSpieces()));
                           },
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.teal
+                            ),
                             label: Text('صنف جديد'),
-                            icon: Icon(Icons.add_box_sharp,color: Color(0xff090c2d),size: 25,)),
+                            icon: Icon(Icons.add_box_sharp,color: Color(0xff090c2d),size: 25,)
+                        ),
                       ),
                     ],
                   ),
