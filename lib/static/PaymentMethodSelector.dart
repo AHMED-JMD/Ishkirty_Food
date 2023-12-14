@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ashkerty_food/models/Bill.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'my_icon_icons.dart';
 
 class PaymentMethodSelector extends StatefulWidget {
@@ -9,26 +9,26 @@ class PaymentMethodSelector extends StatefulWidget {
 }
 
 class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
+  //list of payment methods
+  List PaymentMethod = ['Bankk', 'Cash', 'Account'];
+  int? CurrentPaymentMethod = 1;
 
   @override
   Widget build(BuildContext context) {
-    return  Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-              IconButton.outlined(onPressed: () {},
-                icon: const Icon(Icons.attach_money_rounded,size: 60,color: Color(0xff1b3b0b),),
-              ),
-              const SizedBox(width: 70,),
-              IconButton(onPressed: () {},
-                icon: const Icon(MyIcon.bankak,size: 60,color: Color(0xffc90000),),
-              ),
-              const SizedBox(width: 70,),
-              IconButton(onPressed: () {},
-                icon: const Icon(Icons.person_pin,size: 60,color: Color(0xff0c283f),),
-              ),
-      ]
+    return Column(
+      children: [
+        FormBuilderRadioGroup(
+          name: 'payment_method',
+          decoration: InputDecoration(
+              labelText: 'طرق الدفع', contentPadding: EdgeInsets.all(10.0)),
+          options: [
+            FormBuilderFieldOption(value: 'كاش'),
+            FormBuilderFieldOption(value: 'بنكك'),
+            FormBuilderFieldOption(value: 'حساب'),
+          ],
+        ),
+
+      ],
     );
 
 }

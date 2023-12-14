@@ -1,8 +1,8 @@
 import 'package:ashkerty_food/models/cart_model.dart';
 import 'package:ashkerty_food/providers/cart_provider.dart';
+import 'package:ashkerty_food/static/GridCard.dart';
 import 'package:flutter/material.dart';
 import 'package:image_card/image_card.dart';
-import 'package:ashkerty_food/Components/Forms/CheckoutForm.dart';
 import 'package:provider/provider.dart';
 
 class GridViewBuilder extends StatefulWidget {
@@ -14,46 +14,6 @@ class GridViewBuilder extends StatefulWidget {
 }
 
 class _GridViewBuilderState extends State<GridViewBuilder> {
-
-  //card Widget holding the image and width and height and data
-  Widget _card(BuildContext context, speices, double widths, double height) {
-    return Consumer<CartProvider>(builder: (context, value, child) {
-      return Padding(
-        padding: const EdgeInsets.all(3.0),
-        child: Container(
-          child: TransparentImageCard(
-            width: widths,
-            height: height,
-            imageProvider: NetworkImage('http://localhost:3000/${speices['ImgLink']}'),
-            // tags: [ _tag('Product', () {}), ],
-            title: Center(
-              child: Text('${speices['name']}',
-                  style: const TextStyle(color: Colors.white, fontSize: 18)),
-            ),
-            description: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                IconButton(onPressed: (){
-                  //new model ready for cart
-                  Cart model = Cart(spices: speices['name'], counter: 1, unit_price: speices['price'], total_price: speices['price']);
-                  //getting cart provider function
-                  var cartProvider = context.read<CartProvider>();
-                  cartProvider.addToCart(model);
-                },
-                  icon: const Icon(Icons.add_box,color: Color(0xffffffff),size: 27,),tooltip: 'إضافة',),
-                Text('${speices['price']} ',
-                    style: const TextStyle(color: Colors.white, fontSize: 18)),
-                IconButton(onPressed: (){
-                  Checkout(context);
-                  },
-                  icon: const Icon(Icons.remove_circle,color: Colors.white,size: 27,),tooltip: 'نقصان',),
-              ],
-            ),
-          ),
-        ),
-      );
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +32,7 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
               ),
               itemBuilder: (context, index) =>
               //call the card widget and set custom width and height !!default height best 200!!!
-                  _card(context, widget.data[index], 245, 204)
+                  GridCart(speices: widget.data[index], widths: 245, height: 204)
               );
         } else {
           if (constraints.maxWidth > 1000) {
@@ -84,7 +44,8 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                   crossAxisCount: 3,
                 ),
                 itemBuilder: (context, index) =>
-                    _card(context, widget.data[index], 350.0, 200));
+                    GridCart(speices: widget.data[index], widths: 350, height: 200)
+            );
           } else {
             if (constraints.maxWidth > 800) {
               return GridView.builder(
@@ -95,7 +56,8 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                     crossAxisCount: 3,
                   ),
                   itemBuilder: (context, index) =>
-                      _card(context, widget.data[index], 300.0, 200));
+                      GridCart(speices: widget.data[index], widths: 300, height: 200)
+              );
             } else {
               if (constraints.maxWidth > 600) {
                 return GridView.builder(
@@ -106,7 +68,8 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                       crossAxisCount: 3,
                     ),
                     itemBuilder: (context, index) =>
-                        _card(context, widget.data[index], 200.0, 200));
+                        GridCart(speices: widget.data[index], widths: 200, height: 200)
+                );
               } else {
                 if (constraints.maxWidth > 500) {
                   return GridView.builder(
@@ -117,7 +80,8 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                         crossAxisCount: 2,
                       ),
                       itemBuilder: (context, index) =>
-                          _card(context, widget.data[index], 250.0, 200));
+                          GridCart(speices: widget.data[index], widths: 250, height: 200)
+                  );
                 } else {
                   if (constraints.maxWidth > 400) {
                     return GridView.builder(
@@ -128,7 +92,8 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                           crossAxisCount: 2,
                         ),
                         itemBuilder: (context, index) =>
-                            _card(context, widget.data[index], 200.0, 200));
+                            GridCart(speices: widget.data[index], widths: 200, height: 200)
+                    );
                   } else {
                     return GridView.builder(
                         shrinkWrap: true,
@@ -138,7 +103,8 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                           crossAxisCount: 2,
                         ),
                         itemBuilder: (context, index) =>
-                            _card(context, widget.data[index], 180.0, 300));
+                            GridCart(speices: widget.data[index], widths: 180, height: 300)
+                    );
                   }
                 }
               }

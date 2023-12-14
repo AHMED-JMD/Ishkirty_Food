@@ -1,7 +1,6 @@
 import 'package:draw_graph/draw_graph.dart';
 import 'package:draw_graph/models/feature.dart';
 import 'package:flutter/material.dart';
-import '../Components/Forms/CheckoutForm.dart';
 import '../static/drawer.dart';
 import '../static/leadinButton.dart';
 import '../static/my_icon_icons.dart';
