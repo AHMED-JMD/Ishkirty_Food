@@ -86,7 +86,7 @@ class _LoginState extends State<Login> {
                                   isLoading == true ?
                                   SpinKitFadingCircle
                                     (
-                                    color: Colors.blueGrey,
+                                    color: Colors.teal,
                                     size: 50.0,
                                   ): Text(''),
                                   Center(
@@ -138,7 +138,7 @@ class _LoginState extends State<Login> {
                                         }
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color(0xff000000),
+                                        backgroundColor: Colors.teal,
                                       ),
                                       child: Text('تسجيل الدخول', style: TextStyle(fontSize: 20, color: Colors.white)),
                                     ),
@@ -147,10 +147,6 @@ class _LoginState extends State<Login> {
                                   Padding(
                                     padding: const EdgeInsets.fromLTRB(8,8,8,3),
                                     child: TextButton(onPressed: (){ChangePassword(context);}, child: Text('تغيير كلمة السر? اضغط هنا',style: TextStyle(fontSize: 16,color: Color(0xff0a2060)),)),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(8,0,8,2),
-                                    child: TextButton(onLongPress: (){Navigator.pushReplacementNamed(context, '/home');},onPressed: (){}, child: Text('.',style: TextStyle(fontSize: 8,color: Color(0xffffffff)),)),
                                   ),
                                 ],
                               ),

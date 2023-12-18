@@ -1,4 +1,5 @@
 import 'package:ashkerty_food/providers/Auth_provider.dart';
+import 'package:ashkerty_food/static/CheckTime.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,17 +22,25 @@ class MyDrawer extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'مرحبا',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'مرحبا',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 15,),
+                        Text(
+                          '${value.user['username']}',
+                          style: TextStyle(color: Colors.white, fontSize: 32),
+                        ),
+                      ],
                     ),
-                    Text(
-                      '${value.user['username']}',
-                      style: TextStyle(color: Colors.white, fontSize: 32),
-                    ),
+                    SizedBox(height: 10,),
+                    CheckTime(),
                   ],
                 ),
               ),

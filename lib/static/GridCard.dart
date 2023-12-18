@@ -42,7 +42,7 @@ class _GridCartState extends State<GridCart> {
               child: isAdded == false ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextButton.icon(onPressed: (){
+                  ElevatedButton.icon(onPressed: (){
                     //new model ready for cart
                     Cart model = Cart(spices: speices['name'], counter: 1, unit_price: speices['price'], total_price: speices['price']);
                     //getting cart provider function
@@ -53,15 +53,16 @@ class _GridCartState extends State<GridCart> {
                       isAdded = true;
                     });
                   },
-                      style: TextButton.styleFrom(backgroundColor: Colors.grey, primary: Colors.white),
+                      style: TextButton.styleFrom(backgroundColor: Colors.teal, primary: Colors.white),
                       label: Text('اضف للسلة'),
                       icon: Icon(Icons.add_box,color: Color(0xffffffff),size: 27,)),
                 ],
               ): Center(
-                  child: Container(color: Colors.teal,
+                  child: Container(
+                    color: Colors.white,
                     child: Padding(
                       padding: const EdgeInsets.all(2.0),
-                      child: Text("تمت الاضافة"),
+                      child: Text("تمت الاضافة بنجاح "),
                     ),
                   )
               ),

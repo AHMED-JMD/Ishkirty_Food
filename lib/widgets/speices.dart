@@ -95,7 +95,7 @@ class _SpeicesState extends State<Speices> {
           backgroundColor: Colors.teal,
           leading: IconButton(
             icon: const Icon(
-              Icons.home_sharp,
+              Icons.home_work,
               size: 37,
               color: Colors.white,
             ),

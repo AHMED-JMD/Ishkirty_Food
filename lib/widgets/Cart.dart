@@ -1,6 +1,6 @@
 import 'package:ashkerty_food/providers/cart_provider.dart';
-import 'package:ashkerty_food/static/PaymentMethodSelector.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:ashkerty_food/Components/Forms/CartForm.dart';
+import 'package:ashkerty_food/widgets/Home.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +33,7 @@ class _CartState extends State<Cart> {
                         padding: const EdgeInsets.only(right: 10.0),
                         child: Text(
                           "${item.spices} : ${item.unit_price}",
-                          style: TextStyle(fontSize: 26, color: Colors.blueGrey, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 26, color: Colors.black, fontWeight: FontWeight.bold),
                         ),
                       ),
                         IconButton(
@@ -85,20 +85,9 @@ class _CartState extends State<Cart> {
     );
   }
 
-  //function to get total cart value
-   sumTotal (List cart ) {
-    num sum = 0;
-    for(int i =0; i< cart.length; i++){
-      sum += cart[i].total_price;
-    }
-    return sum;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<CartProvider>(builder: (context, value, child) {
-      var total = sumTotal(value.cart);
-
       return Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
@@ -134,78 +123,31 @@ class _CartState extends State<Cart> {
                         ),
                       ),
                     ),
-                Container(
-                  color: Colors.blueGrey[300],
-                  width: 400,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 80.0, left: 20, right: 20),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 20,),
-                        Text('اختر طريقة الدفع', textAlign: TextAlign.center, style: TextStyle(
-                          fontSize: 19,
-                          color: Colors.white
-                          ),
-                        ),
-                        SizedBox(height: 15,),
-                        PaymentMethodSelector(),
-                        SizedBox(height: 15,),
-
-                        Center(
-                          child: FormBuilderRadioGroup(
-                            name: 'shift',
-                            decoration: InputDecoration(
-                                labelText: 'اختر الوردية', contentPadding: EdgeInsets.all(10.0)),
-                            options: [
-                              FormBuilderFieldOption(value: 'صباحية'),
-                              FormBuilderFieldOption(value: 'مسائية'),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 30,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            ElevatedButton.icon(
-                                onPressed: (){},
-                                icon: Icon(Icons.paypal),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.teal
-                                ),
-                                label: Text('دفع الفاتورة'),
-                            ),
-                            ElevatedButton.icon(
-                              onPressed: (){},
-                              icon: Icon(Icons.print),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.teal
-                              ),
-                              label: Text('طباعة الفاتورة'),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 40),
-                        Text('عدد الاصناف = ${value.cart.length}', textAlign: TextAlign.center, style: TextStyle(
-                            fontSize: 19,
-                            color: Colors.white
-                        ),
-                        ),
-                        Text("المبلغ الكلي: ${total}", textAlign: TextAlign.center,style: TextStyle(
-                            fontSize: 30,
-                            color: Colors.white
-                        ),
-                        ),
-
-
-                      ],
-                    ),
-                  ),
-                ),
-
+                CartForm(),
               ]
             ) :
-            Center(child: Text('السلة فارغة اضف منتجات للسلة ..', style: TextStyle(fontSize: 19),),
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                      onPressed: (){
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (context) => MyHomePage())
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.grey[200]
+                      ) ,
+                      label: Text("Go", style: TextStyle(
+                        color: Colors.teal, fontSize: 23,
+                      ),),
+                      icon: Icon(Icons.shopping_cart_checkout, color: Colors.teal, size: 30,),
+                  ),
+                  SizedBox(width: 20,),
+                  Text('سلة الفواتير فارغة قم باضافة اصناف ', style: TextStyle(fontSize: 24),),
+                ],
+              ),
               ),
           )
       );

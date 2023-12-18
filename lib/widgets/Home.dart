@@ -1,6 +1,7 @@
+import 'package:ashkerty_food/static/CartButton.dart';
+import 'package:ashkerty_food/static/CheckTime.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/spieces_nav.dart';
-import 'package:ashkerty_food/widgets/Cart.dart';
 import 'package:flutter/material.dart';
 import '../Components/Forms/TransactForm.dart';
 import '../static/HomeDrawerbut.dart';
@@ -22,25 +23,27 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
             //custom button in folder static
             leading: IconButton(
-              icon: const Icon(
-                Icons.home_sharp,
+              icon: Icon(
+                Icons.home_work,
                 size: 37,
-                color: Colors.black,
+                color: Colors.grey.shade700,
               ),
               onPressed: () {
                 Navigator.pushReplacementNamed(context, '/home');
               },
             ),
-            toolbarHeight: 100,
+            toolbarHeight: 70,
             title: Image.asset(
               "assets/images/ef1.jpg",
-              width: 200,
-              height: 150,
+              width: 100,
+              height: 80,
             ),
             centerTitle: true,
             elevation: 0,
             backgroundColor: Colors.transparent,
             actions: [
+              CheckTime(),
+              SizedBox(width: 20,),
               SizedBox(
                 width: 77,
                 height: 40,
@@ -50,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.red),
+                          MaterialStateProperty.all<Color>(Colors.grey.shade600),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(0),
@@ -69,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ]),
         //custom drawer in static folder
         endDrawer: const MyDrawer(),
-        body: const SingleChildScrollView(
+        body:  SingleChildScrollView(
           child: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -77,21 +80,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 SizedBox(
                   height: 40,
                 ),
-
                 //custom nav in static folder
                 SpiecesNav(),
               ],
             ),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => Cart()));
-          },
-          child: Icon(Icons.shopping_cart),
-          backgroundColor: Colors.green,
-          tooltip: 'السلة',
-        ),
+        floatingActionButton: CartButton()
       ),
     );
   }

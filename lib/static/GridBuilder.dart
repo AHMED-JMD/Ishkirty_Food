@@ -1,9 +1,5 @@
-import 'package:ashkerty_food/models/cart_model.dart';
-import 'package:ashkerty_food/providers/cart_provider.dart';
 import 'package:ashkerty_food/static/GridCard.dart';
 import 'package:flutter/material.dart';
-import 'package:image_card/image_card.dart';
-import 'package:provider/provider.dart';
 
 class GridViewBuilder extends StatefulWidget {
   final List data;

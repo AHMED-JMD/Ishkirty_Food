@@ -2,7 +2,6 @@ import 'package:ashkerty_food/models/Bill.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:intl/intl.dart';
 import '../../widgets/BilDeatles.dart';
 
 class ClientBillTable extends StatefulWidget {
@@ -139,7 +138,6 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   String lastSearchTerm = '';
 
   @override
-  NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
@@ -148,7 +146,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
           DataCell(
               Padding(
                 padding: const EdgeInsets.fromLTRB(8,8,50,8),
-                child: Text(myFormat.format(currentRowData.BillNumber),style: const TextStyle(fontSize: 20),),
+                child: Text(currentRowData.bill_id,style: const TextStyle(fontSize: 20),),
               )
           ),
           DataCell(
@@ -164,18 +162,18 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
             ),
           ),
           DataCell(
-              Text(currentRowData.BillDate,style: const TextStyle(fontSize: 20),)
+              Text(currentRowData.date,style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
               Padding(
                 padding: const EdgeInsets.fromLTRB(8, 8, 35, 8),
-                child: Text(myFormat.format(currentRowData.BillTotal),style: const TextStyle(fontSize: 20),),
+                child: Text(currentRowData.amount.toString(),style: const TextStyle(fontSize: 20),),
               )
           ),
           DataCell(
               Padding(
                 padding: const EdgeInsets.fromLTRB(8,8,5,8),
-                child: Text(currentRowData.shift,style: const TextStyle(fontSize: 20),),
+                child: Text(currentRowData.shiftTime,style: const TextStyle(fontSize: 20),),
               )
           ),
 
@@ -214,13 +212,14 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
 
     await Future.delayed(const Duration(seconds: 1));
     return RemoteDataSourceDetails(
-      bill1.length,
-      bill1
+      data.length,
+      (data as List<dynamic>)
+      .map((json) => bill.fromJson(json))
           .skip(pageRequest.offset)
           .take(pageRequest.pageSize)
           .toList(),
       filteredRows: lastSearchTerm.isNotEmpty
-          ? bill1.length
+          ? data.length
           : null, //again in a real world example you would only get the right amount of rows
     );
   }

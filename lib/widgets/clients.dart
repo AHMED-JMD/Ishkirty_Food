@@ -125,7 +125,7 @@ class _ClientsState extends State<Clients> {
             backgroundColor: Colors.teal,
             leading: IconButton(
               icon: const Icon(
-                Icons.home_sharp,
+                Icons.home_work,
                 size: 37,
                 color: Colors.white,
               ),
@@ -133,7 +133,6 @@ class _ClientsState extends State<Clients> {
                 Navigator.pushReplacementNamed(context, '/home');
               },
             ),
-
             title:  Center(
                 child: Text(
                   "العملاء",
@@ -145,143 +144,145 @@ class _ClientsState extends State<Clients> {
           ),
           //custom my drawer in static folder
           endDrawer: const MyDrawer(),
-          body: ListView(children: [
-            Container(
-              decoration: BoxDecoration(color: Colors.grey[100]),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+          body: ListView(
               children: [
-                const SizedBox(
-                  height: 50,
+                Container(
+                  decoration: BoxDecoration(color: Colors.grey[100]),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    FormBuilder(
-                      key: _formKey,
-                      child: Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 8, 40, 20),
-                            child: Container(
-                                height: 50,
-                                width: 300,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xffffffff),
-                                  border: Border.all(
-                                    width: 1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: TypeAheadField(
-                                  textFieldConfiguration: TextFieldConfiguration(
-                                    autofocus: false,
-                                    decoration: InputDecoration(
-                                      label: Text('ابحث عن الاسم'),
+                    const SizedBox(
+                      height: 50,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        FormBuilder(
+                          key: _formKey,
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(8, 8, 40, 20),
+                                child: Container(
+                                    height: 50,
+                                    width: 300,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xffffffff),
+                                      border: Border.all(
+                                        width: 1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                  ),
-                                  suggestionsCallback: (pattern) async {
-                                    return clients_names.where((option) => option
-                                        .toLowerCase()
-                                        .contains(pattern.toLowerCase()));
-                                  },
-                                  itemBuilder: (context, suggestion) {
-                                    return ListTile(
-                                      title: Text(suggestion),
-                                    );
-                                  },
-                                  onSuggestionSelected: (suggestion) {
-                                    name = suggestion;
-                                  },
-                                )),
-                          ),
-                          SizedBox(
-                            width: 25,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: TextButton.icon(
-                                onPressed: () {
-                                  if (_formKey.currentState!.saveAndValidate()) {
-                                    //send to server
-                                    Map datas = {};
-                                    datas['name'] = name;
-                                    _OnSubmit(datas);
+                                    child: TypeAheadField(
+                                      textFieldConfiguration: TextFieldConfiguration(
+                                        autofocus: false,
+                                        decoration: InputDecoration(
+                                          label: Text('ابحث عن الاسم'),
+                                        ),
+                                      ),
+                                      suggestionsCallback: (pattern) async {
+                                        return clients_names.where((option) => option
+                                            .toLowerCase()
+                                            .contains(pattern.toLowerCase()));
+                                      },
+                                      itemBuilder: (context, suggestion) {
+                                        return ListTile(
+                                          title: Text(suggestion),
+                                        );
+                                      },
+                                      onSuggestionSelected: (suggestion) {
+                                        name = suggestion;
+                                      },
+                                    )),
+                              ),
+                              SizedBox(
+                                width: 25,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: TextButton.icon(
+                                    onPressed: () {
+                                      if (_formKey.currentState!.saveAndValidate()) {
+                                        //send to server
+                                        Map datas = {};
+                                        datas['name'] = name;
+                                        _OnSubmit(datas);
+                                        setState(() {
+                                          data = [];
+                                        });
+                                      }
+                                    },
+                                    icon: Icon(Icons.person_search),
+                                    style: TextButton.styleFrom(
+                                        backgroundColor: Colors.grey,
+                                        primary: Colors.black,
+                                        minimumSize: Size(100, 50)),
+                                    label: Text('ابحث')),
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: TextButton.icon(
+                                  onPressed: () {
+                                    getClients();
                                     setState(() {
                                       data = [];
                                     });
-                                  }
-                                },
-                                icon: Icon(Icons.person_search),
-                                style: TextButton.styleFrom(
-                                    backgroundColor: Colors.grey,
-                                    primary: Colors.black,
-                                    minimumSize: Size(100, 50)),
-                                label: Text('ابحث')),
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: TextButton.icon(
-                              onPressed: () {
-                                getClients();
-                                setState(() {
-                                  data = [];
-                                });
-                              },
-                              style: TextButton.styleFrom(
-                                  backgroundColor: Colors.grey[300],
-                                  minimumSize: Size(70, 50)),
-                              label: Text(
-                                'الكل',
-                                style:
-                                TextStyle(color: Colors.black, fontSize: 17),
+                                  },
+                                  style: TextButton.styleFrom(
+                                      backgroundColor: Colors.grey[300],
+                                      minimumSize: Size(70, 50)),
+                                  label: Text(
+                                    'الكل',
+                                    style:
+                                    TextStyle(color: Colors.black, fontSize: 17),
+                                  ),
+                                  icon: const Icon(
+                                    Icons.person_search_outlined,
+                                    size: 30,
+                                    color: Colors.red,
+                                  ),
+                                ),
                               ),
-                              icon: const Icon(
-                                Icons.person_search_outlined,
-                                size: 30,
-                                color: Colors.red,
-                              ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 10),
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          AddClient_Modal(
-                            addClient: addClient,
-                          ).AddModal(context);
-                        },
-                        icon: Icon(
-                          Icons.add_box_sharp,
-                          color: Color(0xff090c2d),
-                          size: 25,
                         ),
-                        label: Text('اضافة عميل'),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 10),
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              AddClient_Modal(
+                                addClient: addClient,
+                              ).AddModal(context);
+                            },
+                            icon: Icon(
+                              Icons.add_box_sharp,
+                              color: Color(0xff090c2d),
+                              size: 25,
+                            ),
+                            label: Text('اضافة عميل'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    data.length != 0 && isLoading == false
+                        ? Container(
+                          color: Colors.grey[100], child: ClientTable(data: data))
+                          :
+                    Padding(
+                      padding: const EdgeInsets.only(top: 190.0),
+                      child: SpinKitWave(
+                        color: Colors.green,
+                        size: 70.0,
                       ),
                     ),
                   ],
                 ),
-                data.length != 0 && isLoading == false
-                    ? Container(
-                    color: Colors.grey[100], child: ClientTable(data: data))
-                    : Padding(
-                  padding: const EdgeInsets.only(top: 190.0),
-                  child: SpinKitWave(
-                    color: Colors.green,
-                    size: 70.0,
-                  ),
-                ),
-              ],
+              ]),
             ),
-          ]),
-        ),
       );
     });
   }

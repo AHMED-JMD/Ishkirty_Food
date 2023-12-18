@@ -23,7 +23,7 @@ class _OrdersState extends State<Orders> {
           backgroundColor: Colors.teal,
             leading:  IconButton(
                 icon: const Icon(
-                  Icons.home,
+                  Icons.home_work,
                   size: 37,
                   color: Colors.white,
                 ),
@@ -66,68 +66,61 @@ class _OrdersState extends State<Orders> {
           ],
         ),
         ),
-bottomNavigationBar:   BottomAppBar(
-  height: 60,
-  color: const Color(0xffefecec),
+        bottomNavigationBar:   BottomAppBar(
+          height: 60,
+          color: const Color(0xffefecec),
 
-  child:ButtonBar(
-      alignment: MainAxisAlignment.spaceBetween,
-
-    children: <Widget> [
-         FilledButton(
-          onPressed: () { Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => SalesGRaphs(),
-            ),
-          );},
-          child: const Icon(Icons.auto_graph,color: Color(0xffffffff),),
-        ),
-        SizedBox(width: 300,height: 100,
-          child: TextFormField(
-            keyboardType: TextInputType.text,
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 20.0,
-            ),
-
-            decoration:  InputDecoration(
-              labelText: "الصنف",
-              labelStyle: const TextStyle(color: Colors.black,fontSize: 24),
-//border: UnderlineInputBorder(),
-              border: const OutlineInputBorder(),
-              suffixIcon: IconButton(
-                  icon:const Icon(Icons.search_sharp,size: 25,color: Colors.black87,),
-                onPressed: () { Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SpeciesStats(),
+          child:ButtonBar(
+              alignment: MainAxisAlignment.spaceBetween,
+            children: <Widget> [
+                FilledButton(
+                  onPressed: () { Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SalesGRaphs(),
+                    ),
+                  );},
+                  child: const Icon(Icons.auto_graph,color: Color(0xffffffff),),
+                ),
+                SizedBox(width: 300,height: 100,
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 20.0,
+                    ),
+                    decoration:  InputDecoration(
+                      labelText: "الصنف",
+                      labelStyle: const TextStyle(color: Colors.black,fontSize: 24),
+        //border: UnderlineInputBorder(),
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                          icon:const Icon(Icons.search_sharp,size: 25,color: Colors.black87,),
+                        onPressed: () { Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SpeciesStats(),
+                          ),
+                        );
+                            },
+                      )
+                    ),
                   ),
-                );
+                ),
+            PopupMenuButton(
+              icon:Icon(Icons.menu,size: 36,),
+              onSelected: (value){
+              },
+              itemBuilder: (BuildContext context) { return[
+              PopupMenuItem(child:  Text('إيرادات الإسبوع', style: TextStyle(fontSize: 20,color: Colors.black),),value: 'week',),
+              PopupMenuItem(child:  Text('إيرادات الشهر', style: TextStyle(fontSize: 20,color: Colors.black),),value: 'month',),
+              PopupMenuItem(child:  Text('إيرادات السنة', style: TextStyle(fontSize: 20,color: Colors.black),),value: 'year',),
+                    ];
                     },
-
-
-              )
             ),
-
-          ),
-        ),
-    PopupMenuButton(icon:Icon(Icons.menu,size: 36,),
-      onSelected: (value){
-
-      },
-      itemBuilder: (BuildContext context) { return[
-      PopupMenuItem(child:  Text('إيرادات الإسبوع', style: TextStyle(fontSize: 20,color: Colors.black),),value: 'week',),
-      PopupMenuItem(child:  Text('إيرادات الشهر', style: TextStyle(fontSize: 20,color: Colors.black),),value: 'month',),
-      PopupMenuItem(child:  Text('إيرادات السنة', style: TextStyle(fontSize: 20,color: Colors.black),),value: 'year',),
-
-            ];
-            },
-    ),
-
           ],
-),
-),
+        ),
+        ),
       ),
     );
   }

@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:ashkerty_food/API/Bill.dart';
 import 'package:ashkerty_food/Components/tables/BillTable.dart';
 import 'package:ashkerty_food/static/SearchDates.dart';
 import 'package:ashkerty_food/static/drawer.dart';
@@ -13,13 +16,41 @@ class Bills extends StatefulWidget {
 }
 
 class _BillsState extends State<Bills> {
+  List data = [];
+  bool isLoading = false;
 
-  GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
-  DateTime? start_date = DateTime.now();
-  DateTime? end_date = DateTime.now();
+  @override
+  void initState() {
+    getBills();
+    super.initState();
+  }
+
+  //server func to get bills
+  Future getBills () async {
+    setState(() {
+      isLoading = true;
+      data = [];
+    });
+    //get from server
+    final response = await APIBill.GetAll();
+
+    if(response.statusCode == 200){
+      var res = jsonDecode(response.body);
+
+      setState(() {
+        isLoading = false;
+        data = res;
+      });
+    }
+    setState(() {
+      isLoading = false;
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(data);
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -27,7 +58,7 @@ class _BillsState extends State<Bills> {
           backgroundColor: Colors.teal,
           leading: IconButton(
             icon: const Icon(
-              Icons.home_sharp,
+              Icons.home_work,
               size: 37,
               color: Colors.white,
             ),
@@ -53,10 +84,13 @@ class _BillsState extends State<Bills> {
                   const SearchInDates(),
 
                   const SizedBox(height: 10,),
+                  data.length != 0?
                   Container(
                     color: Colors.grey[100],
-                      child: billTable(data: [],)
-                  ),
+                      child: billTable(data: data,)
+                  ) : Container(
+                      child: billTable(data: data,)
+                  ) ,
                 ],
               ),
             ]
