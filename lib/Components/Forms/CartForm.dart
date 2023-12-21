@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'package:ashkerty_food/API/Client.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ashkerty_food/API/Bill.dart';
 import 'package:ashkerty_food/providers/cart_provider.dart';
@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
+
 
 class CartForm extends StatefulWidget {
   CartForm({super.key});
@@ -19,10 +20,19 @@ class _CartFormState extends State<CartForm> {
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
+  List clients = [];
+  String? clientID;
   String? payment_method;
   DateTime date = DateTime.now();
 
-  //server fun call
+  @override
+  void initState() {
+    // TODO: implement initState
+    getClients();
+    super.initState();
+  }
+
+  //server fun add bill
   Future addBill (data) async {
     setState(() {
       isLoading = true;
@@ -39,18 +49,13 @@ class _CartFormState extends State<CartForm> {
         isLoading = false;
       });
 
-      final data = jsonDecode(response.body);
       return ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Center(child: Text(data, style: TextStyle(fontSize: 19),)),
+            content: Center(child: Text("تم حفظ الفاتورة بنجاح",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold ),
+            )),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 3),
-            action: SnackBarAction(
-              label: "close X",
-              onPressed: (){
-                Navigator.pop(context);
-                },
-          ),
         )
       );
     }else{
@@ -60,7 +65,7 @@ class _CartFormState extends State<CartForm> {
 
       return ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("sorry something is wrong :(", style: TextStyle(fontSize: 19),),
+            content: Text("sorry something is wrong :(", style: TextStyle(fontSize: 22),),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 3),
             action: SnackBarAction(
@@ -71,6 +76,22 @@ class _CartFormState extends State<CartForm> {
             ),
           )
       );
+    }
+  }
+  //server fun get clients
+  Future getClients () async {
+    setState(() {
+      // isLoading = true;
+      clients = [];
+    });
+
+    final response = await APIClient.Get();
+
+    if(response != false){
+      setState(() {
+        isLoading = false;
+        clients = response;
+      });
     }
   }
 
@@ -98,13 +119,23 @@ class _CartFormState extends State<CartForm> {
         color: Colors.blueGrey[300],
         width: 400,
         child: Padding(
-          padding: const EdgeInsets.only(top: 80.0, left: 20, right: 20),
+          padding: const EdgeInsets.only(top: 30.0, left: 20, right: 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              if(isLoading) SpinKitThreeBounce(
-                color: Colors.black,
-                size: 40,
+              if(isLoading) Container(
+                color: Colors.lightGreen,
+                padding: EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('جاري المعالجة', style: TextStyle(color: Colors.black),),
+                    SpinKitThreeBounce(
+                      color: Colors.black,
+                      size: 40,
+                    ),
+                  ],
+                ),
               ),
               SizedBox(height: 20,),
               Text('اختر طريقة الدفع', textAlign: TextAlign.center, style: TextStyle(
@@ -166,10 +197,35 @@ class _CartFormState extends State<CartForm> {
                           ),
                         ],
                         onChanged: (value){
-                          payment_method = value;
+                          setState(() {
+                            payment_method = value;
+                            if(value != 'حساب')
+                              clientID = null;
+                          });
                         },
                         validator: FormBuilderValidators.required(errorText: "الرجاء اختيار طريقة الدفع"),
                       ),
+                      SizedBox(height: 15,),
+                      if(payment_method == 'حساب')
+                        FormBuilderDropdown(
+                          name: "acoount_name",
+                          decoration: InputDecoration(
+                              labelText: 'اختر الحساب',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.yellow.shade900)
+                            )
+                          ),
+                          items: clients
+                           .map((client) => DropdownMenuItem(
+                              value: client['id'],
+                              child: Text(client['name'])
+                          )).toList(),
+                          onChanged: (value){
+                            if(value != null){
+                              clientID = value.toString();
+                            }
+                          },
+                        ),
                       SizedBox(height: 45,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -183,6 +239,7 @@ class _CartFormState extends State<CartForm> {
                                 data['trans'] = value.cart;
                                 data['paymentMethod'] = payment_method;
                                 data['shiftTime'] = _formKey.currentState!.value['shift'];
+                                data['clientId'] = clientID;
 
                                 addBill(data);
                               }

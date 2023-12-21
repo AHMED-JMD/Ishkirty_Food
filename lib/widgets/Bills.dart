@@ -7,6 +7,7 @@ import 'package:ashkerty_food/static/drawer.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Bills extends StatefulWidget {
   const Bills({super.key});
@@ -32,7 +33,9 @@ class _BillsState extends State<Bills> {
       data = [];
     });
     //get from server
-    final response = await APIBill.GetAll();
+    Map datas = {};
+    datas['isDeleted'] = false;
+    final response = await APIBill.GetAll(datas);
 
     if(response.statusCode == 200){
       var res = jsonDecode(response.body);
@@ -41,16 +44,38 @@ class _BillsState extends State<Bills> {
         isLoading = false;
         data = res;
       });
+    }else{
+      setState(() {
+        isLoading = false;
+      });
     }
+  }
+  //search dates
+  Future searchDates (datas) async {
     setState(() {
-      isLoading = false;
+      isLoading = true;
+      data = [];
     });
 
+    //server call
+    final response = await APIBill.Search(datas);
+    //response validity
+    if(response.statusCode == 200){
+      final res = jsonDecode(response.body);
+
+      setState(() {
+        isLoading = false;
+        data = res;
+      });
+    } else{
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    print(data);
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -80,17 +105,21 @@ class _BillsState extends State<Bills> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  SizedBox(height: 90,),
                   //custom widget in static folder for showing search bar responsive
-                  const SearchInDates(),
-
-                  const SizedBox(height: 10,),
-                  data.length != 0?
+                  SearchInDates(isDeleted: false, searchDates: searchDates,),
+                  SizedBox(height: 10,),
+                  data.length != 0 || isLoading == false ?
                   Container(
                     color: Colors.grey[100],
                       child: billTable(data: data,)
-                  ) : Container(
-                      child: billTable(data: data,)
-                  ) ,
+                  ) : Padding(
+                    padding: EdgeInsets.only(top: 190.0),
+                    child: SpinKitPouringHourGlassRefined(
+                      color: Colors.teal,
+                      size: 70.0,
+                    ),
+                  ),
                 ],
               ),
             ]

@@ -5,7 +5,7 @@ import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 
 import 'package:ashkerty_food/widgets/ClientTransactios.dart';
-import 'package:ashkerty_food/Components/Forms/AddAccountForm.dart';
+import 'package:ashkerty_food/Components/Forms/UpdateAccountForm.dart';
 import 'package:ashkerty_food/Components/Forms/DeleteAccountForm.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -187,7 +187,7 @@ class ExampleSource extends AdvancedDataTableSource<Client> {
                     child: IconButton(onPressed: (){Navigator.push(
                       context,
                        MaterialPageRoute(
-                        builder: (context) => ClientTransactios(),
+                        builder: (context) => ClientTransactios(clientId: currentRowData.id,),
                       ),
                     );} ,icon:const Icon(Icons.feed_outlined,color: Color(0xffb2a011),),tooltip: 'معاملات',),
                   ),

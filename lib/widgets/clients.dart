@@ -268,14 +268,14 @@ class _ClientsState extends State<Clients> {
                         ),
                       ],
                     ),
-                    data.length != 0 && isLoading == false
+                    data.length != 0 || isLoading == false
                         ? Container(
                           color: Colors.grey[100], child: ClientTable(data: data))
                           :
                     Padding(
                       padding: const EdgeInsets.only(top: 190.0),
-                      child: SpinKitWave(
-                        color: Colors.green,
+                      child: SpinKitPouringHourGlassRefined(
+                        color: Colors.teal,
                         size: 70.0,
                       ),
                     ),

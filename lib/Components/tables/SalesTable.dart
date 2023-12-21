@@ -2,7 +2,6 @@ import 'package:ashkerty_food/models/sales.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:intl/intl.dart';
 
 
 class SalesTable extends StatefulWidget {
@@ -31,52 +30,6 @@ class _SalesTableState extends State<SalesTable> {
     _searchController.text = '';
   }
   //server side Functions ------------------
-  //------delete--
-  Future deleteBank() async {
-    setState(() {
-      isLoading = true;
-    });
-    //send to server
-    // if (selectedIds.length != 0) {
-    //   final auth = await SharedServices.LoginDetails();
-    //   API_Bank.Delete_Bank(selectedIds, auth.token).then((response) async {
-    //     setState(() {
-    //       isLoading = false;
-    //     });
-    //
-    //     if (response == true) {
-    //       ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(
-    //           content: Text('تم الحذف بنجاح', textAlign: TextAlign.center,
-    //             style: TextStyle(fontSize: 17),),
-    //           backgroundColor: Colors.red,
-    //         ),
-    //       );
-    //       await Future.delayed(Duration(milliseconds: 600));
-    //       Navigator.pushReplacementNamed(context, '/banks');
-    //       selectedIds = [];
-    //     } else {
-    //       ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(
-    //           content: Text('$response', textAlign: TextAlign.center,
-    //             style: TextStyle(fontSize: 17),),
-    //           backgroundColor: Colors.red,
-    //         ),
-    //       );
-    //       selectedIds = [];
-    //     }
-    //   });
-    // } else {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text(
-    //         'الرجاء اختيار بنك من الجدول', textAlign: TextAlign.center,
-    //         style: TextStyle(fontSize: 17),),
-    //       backgroundColor: Colors.red,
-    //     ),
-    //   );
-    // }
-  }
 //-------------------------------------
 
   //delete modal
@@ -117,8 +70,6 @@ class _SalesTableState extends State<SalesTable> {
                 DataColumn(
                   label: Center(child: Text('السعر الكلي ',style: TextStyle(fontSize: 20),)),
                 ),
-
-
               ],
             ),
           ],
@@ -136,11 +87,9 @@ class ExampleSource extends AdvancedDataTableSource<Sales> {
   String lastSearchTerm = '';
 
   @override
-  NumberFormat myFormat = NumberFormat.decimalPattern('en_us');
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
-
         cells: [
           DataCell(
               Text(currentRowData.name,style: const TextStyle(fontSize: 20),)
@@ -148,31 +97,27 @@ class ExampleSource extends AdvancedDataTableSource<Sales> {
           DataCell(
               Padding(
                 padding: const EdgeInsets.fromLTRB(8,8,25,8),
-                child: Text(myFormat.format(currentRowData.quantity),style: const TextStyle(fontSize: 20),),
+                child: Text(
+                  currentRowData.quantity.toString(),
+                  style: const TextStyle(fontSize: 20),),
               )
           ),
           DataCell(
               Padding(
                 padding: const EdgeInsets.fromLTRB(8,8,25,8),
-                child: Text(myFormat.format(currentRowData.price),style: const TextStyle(fontSize: 20),),
+                child: Text(
+                  currentRowData.price.toString(),
+                  style: const TextStyle(fontSize: 20),),
               )
           ),
           DataCell(
               Padding(
                 padding: const EdgeInsets.fromLTRB(8,8,25,8),
-                child: Text(myFormat.format(currentRowData.totall),style: const TextStyle(fontSize: 20),),
+                child: Text(
+                  currentRowData.amount.toString(),
+                  style: const TextStyle(fontSize: 20),),
               )
           ),
-
-          // DataCell(
-          //   InkWell(
-          //     onTap: (){
-          //       Navigator.push(context, MaterialPageRoute(
-          //           builder: (context) => BanksDetails(banks_id: currentRowData.banks_id)));
-          //     },
-          //     child: Icon(Icons.remove_red_eye, color:  Colors.grey.shade500,),
-          //   ),
-          // ),
         ]);
   }
 
@@ -197,15 +142,16 @@ class ExampleSource extends AdvancedDataTableSource<Sales> {
   Future<RemoteDataSourceDetails<Sales>> getNextPage(
       NextPageRequest pageRequest) async {
 
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 400));
     return RemoteDataSourceDetails(
-      sales.length,
-      sales
+      data.length,
+      (data as List<dynamic>)
+      .map((json) => Sales.fromJson(json))
           .skip(pageRequest.offset)
           .take(pageRequest.pageSize)
           .toList(),
       filteredRows: lastSearchTerm.isNotEmpty
-          ? sales.length
+          ? data.length
           : null, //again in a real world example you would only get the right amount of rows
     );
   }

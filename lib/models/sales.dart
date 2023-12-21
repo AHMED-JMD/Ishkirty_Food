@@ -1,50 +1,48 @@
-
 class Sales {
   Sales({
+    required this.id,
     required this.name,
-    required this.type,
     required this.price,
     required this.quantity,
+    required this.amount,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.BillId,
+    this.SpieceId,
   });
-
+  late final int id;
   late final String name;
-  late final String type;
-  late final int quantity;
   late final int price;
-  late final int totall = price * quantity;
+  late final int quantity;
+  late final int amount;
+  late final String createdAt;
+  late final String updatedAt;
+  late final int BillId;
+  late final Null SpieceId;
 
   Sales.fromJson(Map<String, dynamic> json){
+    id = json['id'];
     name = json['name'];
-    type = json['type'];
     price = json['price'];
-    quantity=json['quantity'];
+    quantity = json['quantity'];
+    amount = json['amount'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    BillId = json['BillId'];
+    SpieceId = null;
   }
 
   Map<String, dynamic> toJson() {
-    final data = <String, dynamic>{};
-    data['name'] = name;
-    data['type'] = type;
-    data['quantity'] = quantity;
-    data['price'] = price;
-    return data;
+    final _data = <String, dynamic>{};
+    _data['id'] = id;
+    _data['name'] = name;
+    _data['price'] = price;
+    _data['quantity'] = quantity;
+    _data['amount'] = amount;
+    _data['createdAt'] = createdAt;
+    _data['updatedAt'] = updatedAt;
+    _data['BillId'] = BillId;
+    _data['SpieceId'] = SpieceId;
+    return _data;
   }
 }
-//get data mock from database
-List<Sales> sales = [
-  Sales( name: "برتقال", type: "juice", price: 600,quantity:2,),
-  Sales( name: "بيرقر", type: "meat", price: 2000, quantity:2,),
-  Sales( name: "كريسبي", type: "bufteak", price: 2500, quantity:3,),
-  Sales( name: "اناناس", type: "juice", price: 1000, quantity:3,),
-];
-List<Sales> sales2 = [
-  Sales( name: "برتقال", type: "juice", price: 600,quantity:2,),
-  Sales(  name: "بيرقر", type: "meat", price: 2000,quantity:1,),
-  Sales( name: "كريسبي", type: "bufteak", price: 2500,quantity:2,),
-
-];
-List<Sales> sales3 = [
-  Sales( name: "ليمون", type: "juice", price: 500,quantity:2,),
-  Sales(  name: "طعمية", type: "meat", price: 500,quantity:2,),
-  Sales( name: "فطيرة", type: "Toppings", price: 100,quantity:2,),
-
-];

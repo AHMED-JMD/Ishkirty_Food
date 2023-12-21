@@ -15,28 +15,16 @@ class SalesCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.max,
-
       children: [
-
-        Row(  crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            const SizedBox(height: 40,),
-            Text('$Period', style: TextStyle(fontSize: 35),),
-          ],
-        ),
-
+            const SizedBox(height: 5,),
+            Center(
+                child: Text('$Period', style: TextStyle(fontSize: 35),)),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
           children: [
             Column(
-
                 children: [
                   const SizedBox(height: 15,),
                   const Icon(
@@ -47,19 +35,18 @@ class SalesCard extends StatelessWidget {
                 Text(myFormat.format(CashAmount),style: TextStyle(fontSize: 30),),
                 ]
             ),
-
-        Column(children: [
+          Column(
+            children: [
               const SizedBox(height: 15,),
-           const Icon(
-             MyIcon.bankak,
-            color: Color(0xffc90000),
-            size: 80,
-          ),
+              const Icon(
+                MyIcon.bankak,
+                color: Color(0xffc90000),
+                size: 80,
+              ),
               Text(myFormat.format(BankakAmount),style: TextStyle(fontSize: 30),),
             ]
         ),
-        Column(
-
+          Column(
             children: [
               const SizedBox(height: 15,),
               const Icon(
@@ -68,21 +55,21 @@ class SalesCard extends StatelessWidget {
                 color: Color(0xff0c283f),
               ),
               Text(myFormat.format(AccountsAmount),style: TextStyle(fontSize: 30),),
-
-
             ]
         ),
-          ],),
+          ],
+        ),
+        Divider(color: Colors.black,),
         Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
               SizedBox(width: 10,),
-            Text("التحويلات",style: TextStyle(fontSize: 30),),
-            SizedBox(width: 600,),
+            Text("التحويلات = ",style: TextStyle(fontSize: 30),),
+            SizedBox(width: 20,),
             Text('5,000',style: TextStyle(fontSize: 30),),
           ],
-        ),  ],
+        ),
+      ],
     );
   }
 }

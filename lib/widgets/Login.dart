@@ -38,7 +38,7 @@ class _LoginState extends State<Login> {
     }else{
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Center(child: Text('$response', style: TextStyle(fontSize: 19),)),
+            content: Center(child: Text('${response.body}', style: TextStyle(fontSize: 19),)),
             backgroundColor: Colors.redAccent,
           )
       );

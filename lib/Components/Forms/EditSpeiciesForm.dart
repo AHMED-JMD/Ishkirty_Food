@@ -34,7 +34,7 @@ class _EditSpiecesState extends State<EditSpieces> {
     if(response == true){
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Center(child: Text('تمت اضافة الصنف بنجاح', style: TextStyle(fontSize: 19) ,)),
+            content: Center(child: Text('تمت تعديل الصنف بنجاح', style: TextStyle(fontSize: 19) ,)),
             backgroundColor: Colors.green,
           )
       );
@@ -58,12 +58,12 @@ class _EditSpiecesState extends State<EditSpieces> {
           backgroundColor: const Color(0xff20491a),
           leading: IconButton(
             icon: const Icon(
-              Icons.home_sharp,
+              Icons.arrow_back,
               size: 37,
               color: Colors.white,
             ),
             onPressed: (){
-              Navigator.pushReplacementNamed(context, '/home');
+              Navigator.pushReplacementNamed(context, '/speices');
             },
           ),
           title: const Center(child: Text("تعديل الصنف", style: TextStyle(fontSize: 25),)),
@@ -71,20 +71,27 @@ class _EditSpiecesState extends State<EditSpieces> {
         ),
         endDrawer: MyDrawer(),
         body: Padding(
-              padding: const EdgeInsets.all(70.0),
+              padding: const EdgeInsets.all(20.0),
               child: FormBuilder(
                 key: _formKey,
                 child: Column(
                   children: [
-                    CircleAvatar(
-                      child: Image.network('http://localhost:3000/${widget.data.ImgLink}'),
-                      radius: 70,
-                      backgroundColor: Colors.grey.shade300,
-                    ),
-                    isLoading == true? SpinKitWave(
-                      color: Colors.green,
-                      size: 50.0,
+                    isLoading == true? Container(
+                      padding: EdgeInsets.all(8),
+                      color: Colors.grey[200],
+                      width: 200,
+                      child: SpinKitThreeInOut(
+                        color: Colors.green,
+                        size: 50.0,
+                      ),
                     ) : Text(''),
+                    SizedBox(height: 5,),
+                    Image.network(
+                      'http://localhost:3000/${widget.data.ImgLink}',
+                      width: 300.0,
+                      height: 200.0,
+                      fit: BoxFit.cover,
+                    ),
                     Container(
                       width: 700,
                       child: FormBuilderTextField(
@@ -133,12 +140,13 @@ class _EditSpiecesState extends State<EditSpieces> {
                             onPressed: (){
                               if(_formKey.currentState!.saveAndValidate()){
                                 Map data = {};
+                                data['id'] = widget.data.id;
                                 data['name'] = _formKey.currentState!.value['name'];
                                 data['price'] = _formKey.currentState!.value['price'];
-                                data['imageLink'] = _formKey.currentState!.value['imageLink'];
-                                data['type'] = _formKey.currentState!.value['type'];
+                                data['category'] = _formKey.currentState!.value['category'];
+
                                 //server
-                                Navigator.of(context).pop();
+                                editSpieces(data);
                               }
 
                             },

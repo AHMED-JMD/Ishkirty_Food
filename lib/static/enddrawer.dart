@@ -16,7 +16,6 @@ class EndDrawer extends StatelessWidget {
             const SizedBox(height: 50,),
             InkWell(
               onTap: (){
-
               },
               child: const Text(
                 'إيرادات الإسبوع',
@@ -26,7 +25,6 @@ class EndDrawer extends StatelessWidget {
             const SizedBox(height: 50,),
             InkWell(
               onTap: (){
-
               },
               child: const Text(
                 'إيرادات الشهر',
@@ -36,7 +34,6 @@ class EndDrawer extends StatelessWidget {
             const SizedBox(height: 50,),
             InkWell(
               onTap: (){
-
               },
               child: const Text(
                 'إيرادات السنة',
@@ -46,8 +43,6 @@ class EndDrawer extends StatelessWidget {
           ],
         ),
       ),
-
-
     );
   }
 }

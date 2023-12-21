@@ -186,7 +186,7 @@ class ExampleSource extends AdvancedDataTableSource<Spieces> {
   Future<RemoteDataSourceDetails<Spieces>> getNextPage(
       NextPageRequest pageRequest) async {
 
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 400));
     return RemoteDataSourceDetails(
       data.length,
       (data as List<dynamic>)

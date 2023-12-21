@@ -2,7 +2,7 @@ import 'package:ashkerty_food/models/Bill.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import '../../widgets/BilDeatles.dart';
+import '../../widgets/BillDetailes.dart';
 
 
 class DeletedBillsTable extends StatefulWidget {
@@ -32,52 +32,6 @@ class _DeletedBillsTableState extends State<DeletedBillsTable> {
     _searchController.text = '';
   }
   //server side Functions ------------------
-  //------delete--
-  Future deleteBank() async {
-    setState(() {
-      isLoading = true;
-    });
-    //send to server
-    // if (selectedIds.length != 0) {
-    //   final auth = await SharedServices.LoginDetails();
-    //   API_Bank.Delete_Bank(selectedIds, auth.token).then((response) async {
-    //     setState(() {
-    //       isLoading = false;
-    //     });
-    //
-    //     if (response == true) {
-    //       ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(
-    //           content: Text('تم الحذف بنجاح', textAlign: TextAlign.center,
-    //             style: TextStyle(fontSize: 17),),
-    //           backgroundColor: Colors.red,
-    //         ),
-    //       );
-    //       await Future.delayed(Duration(milliseconds: 600));
-    //       Navigator.pushReplacementNamed(context, '/banks');
-    //       selectedIds = [];
-    //     } else {
-    //       ScaffoldMessenger.of(context).showSnackBar(
-    //         SnackBar(
-    //           content: Text('$response', textAlign: TextAlign.center,
-    //             style: TextStyle(fontSize: 17),),
-    //           backgroundColor: Colors.red,
-    //         ),
-    //       );
-    //       selectedIds = [];
-    //     }
-    //   });
-    // } else {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text(
-    //         'الرجاء اختيار بنك من الجدول', textAlign: TextAlign.center,
-    //         style: TextStyle(fontSize: 17),),
-    //       backgroundColor: Colors.red,
-    //     ),
-    //   );
-    // }
-  }
 //-------------------------------------
 
   //delete modal
@@ -107,7 +61,7 @@ class _DeletedBillsTableState extends State<DeletedBillsTable> {
               },
               columns: const [
                 DataColumn(
-                    label: Text('رقم الفاتورة',style: TextStyle(fontSize: 20),)
+                    label: Text('التعليق',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
                     label: Text('تفاصيل الفاتورة',style: TextStyle(fontSize: 20),)
@@ -116,23 +70,16 @@ class _DeletedBillsTableState extends State<DeletedBillsTable> {
                     label:  Text('وقت الفاتورة',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
-                    label:  Padding(
-                      padding: EdgeInsets.only(right: 35),
-                      child: Text(' قيمة الفاتورة ',style: TextStyle(fontSize: 20),),
-                    )
+                    label:  Text(' قيمة الفاتورة ',style: TextStyle(fontSize: 20),),
                 ),
                 DataColumn(
-                    label:  Padding(
-                      padding: EdgeInsets.only(right: 30),
-                      child: Text(' طريقة الدفع',style: TextStyle(fontSize: 20),),
-                    )
+                    label: Text(' طريقة الدفع',style: TextStyle(fontSize: 20),),
                 ),
                 DataColumn(
                     label:  Text(' الوردية',style: TextStyle(fontSize: 20),)
                 ),
                 DataColumn(
                     label:  Text('',style: TextStyle(color: Color(0xffffffff)),)
-
                 ),
               ],
             ),
@@ -157,66 +104,46 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
 
         cells: [
           DataCell(
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8,8,50,8),
-                child: Text(currentRowData.bill_id,style: const TextStyle(fontSize: 20),),
-              )
+               Text(currentRowData.comment.toString(),style: const TextStyle(fontSize: 20),),
           ),
           DataCell(
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8,8,16,0),
-              child: ElevatedButton(onPressed: () {
+             ElevatedButton(onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => BillDeatles(),
+                    builder: (context) => BillDetailes(billId: currentRowData.id),
                   ),
                 );
-              }, child: const Text('التفاصيل',style:TextStyle(fontSize: 20)),),
+              },
+               style: ElevatedButton.styleFrom(
+                   backgroundColor: Colors.teal
+               ),
+               child: const Text('التفاصيل',style:TextStyle(fontSize: 20)),),
             ),
-          ),
           DataCell(
               Text(currentRowData.date,style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
-                child: Center(child: Text(currentRowData.amount.toString(),style: const TextStyle(fontSize: 20),)),
-              )
+               Center(child: Text(currentRowData.amount.toString(),style: const TextStyle(fontSize: 20),)),
           ),
           DataCell(
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8,8,20,8),
-                child: Center(child: Text(currentRowData.paymentMethod,style: const TextStyle(fontSize: 20),)),
-              )
+               Center(child: Text(currentRowData.paymentMethod,style: const TextStyle(fontSize: 20),)),
           ),
           DataCell(
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8,8,5,8),
-                child: Text(currentRowData.shiftTime,style: const TextStyle(fontSize: 20),),
-              )
+               Text(currentRowData.shiftTime,style: const TextStyle(fontSize: 20),),
           ),
           DataCell(
-            Padding(
-              padding: const EdgeInsets.all(0),
-              child: ButtonBar(
+             ButtonBar(
                 children: [
-                  IconButton(onPressed: (){} ,icon:const Icon(Icons.message_outlined,color: Color(
-                      0xff5d5c05),),tooltip: 'تعديل',),
+                  IconButton(
+                    onPressed: (){} ,
+                    icon:const Icon(
+                      Icons.message_outlined,color: Color(0xff5d5c05),
+                    ),
+                    tooltip: 'تعديل',),
                 ],
               ),
             ),
-
-          ),
-          // DataCell(
-          //   InkWell(
-          //     onTap: (){
-          //       Navigator.push(context, MaterialPageRoute(
-          //           builder: (context) => BanksDetails(banks_id: currentRowData.banks_id)));
-          //     },
-          //     child: Icon(Icons.remove_red_eye, color:  Colors.grey.shade500,),
-          //   ),
-          // ),
         ]);
   }
 
@@ -241,7 +168,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   Future<RemoteDataSourceDetails<bill>> getNextPage(
       NextPageRequest pageRequest) async {
 
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(milliseconds: 400));
     return RemoteDataSourceDetails(
       data.length,
         (data as List<dynamic>)

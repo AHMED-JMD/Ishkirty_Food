@@ -14,12 +14,12 @@ class CheckTime extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.all(4),
           decoration: BoxDecoration(
-            color: Colors.teal.shade400,
+            color: Colors.yellow.shade700,
             borderRadius: BorderRadius.circular(4)
           ),
           child: Text(
             isAfterSixPM ? 'الوردية المسائية' : 'الوردية الصباحية',
-            style: TextStyle(fontSize: 16, color: Colors.white),
+            style: TextStyle(fontSize: 16, color: Colors.black),
           ),
         ),
       );
