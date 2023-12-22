@@ -34,21 +34,6 @@ class APIBill {
     }
   }
   //get the bills
-  static Future TodayBills (data) async {
-    try{
-      Map<String, String> ConfigHeaders = {
-        "Content-Type" : "application/json"
-      };
-
-      final url = Uri.parse('$apiUrl/today_bill');
-      Response response = await post(url, headers: ConfigHeaders, body: jsonEncode(data));
-
-      return response;
-    }catch (e){
-      throw e;
-    }
-  }
-  //get the bills
   static Future GetClientBills (data) async {
     try{
       Map<String, String> ConfigHeaders = {

@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:ashkerty_food/API/Bill.dart';
+import 'package:ashkerty_food/API/Sales.dart';
+import 'package:ashkerty_food/API/Spieces.dart';
 import 'package:ashkerty_food/static/SearchDates.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
@@ -20,12 +22,14 @@ class Orders extends StatefulWidget {
 class _OrdersState extends State<Orders> {
   bool isLoading = false;
   List data = [];
+  List spices = [];
   DateTime today_date = DateTime.now();
 
   @override
   void initState() {
     // TODO: implement initState
     getTodayBil();
+    getSpieces();
     super.initState();
   }
 
@@ -62,7 +66,7 @@ class _OrdersState extends State<Orders> {
     //server call
     Map datas = {};
     datas['curr_date'] = today_date.toIso8601String();
-    final response = await APIBill.TodayBills(datas);
+    final response = await APISales.TodaySales(datas);
     //response validity
     if(response.statusCode == 200){
       final res = jsonDecode(response.body);
@@ -74,6 +78,27 @@ class _OrdersState extends State<Orders> {
     } else{
       setState(() {
         isLoading = false;
+      });
+    }
+  }
+  //get spices
+  Future getSpieces () async {
+    setState(() {
+      isLoading = true;
+      spices = [];
+    });
+    //call api
+    Map datas = {};
+    datas["name"] = "burger";
+    final response = await APISpieces.findOne(datas);
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if(response != false){
+      setState(() {
+        spices = response;
       });
     }
   }
@@ -271,7 +296,11 @@ class _OrdersState extends State<Orders> {
                           value: 'month',
                         ),
                         PopupMenuItem(
-                          child:  Text('إيرادات السنة', style: TextStyle(fontSize: 20,color: Colors.black),),
+                          child:  InkWell(
+                              onTap: (){
+                                getTodayBil();
+                              },
+                              child: Text('إيرادات اليوم', style: TextStyle(fontSize: 20,color: Colors.black),)),
                           value: 'year',
                         ),
                       ];

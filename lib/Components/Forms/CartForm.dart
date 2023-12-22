@@ -1,4 +1,5 @@
 import 'package:ashkerty_food/API/Client.dart';
+import 'package:ashkerty_food/static/Printing.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ashkerty_food/API/Bill.dart';
 import 'package:ashkerty_food/providers/cart_provider.dart';
@@ -49,14 +50,32 @@ class _CartFormState extends State<CartForm> {
         isLoading = false;
       });
 
-      return ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Center(child: Text("تم حفظ الفاتورة بنجاح",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold ),
-            )),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 3),
-        )
+      return showDialog(
+          context: context,
+          builder: (BuildContext context){
+            return AlertDialog(
+              title: Text('طباعة الفاتورة', textAlign: TextAlign.center,),
+              content: Text(
+                'اضغط الزر ادناه لطباعة الفاتورة',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20
+                ),
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width/6.5,
+                      height: 35,
+                       child: PrintPage(data: data,)
+                    ),
+                  ),
+                )
+              ],
+            );
+          }
       );
     }else{
       setState(() {
@@ -119,7 +138,7 @@ class _CartFormState extends State<CartForm> {
         color: Colors.blueGrey[300],
         width: 400,
         child: Padding(
-          padding: const EdgeInsets.only(top: 30.0, left: 20, right: 20),
+          padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -228,35 +247,32 @@ class _CartFormState extends State<CartForm> {
                         ),
                       SizedBox(height: 45,),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ElevatedButton.icon(
-                            onPressed: (){
-                              if(_formKey.currentState!.saveAndValidate()){
-                                var data = {};
-                                data['date'] = date.toIso8601String();
-                                data['amount'] = totalAmount;
-                                data['trans'] = value.cart;
-                                data['paymentMethod'] = payment_method;
-                                data['shiftTime'] = _formKey.currentState!.value['shift'];
-                                data['clientId'] = clientID;
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width/4,
+                            height: 40,
+                            child: ElevatedButton.icon(
+                              onPressed: (){
+                                if(_formKey.currentState!.saveAndValidate()) {
+                                  var data = {};
+                                  data['date'] = date.toIso8601String();
+                                  data['amount'] = totalAmount;
+                                  data['trans'] = value.cart;
+                                  data['paymentMethod'] = payment_method;
+                                  data['shiftTime'] =
+                                  _formKey.currentState!.value['shift'];
+                                  data['clientId'] = clientID;
 
-                                addBill(data);
-                              }
-                            },
-                            icon: Icon(Icons.paypal),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal
+                                  addBill(data);
+                                }
+                              },
+                              icon: Icon(Icons.paypal),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal
+                              ),
+                              label: Text('دفع الفاتورة'),
                             ),
-                            label: Text('دفع الفاتورة'),
-                          ),
-                          ElevatedButton.icon(
-                            onPressed: (){},
-                            icon: Icon(Icons.print),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal
-                            ),
-                            label: Text('طباعة الفاتورة'),
                           ),
                         ],
                       ),

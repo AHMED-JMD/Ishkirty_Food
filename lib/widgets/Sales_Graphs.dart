@@ -18,84 +18,84 @@ class _SalesGRaphsState extends State<SalesGRaphs> {
   Widget build(BuildContext context) {
 
     return Directionality(textDirection: TextDirection.rtl,
-    child: Scaffold(
-  appBar: AppBar(
-  backgroundColor: const Color(0xff20491a),
-  leading:  IconButton(
-  icon: const Icon(
-  Icons.arrow_back,
-  size: 37,
-  color: Colors.white,
-  ),
-  onPressed: (){
-  Navigator.pushReplacementNamed(context, '/orders');
-  },
-  ),
-  title: const Center(child:Text("الرسوم البيانيية", style: TextStyle(fontSize: 25,)),),
-  actions: const [LeadingDrawerBtn(),],
-    toolbarHeight: 45,
-  ),
-  endDrawer:const MyDrawer(),
-body: Column(
-  mainAxisAlignment: MainAxisAlignment.start,
-  crossAxisAlignment: CrossAxisAlignment.start,
-  mainAxisSize: MainAxisSize.max,
-  children: [const SizedBox(height: 94,),
-    Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(width: 900,
-          height:600,
-          decoration: const BoxDecoration(
-            color: Colors.red,
-            shape: BoxShape.rectangle,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: const Color(0xff20491a),
+          leading:  IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              size: 37,
+              color: Colors.white,
+            ),
+            onPressed: (){
+              Navigator.pushReplacementNamed(context, '/orders');
+            },
           ),
-          child: const Center(child: Text('GRAPH3 year 12 points',style: TextStyle(color: Colors.white),)),
+          title: const Center(child:Text("الرسوم البيانيية", style: TextStyle(fontSize: 25,)),),
+          actions: const [LeadingDrawerBtn(),],
+          toolbarHeight: 45,
         ),
-      SizedBox(height: 30,),
+        endDrawer:const MyDrawer(),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [const SizedBox(height: 94,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(width: 900,
+                  height:600,
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.rectangle,
+                  ),
+                  child: const Center(child: Text('GRAPH3 year 12 points',style: TextStyle(color: Colors.white),)),
+                ),
+                SizedBox(height: 30,),
 
 
-      ],
-    ),
-    Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(height:100),
-        Radio(value: 1, groupValue: _period, onChanged: (value) {
-          setState(() {
-            _period = value;
-          });
-        },
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height:100),
+                Radio(value: 1, groupValue: _period, onChanged: (value) {
+                  setState(() {
+                    _period = value;
+                  });
+                },
+                ),
+                const SizedBox(width: 5,),
+                Text ('اسبوع'),
+                const SizedBox(width: 30,),
+                Radio(value: 2, groupValue: _period, onChanged: (Value) {
+                  setState(() {
+                    _period = Value;
+                  });
+                },
+                ),
+                const SizedBox(width: 5,),
+                const Text ('شهر'),
+                const SizedBox(width: 30,),
+                Radio(value: 3, groupValue: _period, onChanged: (Value) {
+                  setState(() {
+                    _period = Value;
+                  });
+                },
+                ),
+                const SizedBox(width: 5,),
+                Text ('سنة'),
+              ],
+
+
+            )
+          ],
+
+
         ),
-        const SizedBox(width: 5,),
-        Text ('اسبوع'),
-        const SizedBox(width: 30,),
-        Radio(value: 2, groupValue: _period, onChanged: (Value) {
-          setState(() {
-            _period = Value;
-          });
-        },
-        ),
-        const SizedBox(width: 5,),
-        const Text ('شهر'),
-        const SizedBox(width: 30,),
-        Radio(value: 3, groupValue: _period, onChanged: (Value) {
-          setState(() {
-            _period = Value;
-          });
-        },
-        ),
-        const SizedBox(width: 5,),
-        Text ('سنة'),
-      ],
-
-
-    )
-  ],
-
-
-),
-),
-  );
+      ),
+    );
   }
 }
