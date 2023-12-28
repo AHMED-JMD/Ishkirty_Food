@@ -1,5 +1,6 @@
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/providers/cart_provider.dart';
+import 'package:ashkerty_food/widgets/Cart.dart';
 import 'package:ashkerty_food/widgets/Home.dart';
 import 'package:ashkerty_food/widgets/Login.dart';
 import 'package:ashkerty_food/widgets/clients.dart';
@@ -12,12 +13,11 @@ import 'package:provider/provider.dart';
 Widget _defaultHome = Login();
 
 void main() {
-  runApp( MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
-
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
@@ -31,11 +31,12 @@ class MyApp extends StatelessWidget {
         ),
         routes: {
           '/': (context) => _defaultHome,
-          '/home' : (context) =>  MyHomePage(),
-          '/orders' : (context) =>  Orders(),
-          '/bills' : (context) =>  Bills(),
-          '/speices' : (context) =>  Speices(),
-          '/clients' : (context) =>  Clients(),
+          '/home': (context) => MyHomePage(),
+          '/cart': (context) => MyCart(),
+          '/orders': (context) => Orders(),
+          '/bills': (context) => Bills(),
+          '/speices': (context) => Speices(),
+          '/clients': (context) => Clients(),
         },
       ),
     );

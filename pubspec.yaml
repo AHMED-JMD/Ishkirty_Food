@@ -42,6 +42,7 @@ dependencies:
   fl_chart: ^0.64.0
   printing: ^5.11.0
   provider: ^6.1.1
+  keymap: ^0.0.92
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,7 @@
 import 'dart:convert';
-
+import 'package:ashkerty_food/widgets/SpeciesStats.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:ashkerty_food/API/Bill.dart';
 import 'package:ashkerty_food/API/Sales.dart';
 import 'package:ashkerty_food/API/Spieces.dart';
@@ -10,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../static/SalesCard.dart';
 import 'Sales_Graphs.dart';
-import 'package:ashkerty_food/widgets/SpeciesStats.dart';
 
 class Orders extends StatefulWidget {
   const Orders({super.key});
@@ -24,11 +25,13 @@ class _OrdersState extends State<Orders> {
   List data = [];
   List spices = [];
   DateTime today_date = DateTime.now();
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+
 
   @override
   void initState() {
     // TODO: implement initState
-    getTodayBil();
+    getTodaySales();
     getSpieces();
     super.initState();
   }
@@ -41,7 +44,12 @@ class _OrdersState extends State<Orders> {
     });
 
     //server call
-    final response = await APIBill.Search(datas);
+    Map mod_datas = {};
+    mod_datas['start_date'] = datas['start_date'];
+    mod_datas['end_date'] = datas['end_date'];
+    mod_datas['isDeleted'] = false;
+
+    final response = await APIBill.Search(mod_datas);
     //response validity
     if(response.statusCode == 200){
       final res = jsonDecode(response.body);
@@ -57,7 +65,7 @@ class _OrdersState extends State<Orders> {
     }
   }
   //get current dat
-  Future getTodayBil () async {
+  Future getTodaySales () async {
     setState(() {
       isLoading = true;
       data = [];
@@ -160,9 +168,9 @@ class _OrdersState extends State<Orders> {
         body: SingleChildScrollView(
           child:Column(
             children: [
-              SearchInDates(isDeleted: false, searchDates: searchDates ),
+              SearchInDates(searchDates: searchDates ),
               if(isLoading)
-                SpinKitThreeInOut(
+                SpinKitCircle(
                   color: Colors.black45,
                   size: 50,
                 ),
@@ -213,7 +221,7 @@ class _OrdersState extends State<Orders> {
         ),
         ),
         bottomNavigationBar:   BottomAppBar(
-          height: 60,
+          height: 65,
           color: const Color(0xffefecec),
 
           child:ButtonBar(
@@ -231,27 +239,28 @@ class _OrdersState extends State<Orders> {
                 SizedBox(
                   width: 300,
                   height: 100,
-                  child: TextFormField(
-                    keyboardType: TextInputType.text,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.0,
+                  child: FormBuilder(
+                    key: _formKey,
+                    child: FormBuilderTextField(
+                      name: 'name',
+                      validator: FormBuilderValidators.required(errorText: '*'),
+                      decoration:  InputDecoration(
+                        labelText: 'اسم الصنف',
+                        border: OutlineInputBorder(),
+                        suffixIcon: IconButton(
+                          onPressed: (){
+                            if(_formKey.currentState!.saveAndValidate()){
+                              Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) => SpeciesStats(name: _formKey.currentState!.value['name'])
+                              )
+                              );
+                            }
+                          },
+                          icon: Icon(Icons.search),
+                        )
+                      ),
                     ),
-                    decoration:  InputDecoration(
-                      labelText: "الصنف",
-                      labelStyle: const TextStyle(color: Colors.black,fontSize: 24),
-                      //border: UnderlineInputBorder(),
-                      border: const OutlineInputBorder(),
-                      suffixIcon: IconButton(
-                          icon:const Icon(Icons.search_sharp,size: 25,color: Colors.black87,),
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => SpeciesStats(),
-                          ),
-                        );
-                            },
-                      )
-                    ),
+
                   ),
                 ),
             PopupMenuButton(
@@ -298,7 +307,7 @@ class _OrdersState extends State<Orders> {
                         PopupMenuItem(
                           child:  InkWell(
                               onTap: (){
-                                getTodayBil();
+                                getTodaySales();
                               },
                               child: Text('إيرادات اليوم', style: TextStyle(fontSize: 20,color: Colors.black),)),
                           value: 'year',

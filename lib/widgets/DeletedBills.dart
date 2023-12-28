@@ -20,51 +20,55 @@ class _DeletedBillsState extends State<DeletedBills> {
 
   @override
   void initState() {
-    getBills();
     super.initState();
   }
   //server func to get bills
-  Future getBills () async {
-    setState(() {
-      isLoading = true;
-      data = [];
-    });
-    //get from server
-    Map datas = {};
-    datas['isDeleted'] = true;
-    final response = await APIBill.GetAll(datas);
+  // Future getBills () async {
+  //   setState(() {
+  //     isLoading = true;
+  //     data = [];
+  //   });
+  //   //get from server
+  //   Map datas = {};
+  //   datas['isDeleted'] = true;
+  //   final response = await APIBill.GetAll(datas);
 
-    if(response.statusCode == 200){
-      var res = jsonDecode(response.body);
+  //   if(response.statusCode == 200){
+  //     var res = jsonDecode(response.body);
 
-      setState(() {
-        isLoading = false;
-        data = res;
-      });
-    }else{
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-  //search dates
-  Future searchDates (datas) async {
+  //     setState(() {
+  //       isLoading = false;
+  //       data = res;
+  //     });
+  //   }else{
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
+  // //search dates
+  Future searchDates(datas) async {
     setState(() {
       isLoading = true;
       data = [];
     });
 
     //server call
-    final response = await APIBill.Search(datas);
+    Map mod_datas = {};
+    mod_datas['start_date'] = datas['start_date'];
+    mod_datas['end_date'] = datas['end_date'];
+    mod_datas['isDeleted'] = true;
+
+    final response = await APIBill.Search(mod_datas);
     //response validity
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       final res = jsonDecode(response.body);
 
       setState(() {
         isLoading = false;
         data = res;
       });
-    } else{
+    } else {
       setState(() {
         isLoading = false;
       });
@@ -85,44 +89,55 @@ class _DeletedBillsState extends State<DeletedBills> {
               size: 37,
               color: Colors.white,
             ),
-            onPressed: (){
+            onPressed: () {
               Navigator.pushReplacementNamed(context, '/bills');
             },
           ),
 
-          title: const Center(child: Text("الفواتير المحذوفة", style: TextStyle(fontSize: 25),)),
-          actions: const [LeadingDrawerBtn(),],
+          title: const Center(
+              child: Text(
+            "الفواتير المحذوفة",
+            style: TextStyle(fontSize: 25),
+          )),
+          actions: const [
+            LeadingDrawerBtn(),
+          ],
           toolbarHeight: 45,
         ),
 
         //custom drawer in static folder
         endDrawer: const MyDrawer(),
 
-        body: ListView(
-            children:[
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 90,),
-                  //custom widget in static folder for showing search bar responsive
-                  SearchInDates(isDeleted: true, searchDates: searchDates,),
-                  const SizedBox(height: 10,),
-                  data.length != 0 || isLoading == false?
-                  Container(
-                      color: Colors.grey[100],
-                      child: DeletedBillsTable(data: data,)
-                  ): Padding(
-                    padding: const EdgeInsets.only(top: 190.0),
-                    child: SpinKitPouringHourGlassRefined(
-                      color: Colors.teal,
-                      size: 70.0,
-                    ),
-                  ),
-                ],
+        body: ListView(children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(
+                height: 90,
               ),
-            ]
-        ),
-
+              //custom widget in static folder for showing search bar responsive
+              SearchInDates(
+                searchDates: searchDates,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              data.length != 0 || isLoading == false
+                  ? Container(
+                      color: Colors.grey[100],
+                      child: DeletedBillsTable(
+                        data: data,
+                      ))
+                  : Padding(
+                      padding: const EdgeInsets.only(top: 190.0),
+                      child: SpinKitPouringHourGlassRefined(
+                        color: Colors.teal,
+                        size: 70.0,
+                      ),
+                    ),
+            ],
+          ),
+        ]),
       ),
     );
   }

@@ -1,17 +1,41 @@
 import 'package:ashkerty_food/static/GridBuilder.dart';
 import 'package:flutter/material.dart';
+import 'package:ashkerty_food/API/Spieces.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Traditional extends StatefulWidget {
-  final List traditional;
-  const Traditional({super.key, required this.traditional});
-
   @override
-  State<Traditional> createState() => _TraditionalState(traditional: traditional);
+  State<Traditional> createState() => _TraditionalState();
 }
 
 class _TraditionalState extends State<Traditional> {
-  final List traditional;
-  _TraditionalState({required this.traditional});
+  List data = [];
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    getData();
+    super.initState();
+  }
+
+  Future getData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final response = await APISpieces.getByType({'category': 'تقليدي'});
+
+    if (response != false) {
+      setState(() {
+        isLoading = false;
+        data = response;
+      });
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +45,32 @@ class _TraditionalState extends State<Traditional> {
           children: [
             const Padding(
               padding: EdgeInsets.only(right: 28.0),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('تقليدي',textAlign: TextAlign.right ,style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),),
+                  Text(
+                    'تقليدي',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 30,),
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: GridViewBuilder(data: traditional,),
-            )
+            const SizedBox(
+              height: 30,
+            ),
+            isLoading
+                ? SpinKitThreeBounce(
+                    color: Colors.grey,
+                    size: 30,
+                  )
+                : Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: GridViewBuilder(
+                      data: data,
+                    ),
+                  )
           ],
-        )
-    );
+        ));
   }
 }

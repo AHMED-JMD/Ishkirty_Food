@@ -54,7 +54,13 @@ class _CartFormState extends State<CartForm> {
           context: context,
           builder: (BuildContext context){
             return AlertDialog(
-              title: Text('طباعة الفاتورة', textAlign: TextAlign.center,),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.check, color: Colors.green, size: 38,),
+                  Text('تم الحفظ', textAlign: TextAlign.center,),
+                ],
+              ),
               content: Text(
                 'اضغط الزر ادناه لطباعة الفاتورة',
                 textAlign: TextAlign.center,
@@ -84,7 +90,8 @@ class _CartFormState extends State<CartForm> {
 
       return ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("sorry something is wrong :(", style: TextStyle(fontSize: 22),),
+            content: Center(
+                child: Text("sorry something is wrong :(", style: TextStyle(fontSize: 22),)),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 3),
             action: SnackBarAction(
@@ -190,6 +197,7 @@ class _CartFormState extends State<CartForm> {
                       SizedBox(height: 20,),
                       FormBuilderRadioGroup(
                         name: 'payment_method',
+                        initialValue: 'كاش',
                         decoration: InputDecoration(
                             labelText: 'اختر طريقة الدفع', contentPadding: EdgeInsets.all(10.0)),
                         options: [
@@ -259,7 +267,7 @@ class _CartFormState extends State<CartForm> {
                                   data['date'] = date.toIso8601String();
                                   data['amount'] = totalAmount;
                                   data['trans'] = value.cart;
-                                  data['paymentMethod'] = payment_method;
+                                  data['paymentMethod'] = _formKey.currentState!.value['payment_method'];
                                   data['shiftTime'] =
                                   _formKey.currentState!.value['shift'];
                                   data['clientId'] = clientID;

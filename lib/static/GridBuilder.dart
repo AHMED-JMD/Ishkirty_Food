@@ -10,7 +10,6 @@ class GridViewBuilder extends StatefulWidget {
 }
 
 class _GridViewBuilderState extends State<GridViewBuilder> {
-
   @override
   Widget build(BuildContext context) {
     //layout builder for making the app responsive on diffrent screen sizes
@@ -24,12 +23,12 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
               itemCount: widget.data.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 //amount of data you want on a row
-                crossAxisCount: 6,
+                crossAxisCount: 4,
               ),
               itemBuilder: (context, index) =>
-              //call the card widget and set custom width and height !!default height best 200!!!
-                  GridCart(speices: widget.data[index], widths: 245, height: 204)
-              );
+                  //call the card widget and set custom width and height !!default height best 200!!!
+                  GridCart(
+                      speices: widget.data[index], widths: 245, height: 204));
         } else {
           if (constraints.maxWidth > 1000) {
             return GridView.builder(
@@ -39,9 +38,8 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                 ),
-                itemBuilder: (context, index) =>
-                    GridCart(speices: widget.data[index], widths: 350, height: 200)
-            );
+                itemBuilder: (context, index) => GridCart(
+                    speices: widget.data[index], widths: 350, height: 200));
           } else {
             if (constraints.maxWidth > 800) {
               return GridView.builder(
@@ -51,9 +49,8 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                   ),
-                  itemBuilder: (context, index) =>
-                      GridCart(speices: widget.data[index], widths: 300, height: 200)
-              );
+                  itemBuilder: (context, index) => GridCart(
+                      speices: widget.data[index], widths: 300, height: 200));
             } else {
               if (constraints.maxWidth > 600) {
                 return GridView.builder(
@@ -63,9 +60,8 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                     ),
-                    itemBuilder: (context, index) =>
-                        GridCart(speices: widget.data[index], widths: 200, height: 200)
-                );
+                    itemBuilder: (context, index) => GridCart(
+                        speices: widget.data[index], widths: 200, height: 200));
               } else {
                 if (constraints.maxWidth > 500) {
                   return GridView.builder(
@@ -75,9 +71,10 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                       ),
-                      itemBuilder: (context, index) =>
-                          GridCart(speices: widget.data[index], widths: 250, height: 200)
-                  );
+                      itemBuilder: (context, index) => GridCart(
+                          speices: widget.data[index],
+                          widths: 250,
+                          height: 200));
                 } else {
                   if (constraints.maxWidth > 400) {
                     return GridView.builder(
@@ -87,9 +84,10 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                         ),
-                        itemBuilder: (context, index) =>
-                            GridCart(speices: widget.data[index], widths: 200, height: 200)
-                    );
+                        itemBuilder: (context, index) => GridCart(
+                            speices: widget.data[index],
+                            widths: 200,
+                            height: 200));
                   } else {
                     return GridView.builder(
                         shrinkWrap: true,
@@ -98,9 +96,10 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                         ),
-                        itemBuilder: (context, index) =>
-                            GridCart(speices: widget.data[index], widths: 180, height: 300)
-                    );
+                        itemBuilder: (context, index) => GridCart(
+                            speices: widget.data[index],
+                            widths: 180,
+                            height: 300));
                   }
                 }
               }

@@ -1,26 +1,16 @@
-import 'dart:convert';
-
-import 'package:ashkerty_food/API/Bill.dart';
-import 'package:ashkerty_food/static/Printing.dart';
-import 'package:ashkerty_food/widgets/DeletedBills.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
 class SearchInDates extends StatefulWidget {
-  final bool isDeleted;
   final Function(Map) searchDates;
-  SearchInDates({super.key, required this.isDeleted, required this.searchDates});
+  SearchInDates({super.key, required this.searchDates});
 
   @override
-  State<SearchInDates> createState() => _SearchInDatesState(isDeleted: isDeleted, searchDates: searchDates);
+  State<SearchInDates> createState() => _SearchInDatesState();
 }
 
 class _SearchInDatesState extends State<SearchInDates> {
-  final bool isDeleted;
-  final Function(Map) searchDates;
-  _SearchInDatesState({ required this.isDeleted, required this.searchDates});
 
   GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   DateTime? start_date = DateTime.now();
@@ -100,10 +90,9 @@ class _SearchInDatesState extends State<SearchInDates> {
                                 Map datas = {};
                                 datas['start_date'] = start_date!.toIso8601String();
                                 datas['end_date'] = end_date!.toIso8601String();
-                                datas['isDeleted'] = isDeleted;
 
                                 // function
-                                searchDates(datas);
+                                widget.searchDates(datas);
                                 _formKey.currentState!.reset();
                               }
                             },

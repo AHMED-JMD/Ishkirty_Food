@@ -17,63 +17,6 @@ class Bills extends StatefulWidget {
 }
 
 class _BillsState extends State<Bills> {
-  List data = [];
-  bool isLoading = false;
-
-  @override
-  void initState() {
-    getBills();
-    super.initState();
-  }
-
-  //server func to get bills
-  Future getBills () async {
-    setState(() {
-      isLoading = true;
-      data = [];
-    });
-    //get from server
-    Map datas = {};
-    datas['isDeleted'] = false;
-    final response = await APIBill.GetAll(datas);
-
-    if(response.statusCode == 200){
-      var res = jsonDecode(response.body);
-
-      setState(() {
-        isLoading = false;
-        data = res;
-      });
-    }else{
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-  //search dates
-  Future searchDates (datas) async {
-    setState(() {
-      isLoading = true;
-      data = [];
-    });
-
-    //server call
-    final response = await APIBill.Search(datas);
-    //response validity
-    if(response.statusCode == 200){
-      final res = jsonDecode(response.body);
-
-      setState(() {
-        isLoading = false;
-        data = res;
-      });
-    } else{
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -87,44 +30,38 @@ class _BillsState extends State<Bills> {
               size: 37,
               color: Colors.white,
             ),
-            onPressed: (){
+            onPressed: () {
               Navigator.pushReplacementNamed(context, '/home');
             },
           ),
-
-          title: const Center(child: Text("الفواتير", style: TextStyle(fontSize: 25),)),
-          actions: const [LeadingDrawerBtn(),],
+          title: const Center(
+              child: Text(
+            "الفواتير",
+            style: TextStyle(fontSize: 25),
+          )),
+          actions: const [
+            LeadingDrawerBtn(),
+          ],
           toolbarHeight: 45,
         ),
 
         //custom drawer in static folder
         endDrawer: const MyDrawer(),
 
-        body: ListView(
-            children:[
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: 90,),
-                  //custom widget in static folder for showing search bar responsive
-                  SearchInDates(isDeleted: false, searchDates: searchDates,),
-                  SizedBox(height: 10,),
-                  data.length != 0 || isLoading == false ?
-                  Container(
-                    color: Colors.grey[100],
-                      child: billTable(data: data,)
-                  ) : Padding(
-                    padding: EdgeInsets.only(top: 190.0),
-                    child: SpinKitPouringHourGlassRefined(
-                      color: Colors.teal,
-                      size: 70.0,
-                    ),
-                  ),
-                ],
+        body: ListView(children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 90,
               ),
-            ]
+              SizedBox(
+                height: 10,
+              ),
+              Container(color: Colors.grey[100], child: billTable())
+            ],
           ),
-
+        ]),
       ),
     );
   }
