@@ -263,6 +263,10 @@ class _CartFormState extends State<CartForm> {
                             child: ElevatedButton.icon(
                               onPressed: (){
                                 if(_formKey.currentState!.saveAndValidate()) {
+                                  //increment bill counter
+                                  final cartProvider = context.read<CartProvider>();
+                                  cartProvider.increment_counter();
+
                                   var data = {};
                                   data['date'] = date.toIso8601String();
                                   data['amount'] = totalAmount;

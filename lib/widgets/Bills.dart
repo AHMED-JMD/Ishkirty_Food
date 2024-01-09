@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:ashkerty_food/API/Bill.dart';
 import 'package:ashkerty_food/Components/tables/BillTable.dart';
 import 'package:ashkerty_food/static/SearchDates.dart';

@@ -102,7 +102,10 @@ class _SpeiciesTableState extends State<SpeiciesTable> {
                 ),
                 DataColumn(
                   label: Text('النوع',style:TextStyle(fontSize: 20),),
-            ),
+                ),
+                DataColumn(
+                  label: Text('المفضلة',style:TextStyle(fontSize: 20),),
+                ),
                   DataColumn(
                   label: Text('.',style:TextStyle(color: Colors.white),),
                   ),
@@ -142,9 +145,12 @@ class ExampleSource extends AdvancedDataTableSource<Spieces> {
           ),
           DataCell(
               Text(currentRowData.category ,style: const TextStyle(fontSize: 20),),
-
           ),
-    DataCell(Padding(
+          DataCell(
+              currentRowData.isFavourites ?
+              Icon(Icons.check_box, color: Colors.greenAccent,) : Icon(Icons.cancel_rounded, color: Colors.red,)
+          ),
+          DataCell(Padding(
             padding: const EdgeInsets.all(0),
             child: ButtonBar(
               children: [

@@ -48,6 +48,26 @@ class APISpieces {
       throw e;
     }
   }
+  //get data
+  static Future GetFavs () async {
+    try{
+      Map<String, String> ConfigHeaders = {
+        "Content-Type" : "application/json"
+      };
+
+      final url = Uri.parse('$apiUrl/favourites');
+      Response response = await get(url, headers: ConfigHeaders);
+
+      if(response.statusCode == 200){
+        final data = jsonDecode(response.body);
+        return data;
+      }else{
+        return false;
+      }
+    }catch (e){
+      throw e;
+    }
+  }
   //get by type data
   static Future getByType (data) async {
     try{

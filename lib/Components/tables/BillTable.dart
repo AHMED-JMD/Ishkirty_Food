@@ -31,34 +31,38 @@ class _billTableState extends State<billTable> {
       "offset": "0",
       "pageSize": "10"
     };
-    getBills(headers);
+    // getBills(headers);
   }
 
   //server side Functions ------------------
   //server func to get bills
   Future getBills(headers) async {
-    setState(() {
-      isLoading = true;
-    });
+    // setState(() {
+    //   isLoading = true;
+    // });
 
     //call server
     Map dataBody = {};
     dataBody['isDeleted'] = false;
 
     final response = await APIBill.GetAll(dataBody, headers);
-    setState(() {
-      isLoading = false;
-    });
-    if (response.statusCode == 200) {
-      final datas = jsonDecode(response.body);
-      setState(() {
-        data = datas;
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-    }
+    // setState(() {
+    //   isLoading = false;
+    // });
+    final datas = jsonDecode(response.body);
+
+    return datas;
+
+    // if (response.statusCode == 200) {
+    //   final datas = jsonDecode(response.body);
+    //   setState(() {
+    //     data = datas;
+    //   });
+    // } else {
+    //   setState(() {
+    //     isLoading = false;
+    //   });
+    // }
   }
 
   //search dates
@@ -141,7 +145,7 @@ class _billTableState extends State<billTable> {
             const SizedBox(
               height: 20,
             ),
-            isLoading == true
+             isLoading == true
                 ? Center(
                     child: SpinKitPouringHourGlassRefined(
                       color: Colors.teal,
@@ -179,16 +183,16 @@ class _billTableState extends State<billTable> {
                       )),
                       DataColumn(
                           label: Padding(
-                        padding: EdgeInsets.only(right: 35),
-                        child: Text(
+                          padding: EdgeInsets.only(right: 35),
+                          child: Text(
                           ' قيمة الفاتورة ',
                           style: TextStyle(fontSize: 20),
                         ),
                       )),
                       DataColumn(
                           label: Padding(
-                        padding: EdgeInsets.only(right: 30),
-                        child: Text(
+                          padding: EdgeInsets.only(right: 30),
+                          child: Text(
                           ' طريقة الدفع',
                           style: TextStyle(fontSize: 20),
                         ),
@@ -313,7 +317,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   @override
   Future<RemoteDataSourceDetails<bill>> getNextPage(
       NextPageRequest pageRequest) async {
-    // await Future.delayed(const Duration(milliseconds: 400));
+    await Future.delayed(const Duration(milliseconds: 400));
 
     final Map<String, String> reqHeaders = {
       "Content-Type": "application/json",
@@ -322,10 +326,16 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
     };
 
     //call server for data
-    // getBills(reqHeaders);
-    if (data.length > 0) {
-      return RemoteDataSourceDetails(data.length,
-          (data as List<dynamic>).map((json) => bill.fromJson(json)).toList());
+    final datas = await getBills(reqHeaders);
+    print(datas['bills']);
+    if (datas['bills_length'] > 0) {
+      return RemoteDataSourceDetails(
+          datas['bills_length'],
+          (datas['bills'] as List<dynamic>)
+              .map((json) => bill.fromJson(json))
+              .skip(pageRequest.offset)
+              .take(pageRequest.pageSize)
+              .toList());
     } else {
       throw Exception('Unable to query remote server');
     }

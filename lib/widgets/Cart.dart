@@ -1,3 +1,5 @@
+import 'package:ashkerty_food/API/Spieces.dart';
+import 'package:ashkerty_food/models/kebordKeys.dart';
 import 'package:ashkerty_food/providers/cart_provider.dart';
 import 'package:ashkerty_food/Components/Forms/CartForm.dart';
 import 'package:ashkerty_food/widgets/Home.dart';
@@ -15,6 +17,26 @@ class MyCart extends StatefulWidget {
 }
 
 class _MyCartState extends State<MyCart> {
+  List favSpieces = [];
+
+  @override
+  void initState() {
+    getFavs();
+    super.initState();
+  }
+
+  //server function to get favourites
+  Future getFavs() async {
+    //call server
+    final res = await APISpieces.GetFavs();
+
+    if(res != false){
+      setState(() {
+        favSpieces = res;
+      });
+    }
+  }
+
   //custom cart widget
   Widget _cart(BuildContext context, item, cartProvider) {
     return Column(
@@ -114,36 +136,26 @@ class _MyCartState extends State<MyCart> {
   @override
   Widget build(BuildContext context) {
     return KeyboardWidget(
-      bindings: [
-        KeyAction(
-          LogicalKeyboardKey.f2,
-          'اضف بيرقر الى الفاتورة',
-          () {
-            // Perform your action here
-            Cart model = Cart(
-                spices: 'burger',
-                counter: 1,
-                unit_price: 1300,
-                total_price: 1300);
-            //add to provider
-            final cartProvider = context.read<CartProvider>();
-            cartProvider.addToCart(model);
+      bindings: favSpieces.map((theKey) {
+        LogicalKeyboardKey key = KeyBoardKeys[theKey['favBtn']] ?? LogicalKeyboardKey.f1;
 
-            Navigator.pushNamed(context, '/cart');
-          },
-        ),
-        KeyAction(LogicalKeyboardKey.keyF, 'اضف فول الى الفاتورة', () {
-          // Perform your action here
-          Cart model = Cart(
-              spices: 'fool', counter: 1, unit_price: 800, total_price: 800);
-          //add to provider
-          final cartProvider = context.read<CartProvider>();
-          cartProvider.addToCart(model);
+        return KeyAction(
+            key,
+            'اضف ${theKey['name']} الى الفاتورة',
+                () {
+              //perform action here
+              Cart model = Cart(
+                  spices: theKey['name'],
+                  counter: 1,
+                  unit_price: theKey['price'],
+                  total_price: theKey['price']);
+              //add to provider
+              final cartProvider = context.read<CartProvider>();
+              cartProvider.addToCart(model);
 
-          Navigator.pushNamed(context, '/cart');
-        }, isControlPressed: true),
-      ],
-      columnCount: 2,
+              Navigator.pushNamed(context, '/cart');
+            }, isControlPressed: theKey['isControll'] ?? false);
+      }).toList(),
       child: Focus(
           autofocus: true,
           child: Consumer<CartProvider>(builder: (context, value, child) {

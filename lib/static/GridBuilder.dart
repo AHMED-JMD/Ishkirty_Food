@@ -23,7 +23,7 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
               itemCount: widget.data.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 //amount of data you want on a row
-                crossAxisCount: 4,
+                crossAxisCount: 5,
               ),
               itemBuilder: (context, index) =>
                   //call the card widget and set custom width and height !!default height best 200!!!
@@ -36,7 +36,7 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                 physics: ScrollPhysics(),
                 itemCount: widget.data.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
+                  crossAxisCount: 4,
                 ),
                 itemBuilder: (context, index) => GridCart(
                     speices: widget.data[index], widths: 350, height: 200));

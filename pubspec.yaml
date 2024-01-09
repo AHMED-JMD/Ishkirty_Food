@@ -93,6 +93,9 @@ flutter:
     - family: Cairo
       fonts:
         - asset: assets/fonts/Cairo-Bold.ttf
+    - family: Alexandria
+      fonts:
+        - asset: assets/fonts/Alexandria-Bold.ttf
     - family: InvoiceIcon
       fonts:
         - asset: assets/fonts/InvoiceIcon.ttf

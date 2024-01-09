@@ -16,7 +16,6 @@ class _SearchInDatesState extends State<SearchInDates> {
   DateTime? start_date = DateTime.now();
   DateTime? end_date = DateTime.now();
 
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(

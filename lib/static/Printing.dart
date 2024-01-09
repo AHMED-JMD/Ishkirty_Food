@@ -1,9 +1,12 @@
 import 'dart:typed_data';
+import 'package:ashkerty_food/providers/Auth_provider.dart';
+import 'package:ashkerty_food/providers/cart_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:provider/provider.dart';
 
 class PrintPage extends StatefulWidget {
   final Map data;
@@ -29,7 +32,7 @@ class _PrintPageState extends State<PrintPage> {
 
   fetch() async {
     ByteData _bytes = await rootBundle.load('assets/images/ef1.jpg');
-    ByteData font = await rootBundle.load("assets/fonts/Cairo-Bold.ttf");
+    ByteData font = await rootBundle.load("assets/fonts/Alexandria-Bold.ttf");
 
     logobytes = _bytes.buffer.asUint8List();
 
@@ -74,7 +77,7 @@ class _PrintPageState extends State<PrintPage> {
                 createTableCell('الصنف'),
                 createTableCell('الكمية'),
                 createTableCell('السعر'),
-                createTableCell('اجمالي'),
+                createTableCell('المبلغ'),
               ],
             ),
             if (widget.data['trans'].length != 0)
@@ -93,9 +96,10 @@ class _PrintPageState extends State<PrintPage> {
   }
 
   //print future function
-  Future<void> Print() async {
+  Future<void> Print(counter, user) async {
     //create pdf
-    doc.addPage(pw.Page(
+    doc.addPage(
+        pw.Page(
         pageFormat: PdfPageFormat.a4,
         build: (pw.Context context) {
           return pw.Directionality(
@@ -104,56 +108,73 @@ class _PrintPageState extends State<PrintPage> {
                 pw.Column(
                     mainAxisAlignment: pw.MainAxisAlignment.center,
                     children: [
-                      pw.Text('${DateTime.now().toIso8601String()}'),
-                      pw.SizedBox(height: 10),
-                      pw.Text('number 12',
-                          style: pw.TextStyle(
-                              fontSize: 20, fontWeight: pw.FontWeight.bold)),
                       pw.PdfLogo(),
+                      pw.Divider(thickness: 3),
+                      pw.Text('فاتورة مبيعات رقم $counter',
+                          style: pw.TextStyle(
+                              fontSize: 20, fontWeight: pw.FontWeight.bold)
+                      ),
                       pw.SizedBox(height: 20),
                       pw.Row(
                           mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
                           children: [
+                            pw.Text('${DateTime.now().toIso8601String()}'),
                             pw.Text(
                                 "طريقة الدفع = ${widget.data['paymentMethod']}",
                                 style: pw.TextStyle(
                                   font: pw.Font.ttf(myFont!),
                                 )),
-                            pw.Text("الوردية = ${widget.data['shiftTime']}",
+                            pw.Text("المستخدم ${user['username']}",
                                 style: pw.TextStyle(
                                   font: pw.Font.ttf(myFont!),
                                 )),
                           ]),
-                      pw.SizedBox(height: 20),
+                      pw.Divider(),
+                      pw.SizedBox(height: 10),
                       createTable(),
                       pw.SizedBox(height: 10),
+                      pw.Divider(),
                       pw.Row(
                           mainAxisAlignment: pw.MainAxisAlignment.end,
                           children: [
-                            pw.Text("قيمة الفاتورة = ${widget.data['amount']} ",
+                            pw.Text('${widget.data['amount']}', style: pw.TextStyle(
+                                font: pw.Font.ttf(myFont!)
+                              )
+                            ),
+                            pw.SizedBox(width: 20),
+                            pw.Text("الجملة =  ",
                                 style: pw.TextStyle(
                                   font: pw.Font.ttf(myFont!),
-                                ))
+                                )
+                            ),
                           ]),
                     ])
               ]));
         }));
 
     //print page as pdf
-    await Printing.layoutPdf(
-        onLayout: (PdfPageFormat format) async => doc.save());
+    await Printing.directPrintPdf(
+        printer: Printer(url: 'Microsoft Print to PDF'),
+        onLayout: (PdfPageFormat format) async => doc.save()
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return TextButton.icon(
-      onPressed: () {
-        Print();
+    return Consumer<AuthProvider>(
+      builder: (context, userVal, child){
+        return Consumer<CartProvider>(builder: (context, value, child){
+          return TextButton.icon(
+            onPressed: () {
+              Print(value.counter, userVal.user);
+            },
+            icon: Icon(Icons.print),
+            label: Text('طباعة'),
+            style: TextButton.styleFrom(
+                backgroundColor: Colors.grey[400], primary: Colors.black),
+          );
+        });
       },
-      icon: Icon(Icons.print),
-      label: Text('طباعة'),
-      style: TextButton.styleFrom(
-          backgroundColor: Colors.grey[400], primary: Colors.black),
     );
   }
 }

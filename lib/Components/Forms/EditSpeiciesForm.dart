@@ -1,4 +1,5 @@
 import 'package:ashkerty_food/API/Spieces.dart';
+import 'package:ashkerty_food/models/kebordKeys.dart';
 import 'package:ashkerty_food/models/speicies.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
@@ -19,6 +20,9 @@ class EditSpieces extends StatefulWidget {
 
 class _EditSpiecesState extends State<EditSpieces> {
   bool isLoading = false;
+  bool isFavourites = false;
+  bool cancelFav = false;
+  bool isControl = false;
 
   //--add client
   Future editSpieces(data) async {
@@ -70,94 +74,174 @@ class _EditSpiecesState extends State<EditSpieces> {
           actions: const [LeadingDrawerBtn(),],
         ),
         endDrawer: MyDrawer(),
-        body: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: FormBuilder(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    isLoading == true? Container(
-                      padding: EdgeInsets.all(8),
-                      color: Colors.grey[200],
-                      width: 200,
-                      child: SpinKitThreeInOut(
-                        color: Colors.green,
-                        size: 50.0,
+        body: SingleChildScrollView(
+          child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: FormBuilder(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      isLoading == true? Container(
+                        padding: EdgeInsets.all(8),
+                        color: Colors.grey[200],
+                        width: 200,
+                        child: SpinKitThreeInOut(
+                          color: Colors.green,
+                          size: 50.0,
+                        ),
+                      ) : Text(''),
+                      SizedBox(height: 5,),
+                      Image.network(
+                        'http://localhost:3000/${widget.data.ImgLink}',
+                        width: 200.0,
+                        height: 150.0,
+                        fit: BoxFit.cover,
                       ),
-                    ) : Text(''),
-                    SizedBox(height: 5,),
-                    Image.network(
-                      'http://localhost:3000/${widget.data.ImgLink}',
-                      width: 300.0,
-                      height: 200.0,
-                      fit: BoxFit.cover,
-                    ),
-                    Container(
-                      width: 700,
-                      child: FormBuilderTextField(
-                        name: 'name',
-                        decoration: InputDecoration(labelText: 'الأسم'),
-                        initialValue: '${widget.data.name}',
-                        validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
+                      Container(
+                        width: 700,
+                        child: FormBuilderTextField(
+                          name: 'name',
+                          decoration: InputDecoration(labelText: 'الأسم'),
+                          initialValue: '${widget.data.name}',
+                          validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
+                        ),
                       ),
-                    ),
-                    Container(
-                      width: 700,
-                      child: FormBuilderTextField(
-                        name: 'price',
-                        decoration: InputDecoration(labelText: 'السعر'),
-                        initialValue: '${widget.data.price}',
-                        validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
+                      Container(
+                        width: 700,
+                        child: FormBuilderTextField(
+                          name: 'price',
+                          decoration: InputDecoration(labelText: 'السعر'),
+                          initialValue: '${widget.data.price}',
+                          validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
+                        ),
                       ),
-                    ),
-                    Container(
-                      width: 700,
-                      child: FormBuilderDropdown(
-                        name: 'category',
-                        decoration: InputDecoration(labelText: 'النوع'),
-                        initialValue: widget.data.category.toString(),
-                        items: ['تقليدي', 'لحوم', 'اضافات', 'عصائر']
-                            .map((type) => DropdownMenuItem(
-                            value: type,
-                            child: Text('$type')
-                        )).toList(),
-                        validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                      Container(
+                        width: 700,
+                        child: FormBuilderDropdown(
+                          name: 'category',
+                          decoration: InputDecoration(labelText: 'النوع'),
+                          initialValue: widget.data.category.toString(),
+                          items: ['تقليدي', 'لحوم', 'اضافات', 'عصائر']
+                              .map((type) => DropdownMenuItem(
+                              value: type,
+                              child: Text('$type')
+                          )).toList(),
+                          validator: FormBuilderValidators.required(errorText: "الرجاء ادخال جميع الجقول"),
+                        ),
                       ),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0, top: 50),
-                      child: Center(
-                        child: SizedBox(
-                          height: 40,
-                          width: 300,
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              backgroundColor: Colors.deepPurple,
-                              primary: Colors.white,
+                      widget.data.isFavourites ?
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                        Container(
+                        width: 350,
+                        child: FormBuilderCheckbox(
+                          name: 'cancelFav',
+                          title: Text('الغاء من المفضلة؟', style: TextStyle(fontSize: 19, color: Colors.redAccent),),
+                          initialValue: false,
+                          onChanged: (val) {
+                            setState(() {
+                              cancelFav = val ?? false;
+                            });
+                          },
+                        ),
+                      ),
+                          SizedBox(width: 30,),
+                          Container(
+                            width: 350,
+                            child: FormBuilderCheckbox(
+                              name: 'isFavourite',
+                              title: Text('تغيير الزر؟', style: TextStyle(fontSize: 19),),
+                              initialValue: false,
+                              onChanged: (val) {
+                                setState(() {
+                                  cancelFav = false;
+                                  isFavourites = val ?? false;
+                                });
+                                },
                             ),
-                            child: Text('حفظ'),
-                            onPressed: (){
-                              if(_formKey.currentState!.saveAndValidate()){
-                                Map data = {};
-                                data['id'] = widget.data.id;
-                                data['name'] = _formKey.currentState!.value['name'];
-                                data['price'] = _formKey.currentState!.value['price'];
-                                data['category'] = _formKey.currentState!.value['category'];
+                          ),
+                        ],
+                      )
+                          :
+                      Container(
+                        width: 700,
+                        child: FormBuilderCheckbox(
+                          name: 'isFavourite',
+                          title: Text('اضافة للمفضلة', style: TextStyle(fontSize: 19)),
+                          initialValue: false,
+                          onChanged: (val) {
+                            setState(() {
+                              isFavourites = val ?? false;
+                            });
+                          },
+                        ),
+                      ),
+                      if (isFavourites)
+                        Container(
+                          width: 700,
+                          child: Column(
+                            children: [
+                              FormBuilderDropdown(
+                                name: 'favBtn',
+                                initialValue: '',
+                                decoration: InputDecoration(labelText: 'زر الكيبورد'),
+                                items: keyBoardList
+                                    .map((key) => DropdownMenuItem(
+                                    value: key,
+                                    child: Text('$key')
+                                )).toList(),
+                              ),
+                              FormBuilderCheckbox(
+                                name: 'isControll',
+                                title: Text('اضافة زر ctrl'),
+                                initialValue: false,
+                                onChanged: (val) {
+                                  setState(() {
+                                    isControl = val ?? false;
+                                  });
+                                },
+                              )
+                            ],
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0, top: 50),
+                        child: Center(
+                          child: SizedBox(
+                            height: 40,
+                            width: 300,
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.deepPurple,
+                                primary: Colors.white,
+                              ),
+                              child: Text('حفظ'),
+                              onPressed: (){
+                                if(_formKey.currentState!.saveAndValidate()){
+                                  Map data = {};
+                                  data['id'] = widget.data.id;
+                                  data['name'] = _formKey.currentState!.value['name'];
+                                  data['price'] = _formKey.currentState!.value['price'];
+                                  data['category'] = _formKey.currentState!.value['category'];
+                                  data['isFavourites'] = _formKey.currentState!.value['isFavourite'];
+                                  data['favBtn'] = _formKey.currentState!.value['favBtn'];
+                                  data['isControll'] = _formKey.currentState!.value['isControll'];
+                                  data['cancel'] = _formKey.currentState!.value['cancelFav'];
 
-                                //server
-                                editSpieces(data);
-                              }
-
-                            },
+                                  //server
+                                  editSpieces(data);
+                                }
+                              },
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
+        ),
       ),
     );
   }
