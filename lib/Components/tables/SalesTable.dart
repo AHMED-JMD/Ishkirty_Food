@@ -32,8 +32,6 @@ class _SalesTableState extends State<SalesTable> {
   //server side Functions ------------------
 //-------------------------------------
 
-  //delete modal
-
 //--------------------------------------------------------
 
   @override

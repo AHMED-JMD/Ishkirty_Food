@@ -9,7 +9,9 @@ class bill {
     required this.createdAt,
     required this.updatedAt,
     this.ClientId,
+    this.AdminAdminId,
     required this.comment,
+    this.admin,
   });
   late final int id;
   late final int amount;
@@ -20,7 +22,9 @@ class bill {
   late final String createdAt;
   late final String updatedAt;
   late final Null ClientId;
+  late final AdminAdminId;
   late final String comment;
+  late final admin;
 
   bill.fromJson(Map<String, dynamic> json){
     id = json['id'];
@@ -32,7 +36,9 @@ class bill {
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     ClientId = null;
+    AdminAdminId = json['AdminAdminId'];
     comment = json['comment'];
+    admin = json['admin'];
   }
 
   Map<String, dynamic> toJson() {
@@ -46,7 +52,9 @@ class bill {
     _data['createdAt'] = createdAt;
     _data['updatedAt'] = updatedAt;
     _data['ClientId'] = ClientId;
+    _data['AdminAdminId'] = AdminAdminId;
     _data['comment'] = comment;
+    _data['admin'] = admin;
     return _data;
   }
 }

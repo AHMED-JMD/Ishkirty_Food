@@ -1,11 +1,6 @@
-import 'package:draw_graph/draw_graph.dart';
-import 'package:draw_graph/models/feature.dart';
 import 'package:flutter/material.dart';
 import '../static/drawer.dart';
 import '../static/leadinButton.dart';
-import '../static/my_icon_icons.dart';
-import 'SpeciesStats.dart';
-import 'package:fl_chart/fl_chart.dart';
 
 class  SalesGRaphs extends StatefulWidget {
   @override
@@ -53,8 +48,6 @@ class _SalesGRaphsState extends State<SalesGRaphs> {
                   child: const Center(child: Text('GRAPH3 year 12 points',style: TextStyle(color: Colors.white),)),
                 ),
                 SizedBox(height: 30,),
-
-
               ],
             ),
             Row(
@@ -88,12 +81,8 @@ class _SalesGRaphsState extends State<SalesGRaphs> {
                 const SizedBox(width: 5,),
                 Text ('سنة'),
               ],
-
-
             )
           ],
-
-
         ),
       ),
     );

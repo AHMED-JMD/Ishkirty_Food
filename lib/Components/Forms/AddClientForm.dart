@@ -29,7 +29,7 @@ class AddClient_Modal extends StatelessWidget {
                                 name: 'name',
                                 decoration:  InputDecoration(
                                   labelText: 'الاسم',
-                                  icon: Icon(Icons.person_pin,size: 30,color: Colors.blue,),
+                                  icon: Icon(Icons.person_pin, size: 20, color: Colors.teal,),
                                 ),
                                 validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال قيمة '),
                               ),
@@ -37,7 +37,7 @@ class AddClient_Modal extends StatelessWidget {
                                 name: 'phoneNum',
                                 decoration:  InputDecoration(
                                   labelText: 'رقم الهاتف',
-                                  icon: Icon(Icons.phone,size: 30,color: Colors.blue,),
+                                  icon: Icon(Icons.phone, size: 20, color: Colors.teal,),
                                 ),
                                 validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال قيمة '),
                               ),
@@ -46,7 +46,7 @@ class AddClient_Modal extends StatelessWidget {
                                 initialValue: '0',
                                 decoration:  InputDecoration(
                                   labelText: 'الحساب الحالي',
-                                  icon: Icon(Icons.account_balance_wallet,size: 30,color: Colors.blue,),
+                                  icon: Icon(Icons.account_balance_wallet, size: 20, color: Colors.teal,),
                                 ),
                                 validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال قيمة '),
                               ),

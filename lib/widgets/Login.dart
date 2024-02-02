@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import '../Components/Forms/ChangePassword.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 
@@ -16,6 +15,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
+  bool hidePassword = true;
 
   //future login
   Future Login (data, provider) async {
@@ -72,7 +72,7 @@ class _LoginState extends State<Login> {
                       children: [
                         Container(
                           width: 600,
-                          height: 543,
+                          height: 500,
                           decoration: BoxDecoration(
                               color: const Color.fromRGBO(255, 255, 255, 0.8),
                               borderRadius: BorderRadius.circular(13)
@@ -113,12 +113,20 @@ class _LoginState extends State<Login> {
                                   const SizedBox(height: 20,),
                                   FormBuilderTextField(
                                     name: 'password',
-                                    decoration: const InputDecoration(
+                                    decoration:  InputDecoration(
                                         labelText: 'كلمة السر',
                                         icon: Icon(Icons.password),
+                                        suffixIcon: IconButton(
+                                            onPressed: (){
+                                              setState(() {
+                                                hidePassword = !hidePassword;
+                                              });
+                                            },
+                                            icon: Icon(hidePassword ? Icons.remove_red_eye : Icons.hide_source)
+                                        ),
                                         focusColor: Colors.deepPurple
                                     ),
-                                    obscureText: true,
+                                    obscureText: hidePassword,
                                     validator: FormBuilderValidators.required(
                                         errorText: "الرجاء ادخال جميع الحقول"),
                                   ),
@@ -142,11 +150,6 @@ class _LoginState extends State<Login> {
                                       ),
                                       child: Text('تسجيل الدخول', style: TextStyle(fontSize: 20, color: Colors.white)),
                                     ),
-                                  ),
-                                  SizedBox(height: 20,),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(8,8,8,3),
-                                    child: TextButton(onPressed: (){ChangePassword(context);}, child: Text('تغيير كلمة السر? اضغط هنا',style: TextStyle(fontSize: 16,color: Color(0xff0a2060)),)),
                                   ),
                                 ],
                               ),

@@ -1,4 +1,5 @@
 import 'package:ashkerty_food/API/Client.dart';
+import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/Printing.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ashkerty_food/API/Bill.dart';
@@ -40,49 +41,53 @@ class _CartFormState extends State<CartForm> {
     });
 
     final response = await APIBill.Add(data);
-
-    setState(() {
-      isLoading = false;
-    });
-
     if(response.statusCode == 200) {
       setState(() {
         isLoading = false;
       });
 
-      return showDialog(
-          context: context,
-          builder: (BuildContext context){
-            return AlertDialog(
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.check, color: Colors.green, size: 38,),
-                  Text('تم الحفظ', textAlign: TextAlign.center,),
-                ],
-              ),
-              content: Text(
-                'اضغط الزر ادناه لطباعة الفاتورة',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20
-                ),
-              ),
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Center(
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width/6.5,
-                      height: 35,
-                       child: PrintPage(data: data,)
-                    ),
-                  ),
-                )
-              ],
-            );
-          }
+      return ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Center(
+                child: Text("تم حفظ الفاتورة بنجاح", style: TextStyle(fontSize: 22, color: Colors.white),)),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          )
       );
+
+      // return showDialog(
+      //     context: context,
+      //     builder: (BuildContext context){
+      //       return AlertDialog(
+      //         title: Row(
+      //           mainAxisAlignment: MainAxisAlignment.center,
+      //           children: [
+      //             Icon(Icons.check, color: Colors.green, size: 38,),
+      //             Text('تم الحفظ', textAlign: TextAlign.center,),
+      //           ],
+      //         ),
+      //         content: Text(
+      //           'اضغط الزر ادناه لطباعة الفاتورة',
+      //           textAlign: TextAlign.center,
+      //           style: TextStyle(
+      //             fontSize: 20
+      //           ),
+      //         ),
+      //         actions: [
+      //           Padding(
+      //             padding: const EdgeInsets.only(bottom: 10),
+      //             child: Center(
+      //               child: SizedBox(
+      //                 width: MediaQuery.of(context).size.width/6.5,
+      //                 height: 35,
+      //                  child: PrintPage(data: data,)
+      //               ),
+      //             ),
+      //           )
+      //         ],
+      //       );
+      //     }
+      // );
     }else{
       setState(() {
         isLoading = false;
@@ -138,175 +143,180 @@ class _CartFormState extends State<CartForm> {
 
     bool isAfterSixPM = currentTime.isAfter(sixPM);
     //----------
-    return Consumer<CartProvider>(builder: (context, value, child){
-      var totalAmount = sumTotal(value.cart);
+    return Consumer<AuthProvider>(builder: (context, user_val, child){
+      return Consumer<CartProvider>(builder: (context, value, child){
+        var totalAmount = sumTotal(value.cart);
 
-      return Container(
-        color: Colors.blueGrey[300],
-        width: 400,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              if(isLoading) Container(
-                color: Colors.lightGreen,
-                padding: EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('جاري المعالجة', style: TextStyle(color: Colors.black),),
-                    SpinKitThreeBounce(
-                      color: Colors.black,
-                      size: 40,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20,),
-              Text('اختر طريقة الدفع', textAlign: TextAlign.center, style: TextStyle(
-                  fontSize: 19,
-                  color: Colors.white
-              ),
-              ),
-              SizedBox(height: 15,),
-              FormBuilder(
-                key: _formKey,
-                  child: Column(
+        return Container(
+          color: Colors.blueGrey[300],
+          width: 400,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                if(isLoading) Container(
+                  color: Colors.lightGreen,
+                  padding: EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      FormBuilderRadioGroup(
-                        initialValue: isAfterSixPM ? 'مسائية' : 'صباحية',
-                        enabled: false,
-                        name: 'shift',
-                        decoration: InputDecoration(
-                            labelText: 'الوردية', contentPadding: EdgeInsets.all(10.0),
-                        ),
-                        options: [
-                          FormBuilderFieldOption(
-                              value: 'صباحية',
-                              child: Text('صباحية', style: TextStyle(fontSize: 18, ),),
-                          ),
-                          FormBuilderFieldOption(
-                              value: 'مسائية',
-                              child: Text('مسائية', style: TextStyle(fontSize: 18, ),),
-                          ),
-                        ],
-                        validator: FormBuilderValidators.required(errorText: "الرجاء اختيار الوردية"),
-                      ),
-                      SizedBox(height: 20,),
-                      FormBuilderRadioGroup(
-                        name: 'payment_method',
-                        initialValue: 'كاش',
-                        decoration: InputDecoration(
-                            labelText: 'اختر طريقة الدفع', contentPadding: EdgeInsets.all(10.0)),
-                        options: [
-                          FormBuilderFieldOption(
-                            value: 'كاش',
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Icon(Icons.monetization_on, color: Colors.green[900], size: 50, ),
-                            ),
-                          ),
-                          FormBuilderFieldOption(
-                            value: 'بنكك',
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Icon(MyIcon.bankak, color: Colors.red[900], size: 50,),
-                            ),
-                          ),
-                          FormBuilderFieldOption(
-                            value: 'حساب',
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: Icon(Icons.account_box, color: Colors.blue[900], size: 50,),
-                            ),
-                          ),
-                        ],
-                        onChanged: (value){
-                          setState(() {
-                            payment_method = value;
-                            if(value != 'حساب')
-                              clientID = null;
-                          });
-                        },
-                        validator: FormBuilderValidators.required(errorText: "الرجاء اختيار طريقة الدفع"),
-                      ),
-                      SizedBox(height: 15,),
-                      if(payment_method == 'حساب')
-                        FormBuilderDropdown(
-                          name: "acoount_name",
-                          decoration: InputDecoration(
-                              labelText: 'اختر الحساب',
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.yellow.shade900)
-                            )
-                          ),
-                          items: clients
-                           .map((client) => DropdownMenuItem(
-                              value: client['id'],
-                              child: Text(client['name'])
-                          )).toList(),
-                          onChanged: (value){
-                            if(value != null){
-                              clientID = value.toString();
-                            }
-                          },
-                        ),
-                      SizedBox(height: 45,),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width/4,
-                            height: 40,
-                            child: ElevatedButton.icon(
-                              onPressed: (){
-                                if(_formKey.currentState!.saveAndValidate()) {
-                                  //increment bill counter
-                                  final cartProvider = context.read<CartProvider>();
-                                  cartProvider.increment_counter();
-
-                                  var data = {};
-                                  data['date'] = date.toIso8601String();
-                                  data['amount'] = totalAmount;
-                                  data['trans'] = value.cart;
-                                  data['paymentMethod'] = _formKey.currentState!.value['payment_method'];
-                                  data['shiftTime'] =
-                                  _formKey.currentState!.value['shift'];
-                                  data['clientId'] = clientID;
-
-                                  addBill(data);
-                                }
-                              },
-                              icon: Icon(Icons.paypal),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.teal
-                              ),
-                              label: Text('دفع الفاتورة'),
-                            ),
-                          ),
-                        ],
+                      Text('جاري المعالجة', style: TextStyle(color: Colors.black),),
+                      SpinKitThreeBounce(
+                        color: Colors.black,
+                        size: 40,
                       ),
                     ],
-                  )
-              ),
+                  ),
+                ),
+                SizedBox(height: 20,),
+                Text('اختر طريقة الدفع', textAlign: TextAlign.center, style: TextStyle(
+                    fontSize: 19,
+                    color: Colors.white
+                ),
+                ),
+                SizedBox(height: 15,),
+                FormBuilder(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        FormBuilderRadioGroup(
+                          initialValue: isAfterSixPM ? 'مسائية' : 'صباحية',
+                          enabled: false,
+                          name: 'shift',
+                          decoration: InputDecoration(
+                            labelText: 'الوردية', contentPadding: EdgeInsets.all(10.0),
+                          ),
+                          options: [
+                            FormBuilderFieldOption(
+                              value: 'صباحية',
+                              child: Text('صباحية', style: TextStyle(fontSize: 18, ),),
+                            ),
+                            FormBuilderFieldOption(
+                              value: 'مسائية',
+                              child: Text('مسائية', style: TextStyle(fontSize: 18, ),),
+                            ),
+                          ],
+                          validator: FormBuilderValidators.required(errorText: "الرجاء اختيار الوردية"),
+                        ),
+                        SizedBox(height: 20,),
+                        FormBuilderRadioGroup(
+                          name: 'payment_method',
+                          initialValue: 'كاش',
+                          decoration: InputDecoration(
+                              labelText: 'اختر طريقة الدفع', contentPadding: EdgeInsets.all(10.0)),
+                          options: [
+                            FormBuilderFieldOption(
+                              value: 'كاش',
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Icon(Icons.monetization_on, color: Colors.green[900], size: 50, ),
+                              ),
+                            ),
+                            FormBuilderFieldOption(
+                              value: 'بنكك',
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Icon(MyIcon.bankak, color: Colors.red[900], size: 50,),
+                              ),
+                            ),
+                            FormBuilderFieldOption(
+                              value: 'حساب',
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Icon(Icons.account_box, color: Colors.blue[900], size: 50,),
+                              ),
+                            ),
+                          ],
+                          onChanged: (value){
+                            setState(() {
+                              payment_method = value;
+                              if(value != 'حساب')
+                                clientID = null;
+                            });
+                          },
+                          validator: FormBuilderValidators.required(errorText: "الرجاء اختيار طريقة الدفع"),
+                        ),
+                        SizedBox(height: 15,),
+                        if(payment_method == 'حساب')
+                          FormBuilderDropdown(
+                            name: "acoount_name",
+                            decoration: InputDecoration(
+                                labelText: 'اختر الحساب',
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.yellow.shade900)
+                                )
+                            ),
+                            items: clients
+                                .map((client) => DropdownMenuItem(
+                                value: client['id'],
+                                child: Text(client['name'])
+                            )).toList(),
+                            onChanged: (value){
+                              if(value != null){
+                                clientID = value.toString();
+                              }
+                            },
+                          ),
+                        SizedBox(height: 45,),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width/4,
+                              height: 40,
+                              child: ElevatedButton.icon(
+                                onPressed: (){
+                                  if(_formKey.currentState!.saveAndValidate()) {
+                                    //increment bill counter
+                                    final cartProvider = context.read<CartProvider>();
+                                    cartProvider.increment_counter();
 
-              SizedBox(height: 40),
-              Text('عدد الاصناف = ${value.cart.length}', textAlign: TextAlign.center, style: TextStyle(
-                  fontSize: 19,
-                  color: Colors.white
-              ),
-              ),
-              Text("المبلغ الكلي: ${totalAmount}", textAlign: TextAlign.center,style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.white
-              ),
-              ),
-            ],
+                                    var data = {};
+                                    data['date'] = date.toIso8601String();
+                                    data['amount'] = totalAmount;
+                                    data['trans'] = value.cart;
+                                    data['paymentMethod'] = _formKey.currentState!.value['payment_method'];
+                                    data['shiftTime'] =
+                                    _formKey.currentState!.value['shift'];
+                                    data['clientId'] = clientID;
+                                    data['admin_id'] = user_val.user['id'];
+
+                                    addBill(data);
+                                    //call printing func
+                                    PrintingFunc(value.counter, user_val.user, data);
+                                  }
+                                },
+                                icon: Icon(Icons.paypal),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.teal
+                                ),
+                                label: Text('دفع الفاتورة'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                ),
+
+                SizedBox(height: 40),
+                Text('عدد الاصناف = ${value.cart.length}', textAlign: TextAlign.center, style: TextStyle(
+                    fontSize: 19,
+                    color: Colors.white
+                ),
+                ),
+                Text("المبلغ الكلي: ${totalAmount}", textAlign: TextAlign.center,style: TextStyle(
+                    fontSize: 30,
+                    color: Colors.white
+                ),
+                ),
+              ],
+            ),
           ),
-        ),
-      );
+        );
+      });
     });
   }
 }

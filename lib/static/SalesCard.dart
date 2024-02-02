@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'my_icon_icons.dart';
+import 'package:money_formatter/money_formatter.dart';
 
 class SalesCard extends StatelessWidget {
   final String Period;
@@ -41,7 +42,7 @@ class SalesCard extends StatelessWidget {
                 size: 80,
               ),
               Text(
-                '$CashAmount',
+                '${MoneyFormatter(amount: CashAmount.toDouble()).output.withoutFractionDigits}',
                 style: TextStyle(fontSize: 30),
               ),
             ]),
@@ -55,7 +56,7 @@ class SalesCard extends StatelessWidget {
                 size: 80,
               ),
               Text(
-                '$BankakAmount',
+                '${MoneyFormatter(amount: BankakAmount.toDouble()).output.withoutFractionDigits}',
                 style: TextStyle(fontSize: 30),
               ),
             ]),
@@ -69,7 +70,7 @@ class SalesCard extends StatelessWidget {
                 color: Color(0xff0c283f),
               ),
               Text(
-                '$AccountsAmount',
+                '${MoneyFormatter(amount: AccountsAmount.toDouble()).output.withoutFractionDigits}',
                 style: TextStyle(fontSize: 30),
               ),
             ]),

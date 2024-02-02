@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:ashkerty_food/API/Bill.dart';
 import 'package:ashkerty_food/static/SearchDates.dart';
 import 'package:ashkerty_food/static/drawer.dart';
+import 'package:ashkerty_food/static/dropDownBtn.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -20,32 +21,33 @@ class _DeletedBillsState extends State<DeletedBills> {
 
   @override
   void initState() {
+    getBills();
     super.initState();
   }
   //server func to get bills
-  // Future getBills () async {
-  //   setState(() {
-  //     isLoading = true;
-  //     data = [];
-  //   });
-  //   //get from server
-  //   Map datas = {};
-  //   datas['isDeleted'] = true;
-  //   final response = await APIBill.GetAll(datas);
+  Future getBills () async {
+    setState(() {
+      isLoading = true;
+      data = [];
+    });
+    //get from server
+    Map datas = {};
+    datas['isDeleted'] = true;
+    final response = await APIBill.GetAll(datas,);
 
-  //   if(response.statusCode == 200){
-  //     var res = jsonDecode(response.body);
+    if(response.statusCode == 200){
+      var res = jsonDecode(response.body);
 
-  //     setState(() {
-  //       isLoading = false;
-  //       data = res;
-  //     });
-  //   }else{
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
+      setState(() {
+        isLoading = false;
+        data = res;
+      });
+    }else{
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
   // //search dates
   Future searchDates(datas) async {
     setState(() {
@@ -93,7 +95,6 @@ class _DeletedBillsState extends State<DeletedBills> {
               Navigator.pushReplacementNamed(context, '/bills');
             },
           ),
-
           title: const Center(
               child: Text(
             "الفواتير المحذوفة",
@@ -104,7 +105,6 @@ class _DeletedBillsState extends State<DeletedBills> {
           ],
           toolbarHeight: 45,
         ),
-
         //custom drawer in static folder
         endDrawer: const MyDrawer(),
 
@@ -116,8 +116,17 @@ class _DeletedBillsState extends State<DeletedBills> {
                 height: 90,
               ),
               //custom widget in static folder for showing search bar responsive
-              SearchInDates(
-                searchDates: searchDates,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SearchInDates(
+                    searchDates: searchDates,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 28.0),
+                    child: MyDropdownButton(searchDates: searchDates),
+                  ),
+                ],
               ),
               const SizedBox(
                 height: 10,

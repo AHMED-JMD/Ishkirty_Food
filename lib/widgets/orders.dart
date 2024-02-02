@@ -4,7 +4,6 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:ashkerty_food/API/Bill.dart';
 import 'package:ashkerty_food/API/Sales.dart';
-import 'package:ashkerty_food/API/Spieces.dart';
 import 'package:ashkerty_food/static/SearchDates.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
@@ -12,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../static/SalesCard.dart';
 import 'Sales_Graphs.dart';
+import 'package:money_formatter/money_formatter.dart';
 
 class Orders extends StatefulWidget {
   const Orders({super.key});
@@ -32,7 +32,6 @@ class _OrdersState extends State<Orders> {
   void initState() {
     // TODO: implement initState
     getTodaySales();
-    getSpieces();
     super.initState();
   }
 
@@ -89,27 +88,6 @@ class _OrdersState extends State<Orders> {
       });
     }
   }
-  //get spices
-  Future getSpieces () async {
-    setState(() {
-      isLoading = true;
-      spices = [];
-    });
-    //call api
-    Map datas = {};
-    datas["name"] = "burger";
-    final response = await APISpieces.findOne(datas);
-
-    setState(() {
-      isLoading = false;
-    });
-
-    if(response != false){
-      setState(() {
-        spices = response;
-      });
-    }
-  }
 
   //dart function to get sums
   num calculateSum(List data, String paymentMethod, String shiftTime) {
@@ -121,8 +99,6 @@ class _OrdersState extends State<Orders> {
     }
     return sum;
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +152,10 @@ class _OrdersState extends State<Orders> {
                 ),
               const SizedBox(height: 30,),
               const Text('إجمالي الإيرادات لليوم',style: TextStyle(fontSize: 30),),
-              Text('${totalMor + totalEv}',style: TextStyle(fontSize: 30),),
+              Text(
+                '${MoneyFormatter(amount: totalEv.toDouble() + totalMor.toDouble()).output.withoutFractionDigits}'
+                ,style: TextStyle(fontSize: 30),
+              ),
               const SizedBox(height: 10,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

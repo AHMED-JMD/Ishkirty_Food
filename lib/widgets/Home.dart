@@ -1,4 +1,5 @@
 import 'package:ashkerty_food/API/Spieces.dart';
+import 'package:ashkerty_food/Components/Forms/CartForm.dart';
 import 'package:ashkerty_food/models/cart_model.dart';
 import 'package:ashkerty_food/models/kebordKeys.dart';
 import 'package:ashkerty_food/providers/cart_provider.dart';
@@ -61,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
           final cartProvider = context.read<CartProvider>();
           cartProvider.addToCart(model);
 
-          Navigator.pushNamed(context, '/cart');
+          Navigator.pushReplacementNamed(context, '/cart');
         }, isControlPressed: theKey['isControll'] ?? false);
       }).toList(),
       child: Focus(
@@ -84,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   toolbarHeight: 70,
                   title: Image.asset(
-                    "assets/images/ef1.jpg",
+                    "assets/images/ef2.jpg",
                     width: 100,
                     height: 80,
                   ),
@@ -134,6 +135,25 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       //custom nav in static folder
                       SpiecesNav(),
+                      // Row(
+                      //   children: [
+                      //     Expanded(
+                      //         child: Container(
+                      //           height: 800,
+                      //           child: ListView(
+                      //               children: [
+                      //                 SpiecesNav()
+                      //               ]
+                      //           ),
+                      //         )
+                      //     ),
+                      //     Container(
+                      //       width: 360,
+                      //       height: MediaQuery.of(context).size.height,
+                      //       child: CartForm(),
+                      //     )
+                      //   ],
+                      // )
                     ],
                   ),
                 ),

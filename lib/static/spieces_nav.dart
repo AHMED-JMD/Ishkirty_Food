@@ -6,10 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:ashkerty_food/Components/Toppings.dart';
-import 'package:ashkerty_food/models/cart_model.dart';
-import 'package:ashkerty_food/providers/cart_provider.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 
 class SpiecesNav extends StatefulWidget {
   const SpiecesNav({super.key});

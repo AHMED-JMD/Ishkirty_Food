@@ -106,6 +106,9 @@ class _SpeiciesTableState extends State<SpeiciesTable> {
                 DataColumn(
                   label: Text('المفضلة',style:TextStyle(fontSize: 20),),
                 ),
+                DataColumn(
+                  label: Text('الزر',style:TextStyle(fontSize: 20),),
+                ),
                   DataColumn(
                   label: Text('.',style:TextStyle(color: Colors.white),),
                   ),
@@ -149,6 +152,11 @@ class ExampleSource extends AdvancedDataTableSource<Spieces> {
           DataCell(
               currentRowData.isFavourites ?
               Icon(Icons.check_box, color: Colors.greenAccent,) : Icon(Icons.cancel_rounded, color: Colors.red,)
+          ),
+          DataCell(
+              Text(currentRowData.isControll? 'ctrl + ${currentRowData.favBtn}': '${currentRowData.favBtn}',
+                    style: const TextStyle(fontSize: 20)
+                )
           ),
           DataCell(Padding(
             padding: const EdgeInsets.all(0),

@@ -101,7 +101,6 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
     return DataRow(
-
         cells: [
           DataCell(
                Text(currentRowData.comment.toString(),style: const TextStyle(fontSize: 20),),

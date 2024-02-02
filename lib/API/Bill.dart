@@ -19,11 +19,15 @@ class APIBill {
   }
 
   //get the bills
-  static Future GetAll(data, headers) async {
+  static Future GetAll(data) async {
     try {
+      Map<String,String> Headers = {
+        "Content-Type" : "application/json"
+      };
+
       final url = Uri.parse('$apiUrl/by_type');
       Response response =
-          await post(url, headers: headers, body: jsonEncode(data));
+          await post(url, headers: Headers, body: jsonEncode(data));
 
       return response;
     } catch (e) {
@@ -31,7 +35,7 @@ class APIBill {
     }
   }
 
-  //get the bills
+  //get client bills
   static Future GetClientBills(data) async {
     try {
       Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
@@ -39,6 +43,22 @@ class APIBill {
       final url = Uri.parse('$apiUrl/client_bills');
       Response response =
           await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+
+      return response;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  //get client bills
+  static Future getAdminBills(data) async {
+    try {
+      Map<String, String> Headers = {'Content-Type': 'application/json'};
+
+
+      final url = Uri.parse('$apiUrl/admin_bills');
+      Response response =
+      await post(url, headers: Headers, body: jsonEncode(data));
 
       return response;
     } catch (e) {

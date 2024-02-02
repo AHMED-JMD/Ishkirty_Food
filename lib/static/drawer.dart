@@ -1,5 +1,6 @@
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/CheckTime.dart';
+import 'package:ashkerty_food/widgets/Profile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,32 +15,43 @@ class MyDrawer extends StatelessWidget {
           children: [
             Container(
               width: double.infinity,
-              height: 200,
+              height: 250,
               color: Colors.teal[400],
               child: Padding(
                 padding: EdgeInsets.all(30),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Container(
+                      color: Colors.grey,
+                      child: Icon(Icons.person_pin, color: Colors.yellowAccent, size: 40,),
+                    ),
+                    Column(
                       children: [
                         Text(
-                          'مرحبا',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(width: 15,),
-                        Text(
                           '${value.user['username']}',
-                          style: TextStyle(color: Colors.white, fontSize: 32),
+                          style: TextStyle(color: Colors.white, fontSize: 28),
+                        ),
+                        InkWell(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => UserProfile())
+                            );
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'الملف الشخصي',
+                                style: TextStyle(color: Colors.grey[300], fontSize: 17),
+                              ),
+                              Icon(Icons.edit_note),
+                            ],
+                          ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 10,),
+
+                    SizedBox(height: 20,),
                     CheckTime(),
                   ],
                 ),
@@ -56,7 +68,7 @@ class MyDrawer extends StatelessWidget {
                   child: const ListTile(
                     leading:  Icon(
                       Icons.local_mall,
-                      color: Colors.blue,
+                      color: Colors.teal,
                     ),
                     title: Text(
                       'المبيعات',
@@ -71,7 +83,7 @@ class MyDrawer extends StatelessWidget {
                   child: const ListTile(
                     leading: Icon(
                       Icons.view_list_rounded,
-                      color: Colors.blue,
+                      color: Colors.teal,
                     ),
                     title: Text(
                       'الفواتير',
@@ -86,7 +98,7 @@ class MyDrawer extends StatelessWidget {
                   child: const ListTile(
                     leading: Icon(
                       Icons.fastfood_sharp,
-                      color: Colors.blue,
+                      color: Colors.teal,
                     ),
                     title: Text(
                       'الاصناف',
@@ -101,7 +113,7 @@ class MyDrawer extends StatelessWidget {
                   child: const ListTile(
                     leading: Icon(
                       Icons.person,
-                      color: Colors.blue,
+                      color: Colors.teal,
                     ),
                     title: Text(
                       'العملاء',
@@ -112,9 +124,9 @@ class MyDrawer extends StatelessWidget {
 
                 InkWell(
                   onTap: ()async {
+                    await Navigator.pushReplacementNamed(context, '/');
                     final auth_provider = context.read<AuthProvider>();
                     auth_provider.Logout();
-                   await Navigator.pushReplacementNamed(context, '/');
                   },
                   child: const ListTile(
                     leading: Icon(

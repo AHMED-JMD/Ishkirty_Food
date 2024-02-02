@@ -10,12 +10,7 @@ class CartProvider extends ChangeNotifier {
 
   //counter logic---------
   void increment_counter(){
-    if(_counter < 100){
-      _counter++;
-    }else if(counter == 100){
-      _counter = 1;
-      notifyListeners();
-    }
+    _counter++;
     notifyListeners();
   }
 
@@ -42,8 +37,10 @@ class CartProvider extends ChangeNotifier {
     //check and iterate and minus
     for(int i = 0; i< _cart.length; i++){
       if(_cart[i].spices == model.spices){
-        _cart[i].counter = _cart[i].counter - 1;
-        _cart[i].total_price = _cart[i].unit_price * _cart[i].counter;
+        if(_cart[i].counter > 1){
+          _cart[i].counter = _cart[i].counter - 1;
+          _cart[i].total_price = _cart[i].unit_price * _cart[i].counter;
+        }
       }
     }
     notifyListeners();

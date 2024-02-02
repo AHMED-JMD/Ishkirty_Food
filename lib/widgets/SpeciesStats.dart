@@ -194,7 +194,6 @@ class _SpeciesStatsState extends State<SpeciesStats> {
                                   left: BorderSide(width: 1),
                                   bottom: BorderSide(width: 1),
                                 )),
-                                maxY: 100,
                                 groupsSpace: 100,
                                 barTouchData: BarTouchData(enabled: true),
                                 titlesData: FlTitlesData(

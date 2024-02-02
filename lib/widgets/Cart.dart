@@ -164,6 +164,16 @@ class _MyCartState extends State<MyCart> {
                 child: Scaffold(
                   appBar: AppBar(
                     backgroundColor: Colors.teal,
+                    leading: IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        size: 37,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/home');
+                      },
+                    ),
                     centerTitle: true,
                     title: Text('سلة الفواتير'),
                   ),

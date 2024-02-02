@@ -81,15 +81,6 @@ class _EditSpiecesState extends State<EditSpieces> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      isLoading == true? Container(
-                        padding: EdgeInsets.all(8),
-                        color: Colors.grey[200],
-                        width: 200,
-                        child: SpinKitThreeInOut(
-                          color: Colors.green,
-                          size: 50.0,
-                        ),
-                      ) : Text(''),
                       SizedBox(height: 5,),
                       Image.network(
                         'http://localhost:3000/${widget.data.ImgLink}',
@@ -205,6 +196,21 @@ class _EditSpiecesState extends State<EditSpieces> {
                             ],
                           ),
                         ),
+                      isLoading == true? Container(
+                        padding: EdgeInsets.all(8),
+                        color: Colors.grey[200],
+                        width: 400,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('جاري المعالجة', style: TextStyle(fontSize: 18),),
+                            SpinKitThreeInOut(
+                              color: Colors.black,
+                              size: 30.0,
+                            ),
+                          ],
+                        ),
+                      ) : Text(''),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0, top: 50),
                         child: Center(

@@ -35,7 +35,7 @@ class _GridCartState extends State<GridCart> {
                 'http://localhost:3000/${widget.speices['ImgLink']}'),
             // tags: [ _tag('Product', () {}), ],
             title: Center(
-              child: Text('${widget.speices['name']}',
+              child: Text('${widget.speices['name']}  ${widget.speices['price']}-جنيه',
                   style: const TextStyle(color: Colors.white, fontSize: 18)),
             ),
             description: Padding(

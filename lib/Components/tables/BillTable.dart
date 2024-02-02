@@ -1,17 +1,15 @@
-import 'package:ashkerty_food/API/Bill.dart';
 import 'package:ashkerty_food/models/Bill.dart';
-import 'package:ashkerty_food/static/SearchDates.dart';
 import 'package:ashkerty_food/widgets/DeletedBills.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../widgets/BillDetailes.dart';
 import 'package:ashkerty_food/Components/Forms/DeleteBill.dart';
-import 'dart:convert';
 
 class billTable extends StatefulWidget {
+  final List data;
   billTable({
+    required this.data,
     Key? key,
   }) : super(key: key);
 
@@ -20,86 +18,48 @@ class billTable extends StatefulWidget {
 }
 
 class _billTableState extends State<billTable> {
-  List data = [];
-  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    Map<String, String> headers = {
-      "Content-Type": "application/json",
-      "offset": "0",
-      "pageSize": "10"
-    };
-    // getBills(headers);
   }
 
   //server side Functions ------------------
-  //server func to get bills
-  Future getBills(headers) async {
-    // setState(() {
-    //   isLoading = true;
-    // });
 
-    //call server
-    Map dataBody = {};
-    dataBody['isDeleted'] = false;
-
-    final response = await APIBill.GetAll(dataBody, headers);
-    // setState(() {
-    //   isLoading = false;
-    // });
-    final datas = jsonDecode(response.body);
-
-    return datas;
-
-    // if (response.statusCode == 200) {
-    //   final datas = jsonDecode(response.body);
-    //   setState(() {
-    //     data = datas;
-    //   });
-    // } else {
-    //   setState(() {
-    //     isLoading = false;
-    //   });
-    // }
-  }
-
-  //search dates
-  Future searchDates(datas) async {
-    setState(() {
-      isLoading = true;
-      data = [];
-    });
-
-    //server call
-    Map mod_datas = {};
-    mod_datas['start_date'] = datas['start_date'];
-    mod_datas['end_date'] = datas['end_date'];
-    mod_datas['isDeleted'] = false;
-
-    final response = await APIBill.Search(mod_datas);
-    //response validity
-    if (response.statusCode == 200) {
-      final res = jsonDecode(response.body);
-
-      setState(() {
-        isLoading = false;
-        data = res;
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
+  // //search dates
+  // Future searchDates(datas) async {
+  //   setState(() {
+  //     isLoading = true;
+  //     data = [];
+  //   });
+  //
+  //   //server call
+  //   Map mod_datas = {};
+  //   mod_datas['start_date'] = datas['start_date'];
+  //   mod_datas['end_date'] = datas['end_date'];
+  //   mod_datas['isDeleted'] = false;
+  //
+  //   final response = await APIBill.Search(mod_datas);
+  //   //response validity
+  //   if (response.statusCode == 200) {
+  //     final res = jsonDecode(response.body);
+  //
+  //     setState(() {
+  //       isLoading = false;
+  //       data = res;
+  //     });
+  //   } else {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
 //-------------------------------------
 
   var rowsPerPage = 10;
   late final source = ExampleSource(
     context: context,
-    getBills: getBills,
-    data: data,
+    data: widget.data,
   );
 
 //--------------------------------------------------------
@@ -112,12 +72,8 @@ class _billTableState extends State<billTable> {
         child: Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SearchInDates(searchDates: searchDates),
-                Row(
+              mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    // PrintPage(),
                     SizedBox(
                       width: 10,
                     ),
@@ -139,20 +95,11 @@ class _billTableState extends State<billTable> {
                           color: Colors.black,
                         )),
                   ],
-                )
-              ],
-            ),
-            const SizedBox(
+                ),
+              const SizedBox(
               height: 20,
             ),
-             isLoading == true
-                ? Center(
-                    child: SpinKitPouringHourGlassRefined(
-                      color: Colors.teal,
-                      size: 60,
-                    ),
-                  )
-                : AdvancedPaginatedDataTable(
+             AdvancedPaginatedDataTable(
                     addEmptyRows: false,
                     source: source,
                     showFirstLastButtons: true,
@@ -182,26 +129,27 @@ class _billTableState extends State<billTable> {
                         style: TextStyle(fontSize: 20),
                       )),
                       DataColumn(
-                          label: Padding(
-                          padding: EdgeInsets.only(right: 35),
-                          child: Text(
+                          label:  Text(
                           ' قيمة الفاتورة ',
                           style: TextStyle(fontSize: 20),
                         ),
-                      )),
+                      ),
                       DataColumn(
-                          label: Padding(
-                          padding: EdgeInsets.only(right: 30),
-                          child: Text(
+                          label: Text(
                           ' طريقة الدفع',
                           style: TextStyle(fontSize: 20),
                         ),
-                      )),
+                      ),
                       DataColumn(
                           label: Text(
                         ' الوردية',
                         style: TextStyle(fontSize: 20),
                       )),
+                      DataColumn(
+                          label: Text(
+                            ' الادمن',
+                            style: TextStyle(fontSize: 20),
+                          )),
                       DataColumn(
                           label: Text(
                         '',
@@ -218,10 +166,9 @@ class _billTableState extends State<billTable> {
 
 class ExampleSource extends AdvancedDataTableSource<bill> {
   BuildContext context;
-  Function(Map) getBills;
   List data;
   ExampleSource(
-      {required this.context, required this.getBills, required this.data});
+      {required this.context, required this.data});
 
   String lastSearchTerm = '';
 
@@ -282,6 +229,13 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
           style: const TextStyle(fontSize: 20),
         ),
       )),
+      DataCell(Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
+        child: Text(
+          currentRowData.admin != null? currentRowData.admin.toString() : 'لايوجد',
+          style: const TextStyle(fontSize: 20),
+        ),
+      )),
       DataCell(
         Padding(
           padding: const EdgeInsets.all(0),
@@ -319,19 +273,10 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
       NextPageRequest pageRequest) async {
     await Future.delayed(const Duration(milliseconds: 400));
 
-    final Map<String, String> reqHeaders = {
-      "Content-Type": "application/json",
-      "offset": pageRequest.offset.toString(),
-      "pageSize": pageRequest.pageSize.toString()
-    };
-
-    //call server for data
-    final datas = await getBills(reqHeaders);
-    print(datas['bills']);
-    if (datas['bills_length'] > 0) {
+    if (data.length > 0) {
       return RemoteDataSourceDetails(
-          datas['bills_length'],
-          (datas['bills'] as List<dynamic>)
+          data.length,
+          (data as List<dynamic>)
               .map((json) => bill.fromJson(json))
               .skip(pageRequest.offset)
               .take(pageRequest.pageSize)
