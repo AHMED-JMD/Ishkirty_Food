@@ -65,6 +65,35 @@ class APIBill {
       throw e;
     }
   }
+  //Saerch bills in dates
+  static Future Search(data) async {
+    try {
+      Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
+
+      final url = Uri.parse('$apiUrl/search_dates');
+      Response response =
+      await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+
+      return response;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  //get bill transactions
+  static Future GetBillTrans(data) async {
+    try {
+      Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
+
+      final url = Uri.parse('$apiUrl/getTrans');
+      Response response =
+      await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+
+      return response;
+    } catch (e) {
+      throw e;
+    }
+  }
 
   //update the bills to be deleted
   static Future deleted_update(data) async {
@@ -81,14 +110,14 @@ class APIBill {
     }
   }
 
-  //Saerch bills in dates
-  static Future Search(data) async {
+  //delete bill
+  static Future deleteBill(data) async {
     try {
       Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
 
-      final url = Uri.parse('$apiUrl/search_dates');
+      final url = Uri.parse('$apiUrl/delete');
       Response response =
-          await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+      await post(url, headers: ConfigHeaders, body: jsonEncode(data));
 
       return response;
     } catch (e) {
@@ -96,18 +125,4 @@ class APIBill {
     }
   }
 
-  //get bill transactions
-  static Future GetBillTrans(data) async {
-    try {
-      Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
-
-      final url = Uri.parse('$apiUrl/getTrans');
-      Response response =
-          await post(url, headers: ConfigHeaders, body: jsonEncode(data));
-
-      return response;
-    } catch (e) {
-      throw e;
-    }
-  }
 }

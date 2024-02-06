@@ -52,4 +52,10 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void resetCart () async {
+    await Future.delayed(Duration(seconds: 2));
+    _cart = [];
+    notifyListeners();
+  }
+
 }

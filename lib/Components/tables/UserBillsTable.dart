@@ -1,4 +1,5 @@
 import 'package:ashkerty_food/API/Bill.dart';
+import 'package:ashkerty_food/API/Transfer.dart';
 import 'package:ashkerty_food/models/Bill.dart';
 import 'package:ashkerty_food/static/SearchDates.dart';
 import 'package:flutter/material.dart';
@@ -20,11 +21,13 @@ class UserBillsTable extends StatefulWidget {
 class _UserBillsTableState extends State<UserBillsTable> {
   bool isLoading = false;
   List data = [];
+  int transfer = 0;
 
   @override
   void initState() {
     // TODO: implement initState
     getBills(widget.admin_id);
+    getTransfers();
     super.initState();
   }
 
@@ -45,6 +48,24 @@ class _UserBillsTableState extends State<UserBillsTable> {
     setState(() {
       isLoading = false;
       data = datas;
+    });
+  }
+  //get transfers
+  Future getTransfers() async {
+    setState(() {
+      isLoading = true;
+    });
+    //call server
+    Map datass = {};
+    datass['date'] = DateTime.now().toIso8601String();
+    datass['adminId'] = widget.admin_id;
+    final response = await API_Transfer.Get(datass);
+
+    final transferV = jsonDecode(response.body);
+
+    setState(() {
+      isLoading = false;
+      transfer = transferV['amount'];
     });
   }
   //search dates
@@ -100,6 +121,21 @@ class _UserBillsTableState extends State<UserBillsTable> {
             const SizedBox(
               height: 20,
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                    color: Colors.red[300],
+                    child: Padding(
+                      padding: const EdgeInsets.all(7.0),
+                      child: Text('تحويلات اليوم = $transfer',
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            SizedBox(height: 15,),
             data.length != 0 || isLoading == false ?
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
@@ -145,11 +181,6 @@ class _UserBillsTableState extends State<UserBillsTable> {
                     DataColumn(
                         label: Text(
                           ' الوردية',
-                          style: TextStyle(fontSize: 20),
-                        )),
-                    DataColumn(
-                        label: Text(
-                          ' الادمن',
                           style: TextStyle(fontSize: 20),
                         )),
                   ],
@@ -211,7 +242,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
         ),
       ),
       DataCell(Text(
-        currentRowData.date,
+        '${currentRowData.createdAt}',
         style: const TextStyle(fontSize: 20),
       )),
       DataCell(Padding(
@@ -234,13 +265,6 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
         padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
         child: Text(
           currentRowData.shiftTime,
-          style: const TextStyle(fontSize: 20),
-        ),
-      )),
-      DataCell(Padding(
-        padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
-        child: Text(
-          currentRowData.admin != null? currentRowData.admin.toString() : 'لايوجد',
           style: const TextStyle(fontSize: 20),
         ),
       )),

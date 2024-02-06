@@ -45,9 +45,10 @@ class _MyCartState extends State<MyCart> {
         Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
           child: Container(
-            width: 350,
+            width: MediaQuery.of(context).size.width/3.5,
             child: Card(
               color: Colors.grey[100],
+              elevation: 3,
               child: Column(
                 children: [
                   Row(
@@ -184,13 +185,13 @@ class _MyCartState extends State<MyCart> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 8.0),
                                 child: Container(
-                                  width: 800,
-                                  height: 700,
+                                  width: MediaQuery.of(context).size.width/1.5,
+                                  height: MediaQuery.of(context).size.height/1.2,
                                   color: Colors.grey[100],
                                   child: GridView.builder(
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 2),
+                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 3
+                                        ),
                                     shrinkWrap: true,
                                     physics: ScrollPhysics(),
                                     itemCount: value.cart.length,

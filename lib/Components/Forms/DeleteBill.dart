@@ -1,50 +1,29 @@
 import 'package:ashkerty_food/API/Bill.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 
-class DeleteBill extends StatefulWidget {
-  final bill;
-  DeleteBill({super.key, required this.bill});
+class DeleteBills extends StatefulWidget {
+  final int id;
+  DeleteBills({super.key, required this.id,});
 
   @override
-  State<DeleteBill> createState() => _DeleteBillState(bill: bill);
+  State<DeleteBills> createState() => _DeleteBillsState();
 }
 
-class _DeleteBillState extends State<DeleteBill> {
-  final bill;
-  _DeleteBillState({ required this.bill});
-  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
-
-  String? comment;
-  bool isLoading = false;
-
-  //server function to update bill to be deleted
-  //server fun add bill
-  Future updateBill (data) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    final response = await APIBill.deleted_update(data);
-
-    setState(() {
-      isLoading = false;
-    });
+class _DeleteBillsState extends State<DeleteBills> {
+  //server side Functions ------------------
+  Future DeleteBill (data) async {
+    //call server
+    final response = await APIBill.deleteBill(data);
 
     if(response.statusCode == 200) {
-      setState(() {
-        isLoading = false;
-      });
-
-      return ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Center(child: Text("تم اضافة الفاتورة للمحذوفات بنجاح", style: TextStyle(fontSize: 22),)),
+            content: Center(child: Text("تم حذف الفاتورة بنجاح", style: TextStyle(fontSize: 22),)),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 3),
           )
       );
+      Navigator.pushReplacementNamed(context, '/del_bills');
     }else{
       return ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -62,64 +41,44 @@ class _DeleteBillState extends State<DeleteBill> {
     }
   }
 
-  //delete bill model
-  deleteBill(BuildContext context,){
+  //bill modal
+  deleteModal(context){
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return Directionality(
           textDirection: TextDirection.rtl,
-          child:Center(
-            child: FormBuilder(
-              key: _formKey,
-              child: Column(
-                children:<Widget>[
-                  AlertDialog(
-                    title: const Center(child: Text('حذف فاتورة ')),
-                    content: const Text('هل انت متأكد من رغبتك في حذف هذه الفاتورة',style: TextStyle(fontSize: 18,color: Color(0xffb00505),),),
-                    actions: [
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: 'تعليق',
-                          icon: Icon(Icons.comment_rounded),
-                        ),
-                        onChanged: (value){
-                          comment = value;
-                        },
-                        validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال تعليق '),
-                      ),
-                      const SizedBox(height: 20,),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Center(
-                          child: SizedBox(
-                            height: 50,
-                            width: 100,
-                            child: TextButton(
-                                style: TextButton.styleFrom(
-                                    backgroundColor: const Color(0xffb00505),
-                                    primary: Colors.white
-                                ),
-                                onPressed: (){
-                                  if(_formKey.currentState!.saveAndValidate()){
-                                    final data = {};
-                                    data['comment'] = comment;
-                                    data['id'] = bill.id;
-
-                                    //call server
-                                    updateBill(data);
-                                    Navigator.pop(context);
-                                  }
-                                },
-                                child: const Text('حذف',style: TextStyle(fontSize: 20,color: Colors.white),)
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],),
+          child: AlertDialog(
+            title: Center(
+                child: Text('حذف  الفاتورة')
             ),
+            content: Text(
+              'سيؤدي ذلك لضياع كل البيانات المتعلقة بالفاتورة',
+              style: TextStyle(fontSize: 18,color: Color(0xffb00505),),
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Center(
+                  child: SizedBox(
+                    height: 50,
+                    width: 100,
+                    child: TextButton(
+                        child: Text('حذف',style: TextStyle(fontSize: 20,color: Colors.white),),
+                        style: TextButton.styleFrom(
+                            backgroundColor: Color(0xffb00505),
+                            primary: Colors.white
+                        ),
+                        onPressed: (){
+                          //call server
+                          DeleteBill({'id': widget.id});
+                          Navigator.of(context).pop();
+                        }
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -128,17 +87,15 @@ class _DeleteBillState extends State<DeleteBill> {
 
   @override
   Widget build(BuildContext context) {
-    return isLoading ?
-    SpinKitChasingDots(
-      color: Colors.black,
-      size: 30,
-    )
-    : IconButton(
-        onPressed: (){
-          deleteBill(context);
-        },
-        icon: const Icon(Icons.delete_rounded,color: Color(0xff65090c),)
-        ,tooltip: 'حذف'
+    return IconButton(
+      onPressed: (){
+        deleteModal(context);
+      } ,
+      icon: Icon(
+        Icons.delete_forever,
+        color: Colors.red,
+      ),
+      tooltip: 'حذف',
     );
   }
 }

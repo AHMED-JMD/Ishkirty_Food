@@ -24,6 +24,7 @@ class _OrdersState extends State<Orders> {
   bool isLoading = false;
   List data = [];
   List spices = [];
+  String period = 'اليوم';
   DateTime today_date = DateTime.now();
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
@@ -56,6 +57,7 @@ class _OrdersState extends State<Orders> {
       setState(() {
         isLoading = false;
         data = res;
+        period = 'فترة زمنية';
       });
     } else{
       setState(() {
@@ -81,6 +83,7 @@ class _OrdersState extends State<Orders> {
       setState(() {
         isLoading = false;
         data = res;
+        period = 'اليوم';
       });
     } else{
       setState(() {
@@ -174,6 +177,7 @@ class _OrdersState extends State<Orders> {
                       CashAmount: cashMor.toInt(),
                       BankakAmount: bankMor.toInt(),
                       AccountsAmount: accountMor.toInt(),
+                      period: period,
                     ),
                   ),
                   const SizedBox(width: 15,),
@@ -191,6 +195,7 @@ class _OrdersState extends State<Orders> {
                       CashAmount: cashEv.toInt(),
                       BankakAmount: bankEv.toInt(),
                       AccountsAmount: accountEv.toInt(),
+                      period: period,
                     ),
                   ),
                 ],

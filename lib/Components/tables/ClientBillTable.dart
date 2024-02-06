@@ -122,7 +122,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
             ),
           ),
           DataCell(
-              Text(currentRowData.date,style: const TextStyle(fontSize: 20),)
+              Text('${currentRowData.createdAt}',style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
               Padding(

@@ -65,10 +65,16 @@ PrintingFunc(counter, user, data) async {
   // Create a pw.Image instance with the imageBytes
   final image = pw.Image(pw.MemoryImage(bytes));
 
+  //setting date and time
+  DateTime now = DateTime.now();
+  String date = '${now.year}/${now.month}/${now.day}';
+  String time = '${now.hour}:${now.minute}:${now.second}';
+  String amPm = now.hour < 12 ? 'AM' : 'PM';
+
   //create pdf
   doc.addPage(
       pw.Page(
-          pageFormat: PdfPageFormat.roll57,
+          pageFormat: PdfPageFormat.roll80,
           theme: myTheme,
           build: (pw.Context context) {
             return pw.Directionality(
@@ -81,53 +87,59 @@ PrintingFunc(counter, user, data) async {
                             pw.Row(
                               mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  pw.Text('Eshkarti', style: pw.TextStyle(fontSize: 19 ,)),
+                                  pw.Text('Eshkarti', style: pw.TextStyle(fontSize: 16 ,)),
                                   pw.Container(
-                                      width: 30,
-                                      height: 30,
+                                      width: 20,
+                                      height: 20,
                                       child: image
                                   ),
-                                  pw.Text('اشكرتي', style: pw.TextStyle(fontSize: 19,)),
+                                  pw.Text('اشكرتي', style: pw.TextStyle(fontSize: 16,)),
                                 ]
                             ),
-                            pw.Divider(thickness: 3),
+                            pw.Divider(thickness: 2),
                             pw.Row(
-                              mainAxisAlignment: pw.MainAxisAlignment.center,
+                              mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
                               children: [
-                                pw.Text('$counter',
-                                    style: pw.TextStyle(
-                                      fontSize: 25,
-                                    )
+                                pw.Row(
+                                    children: [
+                                      pw.Text('${date} - '),
+                                      pw.Text('${time} $amPm'),
+                                    ]
                                 ),
-                                pw.Text('فاتورة مبيعات رقم ',
-                                    style: pw.TextStyle(
-                                      fontSize: 17,
-                                    )
+                                pw.Row(
+                                  children: [
+                                    pw.Text('($counter)',
+                                        style: pw.TextStyle(
+                                          fontSize: 18,
+                                        )
+                                    ),
+                                    pw.Text('فاتورة رقم ',
+                                        style: pw.TextStyle(
+                                          fontSize: 14,
+                                        )
+                                    ),
+                                  ]
                                 ),
                               ]
                             ),
-                            pw.Text("المستخدم ${user['username']}",),
+
                             pw.Row(
                                 mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
                                 children: [
                                   pw.Text("طريقة الدفع = ${data['paymentMethod']}",),
-                                  pw.Text('${DateTime.now().toIso8601String()}'),
+                                  pw.Text("المستخدم = ${user['username']}",),
                                 ]
                             ),
                             pw.Divider(),
                             createTable(data),
                             pw.Divider(),
                             pw.Padding(
-                              padding: pw.EdgeInsets.only(left: 40),
+                              padding: pw.EdgeInsets.only(left: 10),
                               child: pw.Row(
                                   mainAxisAlignment: pw.MainAxisAlignment.start,
                                   children: [
-                                    pw.Text('${data['amount']}', style: pw.TextStyle()
-                                    ),
-                                    pw.Text("الجملة =  ",
-                                        style: pw.TextStyle(
-                                        )
-                                    ),
+                                    pw.Text('${data['amount']}',),
+                                    pw.Text("الجملة  =  ",),
                                   ]
                               ),
                             ),

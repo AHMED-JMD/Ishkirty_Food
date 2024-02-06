@@ -41,11 +41,11 @@ class _CartFormState extends State<CartForm> {
     });
 
     final response = await APIBill.Add(data);
-    if(response.statusCode == 200) {
-      setState(() {
-        isLoading = false;
-      });
+    setState(() {
+      isLoading = false;
+    });
 
+    if(response.statusCode == 200) {
       return ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Center(
@@ -54,45 +54,7 @@ class _CartFormState extends State<CartForm> {
             duration: Duration(seconds: 3),
           )
       );
-
-      // return showDialog(
-      //     context: context,
-      //     builder: (BuildContext context){
-      //       return AlertDialog(
-      //         title: Row(
-      //           mainAxisAlignment: MainAxisAlignment.center,
-      //           children: [
-      //             Icon(Icons.check, color: Colors.green, size: 38,),
-      //             Text('تم الحفظ', textAlign: TextAlign.center,),
-      //           ],
-      //         ),
-      //         content: Text(
-      //           'اضغط الزر ادناه لطباعة الفاتورة',
-      //           textAlign: TextAlign.center,
-      //           style: TextStyle(
-      //             fontSize: 20
-      //           ),
-      //         ),
-      //         actions: [
-      //           Padding(
-      //             padding: const EdgeInsets.only(bottom: 10),
-      //             child: Center(
-      //               child: SizedBox(
-      //                 width: MediaQuery.of(context).size.width/6.5,
-      //                 height: 35,
-      //                  child: PrintPage(data: data,)
-      //               ),
-      //             ),
-      //           )
-      //         ],
-      //       );
-      //     }
-      // );
     }else{
-      setState(() {
-        isLoading = false;
-      });
-
       return ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Center(
@@ -149,7 +111,8 @@ class _CartFormState extends State<CartForm> {
 
         return Container(
           color: Colors.blueGrey[300],
-          width: 400,
+          width: MediaQuery.of(context).size.width/3.3,
+          height: MediaQuery.of(context).size.height,
           child: Padding(
             padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
             child: Column(
@@ -283,9 +246,11 @@ class _CartFormState extends State<CartForm> {
                                     data['clientId'] = clientID;
                                     data['admin_id'] = user_val.user['id'];
 
-                                    addBill(data);
+                                    addBill(data,);
                                     //call printing func
                                     PrintingFunc(value.counter, user_val.user, data);
+                                    //reset cart
+                                    cartProvider.resetCart();
                                   }
                                 },
                                 icon: Icon(Icons.paypal),

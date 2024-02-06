@@ -9,7 +9,6 @@ import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/spieces_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../Components/Forms/TransactForm.dart';
 import '../static/HomeDrawerbut.dart';
 import 'package:flutter/services.dart';
 import 'package:keymap/keymap.dart';
@@ -83,41 +82,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.pushReplacementNamed(context, '/home');
                     },
                   ),
-                  toolbarHeight: 70,
+                  toolbarHeight: MediaQuery.of(context).size.height/9.5,
                   title: Image.asset(
                     "assets/images/ef2.jpg",
-                    width: 100,
-                    height: 80,
+                    height: MediaQuery.of(context).size.height/9.5,
                   ),
                   centerTitle: true,
                   elevation: 0,
                   backgroundColor: Colors.transparent,
                   actions: [
                     CheckTime(),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    SizedBox(
-                      width: 77,
-                      height: 40,
-                      child: FilledButton(
-                        onPressed: () {
-                          Transact(context);
-                        },
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                Colors.grey.shade600),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(0),
-                              side: BorderSide(color: Colors.transparent),
-                            ))),
-                        child: Text(
-                          'تحويل',
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
-                      ),
-                    ),
                     SizedBox(
                       width: 20,
                     ),
@@ -131,29 +105,32 @@ class _MyHomePageState extends State<MyHomePage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(
-                        height: 40,
+                        height: 20,
                       ),
                       //custom nav in static folder
-                      SpiecesNav(),
-                      // Row(
-                      //   children: [
-                      //     Expanded(
-                      //         child: Container(
-                      //           height: 800,
-                      //           child: ListView(
-                      //               children: [
-                      //                 SpiecesNav()
-                      //               ]
-                      //           ),
-                      //         )
-                      //     ),
-                      //     Container(
-                      //       width: 360,
-                      //       height: MediaQuery.of(context).size.height,
-                      //       child: CartForm(),
-                      //     )
-                      //   ],
-                      // )
+                      // SpiecesNav(),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: Container(
+                                height: MediaQuery.of(context).size.height,
+                                child: ListView(
+                                    children: [
+                                      SpiecesNav()
+                                    ]
+                                ),
+                              )
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width/3.5,
+                            height: MediaQuery.of(context).size.height/1.1,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 5.0),
+                              child: CartForm(),
+                            ),
+                          )
+                        ],
+                      )
                     ],
                   ),
                 ),

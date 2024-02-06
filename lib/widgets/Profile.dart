@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:ashkerty_food/API/Auth.dart';
+import 'package:ashkerty_food/API/Transfer.dart';
 import 'package:ashkerty_food/Components/Forms/AddAdminForm.dart';
 import 'package:ashkerty_food/Components/Forms/ChangePassword.dart';
+import 'package:ashkerty_food/Components/Forms/TransactForm.dart';
 import 'package:ashkerty_food/Components/tables/ManagersTable.dart';
 import 'package:ashkerty_food/Components/tables/UserBillsTable.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
@@ -121,7 +123,14 @@ class _UserProfileState extends State<UserProfile> {
                     ),
                     SizedBox(height: 10,),
                     value.user['role'] != 'admin' ?
-                      ChangePassword(admin_id: value.user['id'])
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ChangePassword(admin_id: value.user['id']),
+                          SizedBox(width: 20,),
+                          TransferFormModal(admin_id: value.user['id']),
+                        ],
+                      )
                         : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

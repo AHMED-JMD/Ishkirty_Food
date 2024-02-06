@@ -7,12 +7,15 @@ class SalesCard extends StatelessWidget {
   final int CashAmount;
   final int BankakAmount;
   final int AccountsAmount;
+  final String period;
+
   SalesCard({
     super.key,
     required this.Period,
     required this.CashAmount,
     required this.BankakAmount,
     required this.AccountsAmount,
+    required this.period
   });
 
   @override
@@ -79,25 +82,9 @@ class SalesCard extends StatelessWidget {
         Divider(
           color: Colors.black,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              "التحويلات = ",
-              style: TextStyle(fontSize: 30),
-            ),
-            SizedBox(
-              width: 20,
-            ),
-            Text(
-              '5,000',
-              style: TextStyle(fontSize: 30),
-            ),
-          ],
-        ),
+        Center(
+          child: Text('مبيعات $period', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),),
+        )
       ],
     );
   }

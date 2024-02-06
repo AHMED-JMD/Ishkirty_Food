@@ -1,3 +1,4 @@
+import 'package:ashkerty_food/Components/Forms/DeleteBill.dart';
 import 'package:ashkerty_food/models/Bill.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
@@ -31,10 +32,6 @@ class _DeletedBillsTableState extends State<DeletedBillsTable> {
     super.initState();
     _searchController.text = '';
   }
-  //server side Functions ------------------
-//-------------------------------------
-
-  //delete modal
 
 //--------------------------------------------------------
 
@@ -120,7 +117,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
                child: const Text('التفاصيل',style:TextStyle(fontSize: 20)),),
             ),
           DataCell(
-              Text(currentRowData.date,style: const TextStyle(fontSize: 20),)
+              Text('${currentRowData.createdAt}',style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
                Center(child: Text(currentRowData.amount.toString(),style: const TextStyle(fontSize: 20),)),
@@ -132,16 +129,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
                Text(currentRowData.shiftTime,style: const TextStyle(fontSize: 20),),
           ),
           DataCell(
-             ButtonBar(
-                children: [
-                  IconButton(
-                    onPressed: (){} ,
-                    icon:const Icon(
-                      Icons.message_outlined,color: Color(0xff5d5c05),
-                    ),
-                    tooltip: 'تعديل',),
-                ],
-              ),
+              DeleteBills(id: currentRowData.id,)
             ),
         ]);
   }

@@ -25,6 +25,8 @@ class _GridCartState extends State<GridCart> {
   @override
   Widget build(BuildContext context) {
     return Consumer<CartProvider>(builder: (context, value, child) {
+      var cartProvider = context.read<CartProvider>();
+
       return Padding(
         padding: const EdgeInsets.all(3.0),
         child: Container(
@@ -51,9 +53,9 @@ class _GridCartState extends State<GridCart> {
                                   spices: widget.speices['name'],
                                   counter: 1,
                                   unit_price: widget.speices['price'],
-                                  total_price: widget.speices['price']);
+                                  total_price: widget.speices['price']
+                              );
                               //getting cart provider function
-                              var cartProvider = context.read<CartProvider>();
                               cartProvider.addToCart(model);
                               //setting the state
                               setState(() {
@@ -71,14 +73,46 @@ class _GridCartState extends State<GridCart> {
                             )),
                       ],
                     )
-                  : Center(
-                      child: Container(
-                      color: Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Text("تمت الاضافة بنجاح "),
-                      ),
-                    )),
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            //add amount
+                            value.cart.map((item) =>{
+                              if(item.spices == widget.speices['name']){
+                                cartProvider.addAmount(item)
+                              }
+                            });
+                          },
+                          icon: Icon(
+                            Icons.add_box,
+                            color: Colors.teal,
+                            size: 27,
+                          ),
+                          tooltip: 'إضافة',
+                        ),
+                        Text('yes',
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 18)),
+                        IconButton(
+                          onPressed: () {
+                            //decrease amount
+                            value.cart.map((item) =>{
+                              if(item.spices == widget.speices['name']){
+                                cartProvider.minusAmount(item)
+                              }
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.remove_circle,
+                            color: Colors.teal,
+                            size: 27,
+                          ),
+                          tooltip: 'نقصان',
+                        ),
+                      ],
+                    ),
             ),
           ),
         ),

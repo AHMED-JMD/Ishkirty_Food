@@ -64,14 +64,14 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                     physics: ScrollPhysics(),
                     itemCount: widget.data.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      // childAspectRatio: 0.7
+                      crossAxisCount: 4,
+                      // childAspectRatio: 1.3
                     ),
                     itemBuilder: (context, index) =>
                         GridCart(
                             speices: widget.data[index],
-                            widths: 300,
-                            height: 210));
+                            widths: 200,
+                            height: 250));
               } else {
                 if (constraints.maxWidth > 600) {
                   return GridView.builder(

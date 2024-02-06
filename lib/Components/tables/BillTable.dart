@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 import '../../widgets/BillDetailes.dart';
-import 'package:ashkerty_food/Components/Forms/DeleteBill.dart';
+import 'package:ashkerty_food/Components/Forms/DeletedBillsAdd.dart';
 
 class billTable extends StatefulWidget {
   final List data;
@@ -24,36 +24,6 @@ class _billTableState extends State<billTable> {
     super.initState();
   }
 
-  //server side Functions ------------------
-
-  // //search dates
-  // Future searchDates(datas) async {
-  //   setState(() {
-  //     isLoading = true;
-  //     data = [];
-  //   });
-  //
-  //   //server call
-  //   Map mod_datas = {};
-  //   mod_datas['start_date'] = datas['start_date'];
-  //   mod_datas['end_date'] = datas['end_date'];
-  //   mod_datas['isDeleted'] = false;
-  //
-  //   final response = await APIBill.Search(mod_datas);
-  //   //response validity
-  //   if (response.statusCode == 200) {
-  //     final res = jsonDecode(response.body);
-  //
-  //     setState(() {
-  //       isLoading = false;
-  //       data = res;
-  //     });
-  //   } else {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
 //-------------------------------------
 
   var rowsPerPage = 10;
@@ -90,7 +60,7 @@ class _billTableState extends State<billTable> {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.teal),
                         icon: Icon(
-                          Icons.delete_forever_sharp,
+                          Icons.delete_forever_outlined,
                           size: 30,
                           color: Colors.black,
                         )),
@@ -116,11 +86,6 @@ class _billTableState extends State<billTable> {
                       DataColumn(
                           label: Text(
                         'رقم الفاتورة',
-                        style: TextStyle(fontSize: 20),
-                      )),
-                      DataColumn(
-                          label: Text(
-                        'تفاصيل الفاتورة',
                         style: TextStyle(fontSize: 20),
                       )),
                       DataColumn(
@@ -183,27 +148,8 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
           style: const TextStyle(fontSize: 20),
         ),
       )),
-      DataCell(
-        Padding(
-          padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BillDetailes(
-                    billId: currentRowData.id,
-                  ),
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-            child: const Text('التفاصيل', style: TextStyle(fontSize: 20)),
-          ),
-        ),
-      ),
       DataCell(Text(
-        currentRowData.date,
+        '${currentRowData.createdAt}',
         style: const TextStyle(fontSize: 20),
       )),
       DataCell(Padding(
@@ -241,7 +187,21 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
           padding: const EdgeInsets.all(0),
           child: ButtonBar(
             children: [
-              DeleteBill(
+              IconButton(
+                  onPressed: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BillDetailes(
+                          billId: currentRowData.id,
+                        ),
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.more_outlined),
+                  tooltip: 'التفاصيل',
+              ),
+              AddToDeleted(
                 bill: currentRowData,
               )
             ],

@@ -19,7 +19,7 @@ class bill {
   late final String paymentMethod;
   late final String date;
   late final String shiftTime;
-  late final String createdAt;
+  late final createdAt;
   late final String updatedAt;
   late final Null ClientId;
   late final AdminAdminId;

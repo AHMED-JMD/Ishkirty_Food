@@ -103,6 +103,8 @@ class _LoginState extends State<Login> {
 
                                   FormBuilderTextField(
                                     name: 'username',
+                                    initialValue: value.user['username'] != null
+                                    ? '${value.user['username']}' : '',
                                     decoration: const InputDecoration(
                                       labelText: 'اسم المستخدم',
                                       icon: Icon(Icons.person),
@@ -122,7 +124,7 @@ class _LoginState extends State<Login> {
                                                 hidePassword = !hidePassword;
                                               });
                                             },
-                                            icon: Icon(hidePassword ? Icons.remove_red_eye : Icons.hide_source)
+                                            icon: Icon(hidePassword ? Icons.visibility : Icons.visibility_off)
                                         ),
                                         focusColor: Colors.deepPurple
                                     ),
