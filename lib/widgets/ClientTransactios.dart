@@ -59,7 +59,7 @@ class _ClientTransactiosState extends State<ClientTransactios> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.teal,
+          backgroundColor: Colors.blueGrey,
 //custom button in static folder
           leading: IconButton(
             icon: const Icon(
@@ -72,7 +72,7 @@ class _ClientTransactiosState extends State<ClientTransactios> {
             },
           ),
 
-          title: const Center(child: Text("المعاملات", style: TextStyle(fontSize: 25),)),
+          title: const Center(child: Text("معاملات العملاء", style: TextStyle(fontSize: 25),)),
           actions: const [LeadingDrawerBtn(),],
           toolbarHeight: 45,),
         //custom my drawer in static folder

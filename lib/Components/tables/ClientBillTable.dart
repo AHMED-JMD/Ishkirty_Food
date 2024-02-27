@@ -95,8 +95,12 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   @override
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
-    return DataRow(
+    //setting date & time
+    var now = DateTime.parse(currentRowData.createdAt);
+    String date = '${now.year}/${now.month}/${now.day}';
+    String time = '${now.hour}:${now.minute}';
 
+    return DataRow(
         cells: [
           DataCell(
               Padding(
@@ -122,13 +126,13 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
             ),
           ),
           DataCell(
-              Text('${currentRowData.createdAt}',style: const TextStyle(fontSize: 20),)
+              Text('$time - $date',style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
               Padding(
                 padding: const EdgeInsets.fromLTRB(8, 8, 35, 8),
                 child: Text(currentRowData.amount.toString(),style: const TextStyle(fontSize: 20),),
-              )
+              ),
           ),
           DataCell(
               Padding(

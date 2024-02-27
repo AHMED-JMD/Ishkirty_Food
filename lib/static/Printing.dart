@@ -28,8 +28,9 @@ pw.Table createTable(data) {
             children: [
               createTableCell('المبلغ',),
               createTableCell('السعر',),
-              createTableCell('الكمية',),
+              createTableCell('اضافة',),
               createTableCell('الصنف',),
+              createTableCell('الكمية',),
             ],
           ),
           if (data['trans'].length != 0)
@@ -38,8 +39,9 @@ pw.Table createTable(data) {
                 children: [
                   createTableCell(name.total_price.toString(),),
                   createTableCell(name.unit_price.toString(),),
-                  createTableCell(name.counter.toString(),),
+                  createTableCell(name.addons.toString(),),
                   createTableCell(name.spices,),
+                  createTableCell(name.counter.toString(),),
                 ],
               ),
             )
@@ -48,7 +50,7 @@ pw.Table createTable(data) {
 }
 
 //print future function
-PrintingFunc(counter, user, data) async {
+PrintingFunc(String Pname, counter, user, data) async {
   // Set the font for Arabic text
   var arabicFont = pw.Font.ttf(await rootBundle.load("assets/fonts/HacenTunisia.ttf"));
   //set Theme
@@ -152,7 +154,7 @@ PrintingFunc(counter, user, data) async {
 
   //print page as pdf
   await Printing.directPrintPdf(
-      printer: Printer(url: 'Microsoft print to PDF'),
+      printer: Printer(url: Pname),
       onLayout: (PdfPageFormat format) async => doc.save()
   );
 }

@@ -1,5 +1,7 @@
 import 'package:ashkerty_food/API/Bill.dart';
+import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DeleteBills extends StatefulWidget {
   final int id;
@@ -87,15 +89,20 @@ class _DeleteBillsState extends State<DeleteBills> {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: (){
-        deleteModal(context);
-      } ,
-      icon: Icon(
-        Icons.delete_forever,
-        color: Colors.red,
-      ),
-      tooltip: 'حذف',
+    return Consumer<AuthProvider>(
+        builder: (context, value, child) {
+          return value.user['role'] != 'admin' ? Text('')
+           : IconButton(
+            onPressed: (){
+              deleteModal(context);
+            } ,
+            icon: Icon(
+              Icons.delete_forever,
+              color: Colors.red,
+            ),
+            tooltip: 'حذف',
+          );
+        }
     );
   }
 }

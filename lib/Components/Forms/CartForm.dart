@@ -22,6 +22,7 @@ class _CartFormState extends State<CartForm> {
 
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
+  bool isSecondPrinter = false;
   List clients = [];
   String? clientID;
   String? payment_method;
@@ -46,7 +47,7 @@ class _CartFormState extends State<CartForm> {
     });
 
     if(response.statusCode == 200) {
-      return ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Center(
                 child: Text("تم حفظ الفاتورة بنجاح", style: TextStyle(fontSize: 22, color: Colors.white),)),
@@ -54,11 +55,13 @@ class _CartFormState extends State<CartForm> {
             duration: Duration(seconds: 3),
           )
       );
+      await Future.delayed(Duration(seconds: 3));
+      Navigator.pushReplacementNamed(context, '/home');
     }else{
       return ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Center(
-                child: Text("sorry something is wrong :(", style: TextStyle(fontSize: 22),)),
+                child: Text("${response.body}", style: TextStyle(fontSize: 22),)),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 3),
             action: SnackBarAction(
@@ -136,13 +139,12 @@ class _CartFormState extends State<CartForm> {
                 Text('اختر طريقة الدفع', textAlign: TextAlign.center, style: TextStyle(
                     fontSize: 19,
                     color: Colors.white
-                ),
+                  ),
                 ),
                 SizedBox(height: 15,),
                 FormBuilder(
                     key: _formKey,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         FormBuilderRadioGroup(
                           initialValue: isAfterSixPM ? 'مسائية' : 'صباحية',
@@ -202,6 +204,16 @@ class _CartFormState extends State<CartForm> {
                           validator: FormBuilderValidators.required(errorText: "الرجاء اختيار طريقة الدفع"),
                         ),
                         SizedBox(height: 15,),
+                        FormBuilderCheckbox(
+                            name: 'secPrinter',
+                            onChanged: (val){
+                              setState(() {
+                                isSecondPrinter = val!;
+                              });
+                            },
+                            initialValue: isSecondPrinter,
+                            title: Text('طباعة قي المطبخ؟')
+                        ),
                         if(payment_method == 'حساب')
                           FormBuilderDropdown(
                             name: "acoount_name",
@@ -222,7 +234,7 @@ class _CartFormState extends State<CartForm> {
                               }
                             },
                           ),
-                        SizedBox(height: 45,),
+                        SizedBox(height: 30,),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -231,7 +243,7 @@ class _CartFormState extends State<CartForm> {
                               height: 40,
                               child: ElevatedButton.icon(
                                 onPressed: (){
-                                  if(_formKey.currentState!.saveAndValidate()) {
+                                  if(_formKey.currentState!.saveAndValidate() && value.cart.length != 0) {
                                     //increment bill counter
                                     final cartProvider = context.read<CartProvider>();
                                     cartProvider.increment_counter();
@@ -246,9 +258,12 @@ class _CartFormState extends State<CartForm> {
                                     data['clientId'] = clientID;
                                     data['admin_id'] = user_val.user['id'];
 
-                                    addBill(data,);
+                                    addBill(data);
                                     //call printing func
-                                    PrintingFunc(value.counter, user_val.user, data);
+                                      PrintingFunc('Microsoft print to PDF', value.counter, user_val.user, data);
+                                      //second printer
+                                      isSecondPrinter?
+                                        PrintingFunc('Microsoft print to PDF', value.counter, user_val.user, data): null;
                                     //reset cart
                                     cartProvider.resetCart();
                                   }
@@ -266,7 +281,7 @@ class _CartFormState extends State<CartForm> {
                     )
                 ),
 
-                SizedBox(height: 40),
+                SizedBox(height: 35),
                 Text('عدد الاصناف = ${value.cart.length}', textAlign: TextAlign.center, style: TextStyle(
                     fontSize: 19,
                     color: Colors.white

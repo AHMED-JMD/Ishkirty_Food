@@ -258,6 +258,9 @@ class _ClientsState extends State<Clients> {
                                 addClient: addClient,
                               ).AddModal(context);
                             },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal,
+                            ),
                             icon: Icon(
                               Icons.add_box_sharp,
                               color: Color(0xff090c2d),

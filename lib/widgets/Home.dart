@@ -55,6 +55,8 @@ class _MyHomePageState extends State<MyHomePage> {
           Cart model = Cart(
             spices: theKey['name'],
             counter: 1,
+            category: theKey['category'],
+            addons: [],
             unit_price: theKey['price'],
             total_price: theKey['price']);
           //add to provider

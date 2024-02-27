@@ -97,6 +97,11 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   @override
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
+    //setting date & time
+    var now = DateTime.parse(currentRowData.createdAt);
+    String date = '${now.year}/${now.month}/${now.day}';
+    String time = '${now.hour}:${now.minute}';
+
     return DataRow(
         cells: [
           DataCell(
@@ -117,7 +122,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
                child: const Text('التفاصيل',style:TextStyle(fontSize: 20)),),
             ),
           DataCell(
-              Text('${currentRowData.createdAt}',style: const TextStyle(fontSize: 20),)
+              Text('$time - $date',style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
                Center(child: Text(currentRowData.amount.toString(),style: const TextStyle(fontSize: 20),)),

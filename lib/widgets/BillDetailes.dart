@@ -59,7 +59,7 @@ class _BillDetailesState extends State<BillDetailes> {
     return Directionality(textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xff20491a),
+          backgroundColor: Colors.blueGrey,
           leading:  IconButton(
             icon: const Icon(
               Icons.arrow_back,

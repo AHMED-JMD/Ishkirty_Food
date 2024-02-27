@@ -56,7 +56,6 @@ class _ManagerDetailsState extends State<ManagerDetails> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  //custom widget in static folder for showing search bar responsive
                   const SizedBox(height: 60,),
                   Container(
                       color: Colors.grey[100],

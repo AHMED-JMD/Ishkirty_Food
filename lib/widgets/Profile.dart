@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:ashkerty_food/API/Auth.dart';
-import 'package:ashkerty_food/API/Transfer.dart';
 import 'package:ashkerty_food/Components/Forms/AddAdminForm.dart';
 import 'package:ashkerty_food/Components/Forms/ChangePassword.dart';
 import 'package:ashkerty_food/Components/Forms/TransactForm.dart';

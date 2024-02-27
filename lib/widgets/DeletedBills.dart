@@ -83,7 +83,7 @@ class _DeletedBillsState extends State<DeletedBills> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.teal,
+          backgroundColor: Colors.redAccent,
           //custom button in static folder
           leading: IconButton(
             icon: const Icon(

@@ -24,25 +24,26 @@ class CartProvider extends ChangeNotifier {
 
   void addAmount (Cart model){
     //check and iterate and add
-    for(int i = 0; i< _cart.length; i++){
-      if(_cart[i].spices == model.spices){
-        _cart[i].counter = _cart[i].counter + 1;
-        _cart[i].total_price = _cart[i].unit_price * _cart[i].counter;
-      }
-    }
+    model.counter = model.counter + 1;
+    model.total_price = model.unit_price * model.counter;
+
     notifyListeners();
   }
 
   void minusAmount (Cart model){
     //check and iterate and minus
-    for(int i = 0; i< _cart.length; i++){
-      if(_cart[i].spices == model.spices){
-        if(_cart[i].counter > 1){
-          _cart[i].counter = _cart[i].counter - 1;
-          _cart[i].total_price = _cart[i].unit_price * _cart[i].counter;
-        }
-      }
+    if(model.counter > 1){
+      model.counter = model.counter - 1;
+      model.total_price = model.unit_price * model.counter;
     }
+    notifyListeners();
+  }
+
+  void addonsUpdate(Cart model ,addon, int amount){
+
+    model.total_price = model.total_price + addon['price'] * amount;
+
+    model.addons.add(amount.toString() + ' ' + addon['name']);
     notifyListeners();
   }
 

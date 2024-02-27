@@ -38,7 +38,15 @@ class _MyCartState extends State<MyCart> {
   }
 
   //custom cart widget
-  Widget _cart(BuildContext context, item, cartProvider) {
+  Widget _cart(BuildContext context, Cart item, cartProvider) {
+    List<Widget> addonWidgets = [];
+
+    if (item.addons.length != 0) {
+      addonWidgets = item.addons.map((add) {
+        return Text('$add + ', style: TextStyle(color: Colors.grey[600]),);
+      }).toList();
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -79,6 +87,13 @@ class _MyCartState extends State<MyCart> {
                   SizedBox(
                     height: 10,
                   ),
+                  if(item.addons.length != 0)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ...addonWidgets
+                      ],
+                    ),
                   Text(
                     "الكمية",
                     style: TextStyle(
@@ -148,6 +163,8 @@ class _MyCartState extends State<MyCart> {
               Cart model = Cart(
                   spices: theKey['name'],
                   counter: 1,
+                  category: theKey['category'],
+                  addons: [],
                   unit_price: theKey['price'],
                   total_price: theKey['price']);
               //add to provider
@@ -188,21 +205,46 @@ class _MyCartState extends State<MyCart> {
                                   width: MediaQuery.of(context).size.width/1.5,
                                   height: MediaQuery.of(context).size.height/1.2,
                                   color: Colors.grey[100],
-                                  child: GridView.builder(
-                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 3
-                                        ),
-                                    shrinkWrap: true,
-                                    physics: ScrollPhysics(),
-                                    itemCount: value.cart.length,
-                                    itemBuilder: (context, index) {
-                                      //current item
-                                      var item = value.cart[index];
-                                      var cartProvider =
-                                          context.read<CartProvider>();
-                                      //call cart widget and iterate
-                                      return _cart(context, item, cartProvider);
+                                  child: LayoutBuilder(
+                                    builder: (BuildContext context, BoxConstraints constraints){
+                                      if(constraints.maxWidth > 1400){
+                                        return GridView.builder(
+                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 4
+                                          ),
+                                          shrinkWrap: true,
+                                          physics: ScrollPhysics(),
+                                          itemCount: value.cart.length,
+                                          itemBuilder: (context, index) {
+                                            //current item
+                                            var item = value.cart[index];
+                                            var cartProvider =
+                                            context.read<CartProvider>();
+                                            //call cart widget and iterate
+                                            return _cart(context, item, cartProvider);
+                                          },
+                                        );
+                                      }else{
+                                        return GridView.builder(
+                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 3
+                                          ),
+                                          shrinkWrap: true,
+                                          physics: ScrollPhysics(),
+                                          itemCount: value.cart.length,
+                                          itemBuilder: (context, index) {
+                                            //current item
+                                            var item = value.cart[index];
+                                            var cartProvider =
+                                            context.read<CartProvider>();
+                                            //call cart widget and iterate
+                                            return _cart(context, item, cartProvider);
+                                          },
+                                        );
+                                      }
+
                                     },
+
                                   ),
                                 ),
                               ),

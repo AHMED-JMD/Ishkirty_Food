@@ -208,10 +208,12 @@ class ExampleSource extends AdvancedDataTableSource<Client> {
                           ),
                         icon: Icon(Icons.edit,)
                       ),
-                      IconButton(onPressed: (){
-                        DeleteAccount(data: currentRowData,Delete: delete,).Modal(context);
+                      IconButton(
+                          onPressed: (){
+                            DeleteAccount(data: currentRowData,Delete: delete,).Modal(context);
                         },
-                          icon: const Icon(Icons.delete_rounded,color: Color(0xff060d48)),tooltip: 'حذف'),
+                          icon: Icon(Icons.delete_rounded, color: Colors.red.shade900),
+                          tooltip: 'حذف'),
                     ],
                   ),
                 ),
