@@ -101,6 +101,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
     var now = DateTime.parse(currentRowData.createdAt);
     String date = '${now.year}/${now.month}/${now.day}';
     String time = '${now.hour}:${now.minute}';
+    String amPm = now.hour > 12 ? 'PM': 'AM';
 
     return DataRow(
         cells: [
@@ -122,7 +123,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
                child: const Text('التفاصيل',style:TextStyle(fontSize: 20)),),
             ),
           DataCell(
-              Text('$time - $date',style: const TextStyle(fontSize: 20),)
+              Text('($time $amPm) - $date',style: const TextStyle(fontSize: 20),)
           ),
           DataCell(
                Center(child: Text(currentRowData.amount.toString(),style: const TextStyle(fontSize: 20),)),

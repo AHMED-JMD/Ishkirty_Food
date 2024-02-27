@@ -32,8 +32,10 @@ class _BillsState extends State<Bills> {
     });
 
     //call server
+    DateTime now = DateTime.now();
     Map dataBody = {};
     dataBody['isDeleted'] = false;
+    dataBody['todayDate'] = '${now.year}-${now.month}-${now.day}';
 
     final response = await APIBill.GetAll(dataBody);
 

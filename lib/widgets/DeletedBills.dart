@@ -31,8 +31,11 @@ class _DeletedBillsState extends State<DeletedBills> {
       data = [];
     });
     //get from server
+    DateTime now = DateTime.now();
     Map datas = {};
     datas['isDeleted'] = true;
+    datas['todayDate'] = '${now.year}-${now.month}-${now.day}';
+
     final response = await APIBill.GetAll(datas,);
 
     if(response.statusCode == 200){

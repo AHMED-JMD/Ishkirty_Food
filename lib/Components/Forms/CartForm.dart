@@ -137,7 +137,7 @@ class _CartFormState extends State<CartForm> {
                 ),
                 SizedBox(height: 20,),
                 Text('اختر طريقة الدفع', textAlign: TextAlign.center, style: TextStyle(
-                    fontSize: 19,
+                    fontSize: MediaQuery.of(context).size.width/50,
                     color: Colors.white
                   ),
                 ),
@@ -156,11 +156,15 @@ class _CartFormState extends State<CartForm> {
                           options: [
                             FormBuilderFieldOption(
                               value: 'صباحية',
-                              child: Text('صباحية', style: TextStyle(fontSize: 18, ),),
+                              child: Text('صباحية',
+                                style: TextStyle(fontSize: MediaQuery.of(context).size.width/70, ),
+                              ),
                             ),
                             FormBuilderFieldOption(
                               value: 'مسائية',
-                              child: Text('مسائية', style: TextStyle(fontSize: 18, ),),
+                              child: Text('مسائية',
+                                style: TextStyle(fontSize: MediaQuery.of(context).size.width/70, ),
+                              ),
                             ),
                           ],
                           validator: FormBuilderValidators.required(errorText: "الرجاء اختيار الوردية"),
@@ -176,21 +180,33 @@ class _CartFormState extends State<CartForm> {
                               value: 'كاش',
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 10.0),
-                                child: Icon(Icons.monetization_on, color: Colors.green[900], size: 50, ),
+                                child: Icon(
+                                  Icons.monetization_on,
+                                  color: Colors.green[900],
+                                  size: MediaQuery.of(context).size.width/27,
+                                ),
                               ),
                             ),
                             FormBuilderFieldOption(
                               value: 'بنكك',
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 10.0),
-                                child: Icon(MyIcon.bankak, color: Colors.red[900], size: 50,),
+                                child: Icon(
+                                  MyIcon.bankak,
+                                  color: Colors.red[900],
+                                  size: MediaQuery.of(context).size.width/27,
+                                ),
                               ),
                             ),
                             FormBuilderFieldOption(
                               value: 'حساب',
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 10.0),
-                                child: Icon(Icons.account_box, color: Colors.blue[900], size: 50,),
+                                child: Icon(
+                                  Icons.account_box,
+                                  color: Colors.blue[900],
+                                  size: MediaQuery.of(context).size.width/27,
+                                ),
                               ),
                             ),
                           ],
@@ -202,17 +218,6 @@ class _CartFormState extends State<CartForm> {
                             });
                           },
                           validator: FormBuilderValidators.required(errorText: "الرجاء اختيار طريقة الدفع"),
-                        ),
-                        SizedBox(height: 15,),
-                        FormBuilderCheckbox(
-                            name: 'secPrinter',
-                            onChanged: (val){
-                              setState(() {
-                                isSecondPrinter = val!;
-                              });
-                            },
-                            initialValue: isSecondPrinter,
-                            title: Text('طباعة قي المطبخ؟')
                         ),
                         if(payment_method == 'حساب')
                           FormBuilderDropdown(
@@ -234,6 +239,19 @@ class _CartFormState extends State<CartForm> {
                               }
                             },
                           ),
+                        SizedBox(height: 15,),
+                        FormBuilderCheckbox(
+                            name: 'secPrinter',
+                            onChanged: (val){
+                              setState(() {
+                                isSecondPrinter = val!;
+                              });
+                            },
+                            initialValue: isSecondPrinter,
+                            title: Text('طباعة قي المطبخ؟',
+                              style: TextStyle(fontSize: MediaQuery.of(context).size.width/75),
+                            )
+                        ),
                         SizedBox(height: 30,),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -283,12 +301,12 @@ class _CartFormState extends State<CartForm> {
 
                 SizedBox(height: 35),
                 Text('عدد الاصناف = ${value.cart.length}', textAlign: TextAlign.center, style: TextStyle(
-                    fontSize: 19,
+                    fontSize: MediaQuery.of(context).size.width/80,
                     color: Colors.white
                 ),
                 ),
                 Text("المبلغ الكلي: ${totalAmount}", textAlign: TextAlign.center,style: TextStyle(
-                    fontSize: 30,
+                    fontSize: MediaQuery.of(context).size.width/50,
                     color: Colors.white
                 ),
                 ),

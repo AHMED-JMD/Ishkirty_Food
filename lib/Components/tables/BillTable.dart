@@ -144,6 +144,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
     var now = DateTime.parse(currentRowData.createdAt);
     String date = '${now.year}/${now.month}/${now.day}';
     String time = '${now.hour}:${now.minute}';
+    String amPm = now.hour > 12 ? 'PM': 'AM';
 
     return DataRow(cells: [
       DataCell(Padding(
@@ -154,7 +155,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
         ),
       )),
       DataCell(Text(
-        '$time - $date',
+        '($time $amPm) - $date',
         style: const TextStyle(fontSize: 20),
       )),
       DataCell(Padding(
