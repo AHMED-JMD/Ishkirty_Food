@@ -38,21 +38,20 @@ dependencies:
   cupertino_icons: ^1.0.2
   http: ^1.1.0
   flutter_spinkit: ^5.2.0
-  form_builder_file_picker: ^4.1.0
+  form_builder_file_picker: ^5.0.0
   flutter_typeahead: ^4.8.0
   draw_graph: ^1.0.0
   fl_chart: ^0.64.0
-  printing: ^5.11.0
+  printing: ^5.14.2
   provider: ^6.1.1
   keymap: ^0.0.92
-  money_formatter: ^0.0.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   image_card: ^0.0.4
-  form_builder_validators: ^9.0.0
-  flutter_form_builder: ^9.0.0
+  form_builder_validators:
+  flutter_form_builder:
   advanced_datatable: ^0.0.8
   google_fonts:
 

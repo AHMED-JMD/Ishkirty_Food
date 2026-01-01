@@ -14,16 +14,14 @@ class APIBill {
 
       return response;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
   //get the bills
   static Future GetAll(data) async {
     try {
-      Map<String,String> Headers = {
-        "Content-Type" : "application/json"
-      };
+      Map<String, String> Headers = {"Content-Type": "application/json"};
 
       final url = Uri.parse('$apiUrl/by_type');
       Response response =
@@ -46,7 +44,7 @@ class APIBill {
 
       return response;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -55,16 +53,16 @@ class APIBill {
     try {
       Map<String, String> Headers = {'Content-Type': 'application/json'};
 
-
       final url = Uri.parse('$apiUrl/admin_bills');
       Response response =
-      await post(url, headers: Headers, body: jsonEncode(data));
+          await post(url, headers: Headers, body: jsonEncode(data));
 
       return response;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
+
   //Saerch bills in dates
   static Future Search(data) async {
     try {
@@ -72,11 +70,11 @@ class APIBill {
 
       final url = Uri.parse('$apiUrl/search_dates');
       Response response =
-      await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+          await post(url, headers: ConfigHeaders, body: jsonEncode(data));
 
       return response;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -87,11 +85,11 @@ class APIBill {
 
       final url = Uri.parse('$apiUrl/getTrans');
       Response response =
-      await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+          await post(url, headers: ConfigHeaders, body: jsonEncode(data));
 
       return response;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -106,7 +104,7 @@ class APIBill {
 
       return response;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -117,12 +115,11 @@ class APIBill {
 
       final url = Uri.parse('$apiUrl/delete');
       Response response =
-      await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+          await post(url, headers: ConfigHeaders, body: jsonEncode(data));
 
       return response;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
-
 }

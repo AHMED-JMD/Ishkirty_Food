@@ -21,10 +21,10 @@ class _BillsState extends State<Bills> {
 
   @override
   void initState() {
-    // TODO: implement initState
     getBills();
     super.initState();
   }
+
   //server func to get bills
   Future getBills() async {
     setState(() {
@@ -44,7 +44,6 @@ class _BillsState extends State<Bills> {
       isLoading = false;
       data = datas;
     });
-
   }
 
   //search dates
@@ -110,7 +109,7 @@ class _BillsState extends State<Bills> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 90,
               ),
               Row(
@@ -123,22 +122,23 @@ class _BillsState extends State<Bills> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
-              data.length != 0 || isLoading == false
+              data.isNotEmpty || isLoading == false
                   ? Container(
-                    color: Colors.grey[100],
-                    child: billTable(data: data,)
-                )
-                  : Padding(
-                    padding: const EdgeInsets.only(top: 190.0),
-                    child: SpinKitPouringHourGlassRefined(
-                      color: Colors.teal,
-                      size: 70.0,
+                      color: Colors.grey[100],
+                      child: billTable(
+                        data: data,
+                      ))
+                  : const Padding(
+                      padding: EdgeInsets.only(top: 190.0),
+                      child: SpinKitPouringHourGlassRefined(
+                        color: Colors.teal,
+                        size: 70.0,
+                      ),
                     ),
-                  ),
-                ],
+            ],
           ),
         ]),
       ),

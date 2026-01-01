@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'my_icon_icons.dart';
-import 'package:money_formatter/money_formatter.dart';
+// import 'package:money_formatter/money_formatter.dart';
 
 class SalesCard extends StatelessWidget {
   final String Period;
@@ -9,14 +9,13 @@ class SalesCard extends StatelessWidget {
   final int AccountsAmount;
   final String period;
 
-  SalesCard({
-    super.key,
-    required this.Period,
-    required this.CashAmount,
-    required this.BankakAmount,
-    required this.AccountsAmount,
-    required this.period
-  });
+  SalesCard(
+      {super.key,
+      required this.Period,
+      required this.CashAmount,
+      required this.BankakAmount,
+      required this.AccountsAmount,
+      required this.period});
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +27,8 @@ class SalesCard extends StatelessWidget {
         ),
         Center(
             child: Text(
-          '$Period',
-          style: TextStyle(fontSize: 35),
+          Period,
+          style: const TextStyle(fontSize: 20),
         )),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,11 +41,11 @@ class SalesCard extends StatelessWidget {
               const Icon(
                 Icons.attach_money_rounded,
                 color: Color(0xff1b3b0b),
-                size: 80,
+                size: 50,
               ),
               Text(
-                '${MoneyFormatter(amount: CashAmount.toDouble()).output.withoutFractionDigits}',
-                style: TextStyle(fontSize: 30),
+                '${CashAmount.toDouble()}',
+                style: const TextStyle(fontSize: 20),
               ),
             ]),
             Column(children: [
@@ -56,11 +55,11 @@ class SalesCard extends StatelessWidget {
               const Icon(
                 MyIcon.bankak,
                 color: Color(0xffc90000),
-                size: 80,
+                size: 50,
               ),
               Text(
-                '${MoneyFormatter(amount: BankakAmount.toDouble()).output.withoutFractionDigits}',
-                style: TextStyle(fontSize: 30),
+                '${BankakAmount.toDouble()}',
+                style: const TextStyle(fontSize: 20),
               ),
             ]),
             Column(children: [
@@ -69,22 +68,28 @@ class SalesCard extends StatelessWidget {
               ),
               const Icon(
                 Icons.person_pin,
-                size: 80,
+                size: 50,
                 color: Color(0xff0c283f),
               ),
               Text(
-                '${MoneyFormatter(amount: AccountsAmount.toDouble()).output.withoutFractionDigits}',
-                style: TextStyle(fontSize: 30),
+                '${AccountsAmount.toDouble()}',
+                style: const TextStyle(fontSize: 20),
               ),
             ]),
           ],
         ),
-        Divider(
-          color: Colors.black,
+        const SizedBox(
+          height: 20,
         ),
-        Center(
-          child: Text('مبيعات $period', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),),
-        )
+        // const Divider(
+        //   color: Colors.black,
+        // ),
+        // Center(
+        //   child: Text(
+        //     'مبيعات $period',
+        //     style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        //   ),
+        // )
       ],
     );
   }

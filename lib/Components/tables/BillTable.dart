@@ -8,7 +8,7 @@ import 'package:ashkerty_food/Components/Forms/DeletedBillsAdd.dart';
 
 class billTable extends StatefulWidget {
   final List data;
-  billTable({
+  const billTable({
     required this.data,
     Key? key,
   }) : super(key: key);
@@ -18,7 +18,6 @@ class billTable extends StatefulWidget {
 }
 
 class _billTableState extends State<billTable> {
-
   @override
   void initState() {
     super.initState();
@@ -43,85 +42,88 @@ class _billTableState extends State<billTable> {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    SizedBox(
-                      width: 10,
-                    ),
-                    ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DeletedBills(),
-                            ),
-                          );
-                        },
-                        label: Text('الفواتير المحذوفة'),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal),
-                        icon: Icon(
-                          Icons.delete_forever_outlined,
-                          size: 30,
-                          color: Colors.black,
-                        )),
-                  ],
+              children: [
+                const SizedBox(
+                  width: 10,
                 ),
-              const SizedBox(
+                ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DeletedBills(),
+                        ),
+                      );
+                    },
+                    label: const Text(
+                      'الفواتير المحذوفة',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+                    icon: const Icon(
+                      Icons.delete_forever_outlined,
+                      size: 30,
+                      color: Colors.black,
+                    )),
+              ],
+            ),
+            const SizedBox(
               height: 20,
             ),
-             AdvancedPaginatedDataTable(
-                    addEmptyRows: false,
-                    source: source,
-                    showFirstLastButtons: true,
-                    rowsPerPage: rowsPerPage,
-                    availableRowsPerPage: const [5, 10, 25],
-                    onRowsPerPageChanged: (newRowsPerPage) {
-                      if (newRowsPerPage != null) {
-                        setState(() {
-                          rowsPerPage = newRowsPerPage;
-                        });
-                      }
-                    },
-                    columns: const [
-                      DataColumn(
-                          label: Text(
-                        'رقم الفاتورة',
-                        style: TextStyle(fontSize: 20),
-                      )),
-                      DataColumn(
-                          label: Text(
-                        'وقت الفاتورة',
-                        style: TextStyle(fontSize: 20),
-                      )),
-                      DataColumn(
-                          label:  Text(
-                          ' قيمة الفاتورة ',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      DataColumn(
-                          label: Text(
-                          ' طريقة الدفع',
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      DataColumn(
-                          label: Text(
-                        ' الوردية',
-                        style: TextStyle(fontSize: 20),
-                      )),
-                      DataColumn(
-                          label: Text(
-                            ' الادمن',
-                            style: TextStyle(fontSize: 20),
-                          )),
-                      DataColumn(
-                          label: Text(
-                        '',
-                        style: TextStyle(color: Color(0xffffffff)),
-                      )),
-                    ],
+            AdvancedPaginatedDataTable(
+              addEmptyRows: false,
+              source: source,
+              showFirstLastButtons: true,
+              rowsPerPage: rowsPerPage,
+              availableRowsPerPage: const [5, 10, 25],
+              onRowsPerPageChanged: (newRowsPerPage) {
+                if (newRowsPerPage != null) {
+                  setState(() {
+                    rowsPerPage = newRowsPerPage;
+                  });
+                }
+              },
+              columns: const [
+                DataColumn(
+                    label: Text(
+                  'رقم الفاتورة',
+                  style: TextStyle(fontSize: 20),
+                )),
+                DataColumn(
+                    label: Text(
+                  'وقت الفاتورة',
+                  style: TextStyle(fontSize: 20),
+                )),
+                DataColumn(
+                  label: Text(
+                    ' قيمة الفاتورة ',
+                    style: TextStyle(fontSize: 20),
                   ),
+                ),
+                DataColumn(
+                  label: Text(
+                    ' طريقة الدفع',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                DataColumn(
+                    label: Text(
+                  ' الوردية',
+                  style: TextStyle(fontSize: 20),
+                )),
+                DataColumn(
+                    label: Text(
+                  ' الادمن',
+                  style: TextStyle(fontSize: 20),
+                )),
+                DataColumn(
+                    label: Text(
+                  '',
+                  style: TextStyle(color: Color(0xffffffff)),
+                )),
+              ],
+            ),
           ],
         ),
       ),
@@ -132,8 +134,7 @@ class _billTableState extends State<billTable> {
 class ExampleSource extends AdvancedDataTableSource<bill> {
   BuildContext context;
   List data;
-  ExampleSource(
-      {required this.context, required this.data});
+  ExampleSource({required this.context, required this.data});
 
   String lastSearchTerm = '';
 
@@ -144,7 +145,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
     var now = DateTime.parse(currentRowData.createdAt);
     String date = '${now.year}/${now.month}/${now.day}';
     String time = '${now.hour}:${now.minute}';
-    String amPm = now.hour > 12 ? 'PM': 'AM';
+    String amPm = now.hour > 12 ? 'PM' : 'AM';
 
     return DataRow(cells: [
       DataCell(Padding(
@@ -184,28 +185,30 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
         child: Text(
-          currentRowData.admin != null? currentRowData.admin.toString() : 'لايوجد',
+          currentRowData.admin != null
+              ? currentRowData.admin.toString()
+              : 'لايوجد',
           style: const TextStyle(fontSize: 20),
         ),
       )),
       DataCell(
         Padding(
           padding: const EdgeInsets.all(0),
-          child: ButtonBar(
+          child: OverflowBar(
             children: [
               IconButton(
-                  onPressed: (){
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BillDetailes(
-                          billId: currentRowData.id,
-                        ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BillDetailes(
+                        billId: currentRowData.id.toString(),
                       ),
-                    );
-                  },
-                  icon: Icon(Icons.more_outlined),
-                  tooltip: 'التفاصيل',
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.more_outlined),
+                tooltip: 'التفاصيل',
               ),
               AddToDeleted(
                 bill: currentRowData,
@@ -239,10 +242,10 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
       NextPageRequest pageRequest) async {
     await Future.delayed(const Duration(milliseconds: 400));
 
-    if (data.length > 0) {
+    if (data.isNotEmpty) {
       return RemoteDataSourceDetails(
           data.length,
-          (data as List<dynamic>)
+          (data)
               .map((json) => bill.fromJson(json))
               .skip(pageRequest.offset)
               .take(pageRequest.pageSize)

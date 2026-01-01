@@ -12,7 +12,7 @@ import 'dart:convert';
 class UserBillsTable extends StatefulWidget {
   final String admin_id;
 
-  UserBillsTable({Key? key, required this.admin_id}) : super(key: key);
+  const UserBillsTable({Key? key, required this.admin_id}) : super(key: key);
 
   @override
   State<UserBillsTable> createState() => _UserBillsTableState();
@@ -25,7 +25,6 @@ class _UserBillsTableState extends State<UserBillsTable> {
 
   @override
   void initState() {
-    // TODO: implement initState
     getBills(widget.admin_id);
     getTransfers();
     super.initState();
@@ -50,6 +49,7 @@ class _UserBillsTableState extends State<UserBillsTable> {
       data = datas;
     });
   }
+
   //get transfers
   Future getTransfers() async {
     setState(() {
@@ -68,6 +68,7 @@ class _UserBillsTableState extends State<UserBillsTable> {
       transfer = transferV;
     });
   }
+
   //search dates
   Future searchDates(datas) async {
     setState(() {
@@ -125,73 +126,80 @@ class _UserBillsTableState extends State<UserBillsTable> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Container(
-                    color: Colors.red[300],
-                    child: Padding(
-                      padding: const EdgeInsets.all(7.0),
-                      child: Text('تحويلات اليوم = $transfer',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
-                      ),
+                  color: Colors.red[300],
+                  child: Padding(
+                    padding: const EdgeInsets.all(7.0),
+                    child: Text(
+                      'تحويلات اليوم = $transfer',
+                      style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white),
                     ),
                   ),
+                ),
               ],
             ),
-            SizedBox(height: 15,),
-            data.length != 0 || isLoading == false ?
-            AdvancedPaginatedDataTable(
-              addEmptyRows: false,
-              source: source,
-              showFirstLastButtons: true,
-              rowsPerPage: rowsPerPage,
-              availableRowsPerPage: const [5, 10, 25],
-              onRowsPerPageChanged: (newRowsPerPage) {
-                if (newRowsPerPage != null) {
-                  setState(() {
-                    rowsPerPage = newRowsPerPage;
-                  });
-                }
-                },
-              columns: const [
-                    DataColumn(
-                        label: Text(
-                          'رقم الفاتورة',
-                          style: TextStyle(fontSize: 20),
-                        )),
-                    DataColumn(
-                        label: Text(
-                          'تفاصيل الفاتورة',
-                          style: TextStyle(fontSize: 20),
-                        )),
-                    DataColumn(
-                        label: Text(
-                          'وقت الفاتورة',
-                          style: TextStyle(fontSize: 20),
-                        )),
-                    DataColumn(
-                      label:  Text(
-                        ' قيمة الفاتورة ',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Text(
-                        ' طريقة الدفع',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                    DataColumn(
-                        label: Text(
-                          ' الوردية',
-                          style: TextStyle(fontSize: 20),
-                        )),
-                  ],
-                ) : Center(
-                      child: SpinKitPouringHourGlassRefined(
-                        color: Colors.teal,
-                        size: 37,
-                      ),
+            const SizedBox(
+              height: 15,
             ),
-              ],
-            ),
+            data.isNotEmpty || isLoading == false
+                ? AdvancedPaginatedDataTable(
+                    addEmptyRows: false,
+                    source: source,
+                    showFirstLastButtons: true,
+                    rowsPerPage: rowsPerPage,
+                    availableRowsPerPage: const [5, 10, 25],
+                    onRowsPerPageChanged: (newRowsPerPage) {
+                      if (newRowsPerPage != null) {
+                        setState(() {
+                          rowsPerPage = newRowsPerPage;
+                        });
+                      }
+                    },
+                    columns: const [
+                      DataColumn(
+                          label: Text(
+                        'رقم الفاتورة',
+                        style: TextStyle(fontSize: 20),
+                      )),
+                      DataColumn(
+                          label: Text(
+                        'تفاصيل الفاتورة',
+                        style: TextStyle(fontSize: 20),
+                      )),
+                      DataColumn(
+                          label: Text(
+                        'وقت الفاتورة',
+                        style: TextStyle(fontSize: 20),
+                      )),
+                      DataColumn(
+                        label: Text(
+                          ' قيمة الفاتورة ',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      DataColumn(
+                        label: Text(
+                          ' طريقة الدفع',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                      ),
+                      DataColumn(
+                          label: Text(
+                        ' الوردية',
+                        style: TextStyle(fontSize: 20),
+                      )),
+                    ],
+                  )
+                : const Center(
+                    child: SpinKitPouringHourGlassRefined(
+                      color: Colors.teal,
+                      size: 37,
+                    ),
+                  ),
+          ],
+        ),
       ),
     );
   }
@@ -200,13 +208,12 @@ class _UserBillsTableState extends State<UserBillsTable> {
 class ExampleSource extends AdvancedDataTableSource<bill> {
   BuildContext context;
   List data;
-  ExampleSource(
-      {required this.context, required this.data});
+  ExampleSource({required this.context, required this.data});
 
   String lastSearchTerm = '';
 
   //update data when searched
-  void updateData(List newData){
+  void updateData(List newData) {
     data = newData;
     notifyListeners();
   }
@@ -218,7 +225,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
     var now = DateTime.parse(currentRowData.createdAt);
     String date = '${now.year}/${now.month}/${now.day}';
     String time = '${now.hour}:${now.minute}';
-    String amPm = now.hour > 12 ? 'PM': 'AM';
+    String amPm = now.hour > 12 ? 'PM' : 'AM';
 
     return DataRow(cells: [
       DataCell(Padding(
@@ -237,13 +244,14 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => BillDetailes(
-                    billId: currentRowData.id,
+                    billId: currentRowData.id.toString(),
                   ),
                 ),
               );
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-            child: const Text('التفاصيل', style: TextStyle(fontSize: 20)),
+            child: const Text('التفاصيل',
+                style: TextStyle(fontSize: 20, color: Colors.white)),
           ),
         ),
       ),
@@ -255,17 +263,17 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
         padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
         child: Center(
             child: Text(
-              currentRowData.amount.toString(),
-              style: const TextStyle(fontSize: 20),
-            )),
+          currentRowData.amount.toString(),
+          style: const TextStyle(fontSize: 20),
+        )),
       )),
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 20, 8),
         child: Center(
             child: Text(
-              currentRowData.paymentMethod,
-              style: const TextStyle(fontSize: 20),
-            )),
+          currentRowData.paymentMethod,
+          style: const TextStyle(fontSize: 20),
+        )),
       )),
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
@@ -299,10 +307,10 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
       NextPageRequest pageRequest) async {
     await Future.delayed(const Duration(milliseconds: 400));
 
-    if (data.length > 0) {
+    if (data.isNotEmpty) {
       return RemoteDataSourceDetails(
           data.length,
-          (data as List<dynamic>)
+          (data)
               .map((json) => bill.fromJson(json))
               .skip(pageRequest.offset)
               .take(pageRequest.pageSize)

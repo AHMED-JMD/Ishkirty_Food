@@ -9,22 +9,18 @@ import '../static/drawer.dart';
 
 class ClientTransactios extends StatefulWidget {
   final int clientId;
-  ClientTransactios({super.key, required this.clientId});
+  const ClientTransactios({super.key, required this.clientId});
 
   @override
-  State<ClientTransactios> createState() => _ClientTransactiosState(clientId: clientId);
+  State<ClientTransactios> createState() => _ClientTransactiosState();
 }
 
 class _ClientTransactiosState extends State<ClientTransactios> {
-  final int clientId;
-  _ClientTransactiosState({ required this.clientId});
-
   bool isLoading = false;
   List data = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     getClientBills();
     super.initState();
   }
@@ -37,7 +33,7 @@ class _ClientTransactiosState extends State<ClientTransactios> {
     });
     //call api
     Map datas = {};
-    datas['clientId'] = clientId;
+    datas['clientId'] = widget.clientId;
     final response = await APIBill.GetClientBills(datas);
 
     if (response.statusCode == 200) {
@@ -46,7 +42,7 @@ class _ClientTransactiosState extends State<ClientTransactios> {
         isLoading = false;
         data = res;
       });
-    }else{
+    } else {
       setState(() {
         isLoading = false;
       });
@@ -67,44 +63,51 @@ class _ClientTransactiosState extends State<ClientTransactios> {
               size: 37,
               color: Colors.white,
             ),
-            onPressed: (){
+            onPressed: () {
               Navigator.pushReplacementNamed(context, '/clients');
             },
           ),
 
-          title: const Center(child: Text("معاملات العملاء", style: TextStyle(fontSize: 25),)),
-          actions: const [LeadingDrawerBtn(),],
-          toolbarHeight: 45,),
+          title: const Center(
+              child: Text(
+            "معاملات العملاء",
+            style: TextStyle(fontSize: 25),
+          )),
+          actions: const [
+            LeadingDrawerBtn(),
+          ],
+          toolbarHeight: 45,
+        ),
         //custom my drawer in static folder
         endDrawer: const MyDrawer(),
 
-        body: ListView(
-            children:[
-              Container(
-                decoration: BoxDecoration(
-                    color: Colors.grey[100]
-                ),
+        body: ListView(children: [
+          Container(
+            decoration: BoxDecoration(color: Colors.grey[100]),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              //custom widget in static folder for showing search bar responsive
+              const SizedBox(
+                height: 20,
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  //custom widget in static folder for showing search bar responsive
-                  const SizedBox(height: 20,),
-                  data.length != 0 || isLoading == false ?
-                  Container(
+              data.isNotEmpty || isLoading == false
+                  ? Container(
                       color: Colors.grey[100],
-                      child: ClientBillTable(data: data,)
-                  ) : Padding(
-                    padding: const EdgeInsets.only(top: 190.0),
-                    child: SpinKitPouringHourGlassRefined(
-                      color: Colors.teal,
-                      size: 70.0,
+                      child: ClientBillTable(
+                        data: data,
+                      ))
+                  : const Padding(
+                      padding: EdgeInsets.only(top: 190.0),
+                      child: SpinKitPouringHourGlassRefined(
+                        color: Colors.teal,
+                        size: 70.0,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ]
-        ),
+            ],
+          ),
+        ]),
       ),
     );
   }

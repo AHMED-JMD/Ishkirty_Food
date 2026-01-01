@@ -10,18 +10,15 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ManagerTable extends StatefulWidget {
   final List data;
-  ManagerTable({Key? key, required this.data}) : super(key: key);
+  const ManagerTable({Key? key, required this.data}) : super(key: key);
   @override
-  State<ManagerTable> createState() => _ManagerTableState(data: data);
+  State<ManagerTable> createState() => _ManagerTableState();
 }
 
 class _ManagerTableState extends State<ManagerTable> {
-  List data;
-  _ManagerTableState({required this.data});
-
   //server side Functions ------------------
   //delete account
-  Future Delete (data) async {
+  Future Delete(data) async {
     setState(() {
       isLoading = true;
     });
@@ -31,32 +28,36 @@ class _ManagerTableState extends State<ManagerTable> {
     setState(() {
       isLoading = false;
     });
-    if(response == true){
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Center(child: Text('تمت الحذف بنجاح', style: TextStyle(fontSize: 19) ,)),
-            backgroundColor: Colors.green,
-          )
-      );
-      await Future.delayed(Duration(seconds: 1));
+    if (response == true) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Center(
+            child: Text(
+          'تمت الحذف بنجاح',
+          style: TextStyle(fontSize: 19),
+        )),
+        backgroundColor: Colors.green,
+      ));
+      await Future.delayed(const Duration(seconds: 1));
       Navigator.pushReplacementNamed(context, '/profile');
-    }else{
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Center(child: Text('$response', style: TextStyle(fontSize: 19) ,)),
-            backgroundColor: Colors.red,
-          )
-      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Center(
+            child: Text(
+          '$response',
+          style: const TextStyle(fontSize: 19),
+        )),
+        backgroundColor: Colors.red,
+      ));
     }
   }
 //-------------------------------------
 
   var rowsPerPage = 10;
-  late final source = ExampleSource(data: data, context: context, delete: Delete);
+  late final source =
+      ExampleSource(data: widget.data, context: context, delete: Delete);
   final _searchController = TextEditingController();
 
   bool isLoading = false;
-
 
   @override
   void initState() {
@@ -64,27 +65,27 @@ class _ManagerTableState extends State<ManagerTable> {
     _searchController.text = '';
   }
 
-
 //--------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
-    return  Padding(
+    return Padding(
       padding: const EdgeInsets.all(15.0),
       child: SingleChildScrollView(
         child: Column(
           children: [
-            isLoading == true ?
-            SpinKitWave(
-              color: Colors.green,
-              size: 40.0,
-            ): Text(''),
+            isLoading == true
+                ? const SpinKitWave(
+                    color: Colors.green,
+                    size: 40.0,
+                  )
+                : const Text(''),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
               showFirstLastButtons: true,
               rowsPerPage: rowsPerPage,
-              availableRowsPerPage: const [ 5, 10, 25],
+              availableRowsPerPage: const [5, 10, 25],
               onRowsPerPageChanged: (newRowsPerPage) {
                 if (newRowsPerPage != null) {
                   setState(() {
@@ -94,24 +95,40 @@ class _ManagerTableState extends State<ManagerTable> {
               },
               columns: const [
                 DataColumn(
-                    label:  Padding(
-                      padding: EdgeInsets.fromLTRB(8,8,35,8),
-                      child: Text('الأسم',style: TextStyle(fontSize: 20),),
-                    )
+                    label: Padding(
+                  padding: EdgeInsets.fromLTRB(8, 8, 35, 8),
+                  child: Text(
+                    'الأسم',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                )),
+                DataColumn(
+                  label: Center(
+                      child: Text(
+                    'رقم الهاتف',
+                    style: TextStyle(fontSize: 20),
+                  )),
                 ),
                 DataColumn(
-                  label: Center(child: Text('رقم الهاتف',style: TextStyle(fontSize: 20),)),
+                  label: Center(
+                      child: Text(
+                    'الوردية',
+                    style: TextStyle(fontSize: 20),
+                  )),
                 ),
                 DataColumn(
-                  label: Center(child: Text('الوردية',style: TextStyle(fontSize: 20),)),
+                  label: Center(
+                      child: Text(
+                    'المعاملات',
+                    style: TextStyle(fontSize: 20),
+                  )),
                 ),
                 DataColumn(
-                  label: Center(child: Text('المعاملات',style: TextStyle(fontSize: 20),)),
-                ),
-                DataColumn(
-                    label: Center(child: Text('',style: TextStyle(color: Color(0xffffffff)),))
-
-                ),
+                    label: Center(
+                        child: Text(
+                  '',
+                  style: TextStyle(color: Color(0xffffffff)),
+                ))),
               ],
             ),
           ],
@@ -125,41 +142,58 @@ class ExampleSource extends AdvancedDataTableSource<Managers> {
   List data;
   BuildContext context;
   final Function(Map) delete;
-  ExampleSource({required this.data, required this.context, required this.delete});
+  ExampleSource(
+      {required this.data, required this.context, required this.delete});
 
   String lastSearchTerm = '';
 
   @override
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
-    return DataRow(
-        cells: [
-          DataCell(
-            Padding(
-              padding: EdgeInsets.only(right: 30),
-              child: Text(currentRowData.username,style: const TextStyle(fontSize: 20),),
-            ),
+    return DataRow(cells: [
+      DataCell(
+        Padding(
+          padding: const EdgeInsets.only(right: 30),
+          child: Text(
+            currentRowData.username,
+            style: const TextStyle(fontSize: 20),
           ),
-          DataCell(
-              Text(currentRowData.phoneNum.toString(),style: const TextStyle(fontSize: 20),)
+        ),
+      ),
+      DataCell(Text(
+        currentRowData.phoneNum.toString(),
+        style: const TextStyle(fontSize: 20),
+      )),
+      DataCell(
+        Text(
+          currentRowData.shift,
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
+      DataCell(
+        IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ManagerDetails(
+                  adminId: currentRowData.adminId,
+                ),
+              ),
+            );
+          },
+          icon: const Icon(
+            Icons.feed_outlined,
+            color: Color(0xffb2a011),
           ),
-          DataCell(
-              Text(currentRowData.shift,style: const TextStyle(fontSize: 20),),
-          ),
-          DataCell(
-            IconButton(
-              onPressed: (){
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (context) => ManagerDetails(adminId: currentRowData.adminId,),
-                  ),
-                );
-                },
-              icon:const Icon(Icons.feed_outlined,color: Color(0xffb2a011),),tooltip: 'معاملات',),
-          ),
-          DataCell(
-              DeleteManager(data: currentRowData,Delete: delete,)
-          ),
-        ]);
+          tooltip: 'معاملات',
+        ),
+      ),
+      DataCell(DeleteManager(
+        data: currentRowData,
+        Delete: delete,
+      )),
+    ]);
   }
 
   @override
@@ -182,11 +216,10 @@ class ExampleSource extends AdvancedDataTableSource<Managers> {
   @override
   Future<RemoteDataSourceDetails<Managers>> getNextPage(
       NextPageRequest pageRequest) async {
-
     await Future.delayed(const Duration(milliseconds: 400));
     return RemoteDataSourceDetails(
       data.length,
-      (data as List<dynamic>)
+      (data)
           .map((json) => Managers.fromJson(json))
           .skip(pageRequest.offset)
           .take(pageRequest.pageSize)
@@ -197,6 +230,6 @@ class ExampleSource extends AdvancedDataTableSource<Managers> {
     );
   }
 }
+
 //selected list goes here
 List<String> selectedIds = [];
-

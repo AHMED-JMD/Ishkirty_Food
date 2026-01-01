@@ -17,40 +17,42 @@ class _ChangePasswordState extends State<ChangePassword> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   //server function to update password
-  Future updatePassword (data) async{
+  Future updatePassword(data) async {
     //call server
     final response = await APIAuth.UpdatPassword(data);
 
-    if(response == true){
-      return ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Center(
-              child: Text('تم تغيير كلمة السر بنجاح', style: TextStyle(fontSize: 20),),
-            ),
-          backgroundColor: Colors.green,
-        )
-      );
-    }else{
-      return ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Center(
-              child: Text('$response', style: TextStyle(fontSize: 20),),
-            ),
-            backgroundColor: Colors.redAccent,
-          )
-      );
+    if (response == true) {
+      return ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Center(
+          child: Text(
+            'تم تغيير كلمة السر بنجاح',
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        backgroundColor: Colors.green,
+      ));
+    } else {
+      return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Center(
+          child: Text(
+            '$response',
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
+        backgroundColor: Colors.redAccent,
+      ));
     }
   }
 
-  change_password (BuildContext context) {
+  change_password(BuildContext context) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: SimpleDialog(
-            title: Center(child: Text('تغيير كلمة السر')),
-            children:[
+            title: const Center(child: Text('تغيير كلمة السر')),
+            children: [
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: FormBuilder(
@@ -58,37 +60,42 @@ class _ChangePasswordState extends State<ChangePassword> {
                   child: Column(
                     children: [
                       FormBuilderTextField(
-                          name: 'password',
-                          decoration: InputDecoration(labelText: 'كلمة السر القديمة'),
-                        validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
+                        name: 'password',
+                        decoration: const InputDecoration(
+                            labelText: 'كلمة السر القديمة'),
+                        validator: FormBuilderValidators.required(
+                            errorText: 'الرجاء ادخال جميع الحقول'),
                       ),
                       FormBuilderTextField(
                         name: 'new_password',
-                        onChanged: (val){
+                        onChanged: (val) {
                           setState(() {
                             new_password = val;
                           });
                         },
                         obscureText: true,
-                        decoration: InputDecoration(labelText: 'كلمة السر الجديدة'),
-                        validator: FormBuilderValidators.required(errorText: 'الرجاء ادخال جميع الحقول'),
+                        decoration: const InputDecoration(
+                            labelText: 'كلمة السر الجديدة'),
+                        validator: FormBuilderValidators.required(
+                            errorText: 'الرجاء ادخال جميع الحقول'),
                       ),
                       FormBuilderTextField(
                         name: 're_password',
-                        onChanged: (val){
+                        onChanged: (val) {
                           setState(() {
                             re_password = val;
                           });
                         },
                         obscureText: true,
-                        decoration: InputDecoration(labelText: 'تكرار كلمة السر'),
-                        validator: (value){
-                          if(value != new_password){
+                        decoration:
+                            const InputDecoration(labelText: 'تكرار كلمة السر'),
+                        validator: (value) {
+                          if (value != new_password) {
                             return 'كلمة السر لا تتطابق';
                           }
+                          return "";
                         },
                       ),
-
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0, top: 30),
                         child: Center(
@@ -97,16 +104,20 @@ class _ChangePasswordState extends State<ChangePassword> {
                             width: 70,
                             child: TextButton(
                               style: TextButton.styleFrom(
-                                backgroundColor: Colors.deepPurple,
-                                primary: Colors.white,
+                                backgroundColor: Colors.teal,
                               ),
-                              child: Text('حفظ'),
-                              onPressed: (){
-                                if(_formKey.currentState!.saveAndValidate()){
+                              child: const Text(
+                                'حفظ',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              onPressed: () {
+                                if (_formKey.currentState!.saveAndValidate()) {
                                   Map data = {};
                                   data['admin_id'] = widget.admin_id;
-                                  data['password'] = _formKey.currentState!.value['password'];
-                                  data['newPassword'] = _formKey.currentState!.value['new_password'];
+                                  data['password'] =
+                                      _formKey.currentState!.value['password'];
+                                  data['newPassword'] = _formKey
+                                      .currentState!.value['new_password'];
 
                                   //call Func
                                   updatePassword(data);
@@ -131,16 +142,14 @@ class _ChangePasswordState extends State<ChangePassword> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-        onPressed: (){
+        onPressed: () {
           change_password(context);
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.teal,
-          minimumSize: Size(200, 50)
-        ),
-        child: Text('تغيير كلمة السر?', style: TextStyle(fontSize: 17),));
+            backgroundColor: Colors.teal, minimumSize: const Size(200, 50)),
+        child: const Text(
+          'تغيير كلمة السر?',
+          style: TextStyle(fontSize: 17),
+        ));
   }
 }
-
-
-

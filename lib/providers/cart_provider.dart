@@ -9,11 +9,10 @@ class CartProvider extends ChangeNotifier {
   get counter => _counter;
 
   //counter logic---------
-  void increment_counter(){
+  void increment_counter() {
     _counter++;
     notifyListeners();
   }
-
 
   //cart logic------------------
   void addToCart(Cart model) {
@@ -22,7 +21,7 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addAmount (Cart model){
+  void addAmount(Cart model) {
     //check and iterate and add
     model.counter = model.counter + 1;
     model.total_price = model.unit_price * model.counter;
@@ -30,33 +29,31 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void minusAmount (Cart model){
+  void minusAmount(Cart model) {
     //check and iterate and minus
-    if(model.counter > 1){
+    if (model.counter > 1) {
       model.counter = model.counter - 1;
       model.total_price = model.unit_price * model.counter;
     }
     notifyListeners();
   }
 
-  void addonsUpdate(Cart model ,addon, int amount){
-
+  void addonsUpdate(Cart model, addon, int amount) {
     model.total_price = model.total_price + addon['price'] * amount;
 
     model.addons.add(amount.toString() + ' ' + addon['name']);
     notifyListeners();
   }
 
-  void deletefromCart (Cart model){
+  void deletefromCart(Cart model) {
     //remove from list
     _cart.remove(model);
     notifyListeners();
   }
 
-  void resetCart () async {
-    await Future.delayed(Duration(seconds: 2));
+  void resetCart() async {
+    await Future.delayed(const Duration(seconds: 2));
     _cart = [];
     notifyListeners();
   }
-
 }

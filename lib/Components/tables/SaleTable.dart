@@ -1,28 +1,22 @@
-import 'package:ashkerty_food/models/sales.dart';
+import 'package:ashkerty_food/models/SpieSales.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
 
-
 class SalesTable extends StatefulWidget {
   final List data;
-  SalesTable({Key? key, required this.data}) : super(key: key);
+  const SalesTable({Key? key, required this.data}) : super(key: key);
 
   @override
-  State<SalesTable> createState() => _SalesTableState(data: data);
+  State<SalesTable> createState() => _SalesTableState();
 }
 
 class _SalesTableState extends State<SalesTable> {
-  List data;
-  _SalesTableState({required this.data});
-
-
   var rowsPerPage = 10;
-  late final source = ExampleSource(data: data, context: context);
+  late final source = ExampleSource(data: widget.data, context: context);
   final _searchController = TextEditingController();
 
   bool isLoading = false;
-
 
   @override
   void initState() {
@@ -36,18 +30,20 @@ class _SalesTableState extends State<SalesTable> {
 
   @override
   Widget build(BuildContext context) {
-    return  Padding(
+    return Padding(
       padding: const EdgeInsets.all(15.0),
       child: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 20,),
+            const SizedBox(
+              height: 20,
+            ),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
               showFirstLastButtons: true,
               rowsPerPage: rowsPerPage,
-              availableRowsPerPage: const [ 5, 10, 25],
+              availableRowsPerPage: const [5, 10, 25],
               onRowsPerPageChanged: (newRowsPerPage) {
                 if (newRowsPerPage != null) {
                   setState(() {
@@ -57,16 +53,25 @@ class _SalesTableState extends State<SalesTable> {
               },
               columns: const [
                 DataColumn(
-                  label: Center(child: Text('الصنف ',style: TextStyle(fontSize: 20),)),
+                  label: Center(
+                      child: Text(
+                    'الاسم ',
+                    style: TextStyle(fontSize: 20),
+                  )),
                 ),
                 DataColumn(
-                  label: Center(child: Text('الكمية',style: TextStyle(fontSize: 20),)),
+                  label: Center(
+                      child: Text(
+                    'النوع',
+                    style: TextStyle(fontSize: 20),
+                  )),
                 ),
                 DataColumn(
-                  label: Center(child: Text('سعر الوحدة ',style: TextStyle(fontSize: 20),)),
-                ),
-                DataColumn(
-                  label: Center(child: Text('السعر الكلي ',style: TextStyle(fontSize: 20),)),
+                  label: Center(
+                      child: Text(
+                    ' الايرادات ',
+                    style: TextStyle(fontSize: 20),
+                  )),
                 ),
               ],
             ),
@@ -77,7 +82,7 @@ class _SalesTableState extends State<SalesTable> {
   }
 }
 
-class ExampleSource extends AdvancedDataTableSource<Sales> {
+class ExampleSource extends AdvancedDataTableSource<SpiecesSales> {
   List data;
   BuildContext context;
   ExampleSource({required this.data, required this.context});
@@ -87,36 +92,26 @@ class ExampleSource extends AdvancedDataTableSource<Sales> {
   @override
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
-    return DataRow(
-        cells: [
-          DataCell(
-              Text(currentRowData.name,style: const TextStyle(fontSize: 20),)
-          ),
-          DataCell(
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8,8,25,8),
-                child: Text(
-                  currentRowData.quantity.toString(),
-                  style: const TextStyle(fontSize: 20),),
-              )
-          ),
-          DataCell(
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8,8,25,8),
-                child: Text(
-                  currentRowData.price.toString(),
-                  style: const TextStyle(fontSize: 20),),
-              )
-          ),
-          DataCell(
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8,8,25,8),
-                child: Text(
-                  currentRowData.amount.toString(),
-                  style: const TextStyle(fontSize: 20),),
-              )
-          ),
-        ]);
+    return DataRow(cells: [
+      DataCell(Text(
+        currentRowData.name,
+        style: const TextStyle(fontSize: 20),
+      )),
+      DataCell(Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
+        child: Text(
+          currentRowData.category,
+          style: const TextStyle(fontSize: 20),
+        ),
+      )),
+      DataCell(Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
+        child: Text(
+          currentRowData.totSales.toString(),
+          style: const TextStyle(fontSize: 20),
+        ),
+      )),
+    ]);
   }
 
   @override
@@ -137,14 +132,13 @@ class ExampleSource extends AdvancedDataTableSource<Sales> {
   }
 
   @override
-  Future<RemoteDataSourceDetails<Sales>> getNextPage(
+  Future<RemoteDataSourceDetails<SpiecesSales>> getNextPage(
       NextPageRequest pageRequest) async {
-
     await Future.delayed(const Duration(milliseconds: 400));
     return RemoteDataSourceDetails(
       data.length,
-      (data as List<dynamic>)
-      .map((json) => Sales.fromJson(json))
+      (data)
+          .map((json) => SpiecesSales.fromJson(json))
           .skip(pageRequest.offset)
           .take(pageRequest.pageSize)
           .toList(),
@@ -154,6 +148,6 @@ class ExampleSource extends AdvancedDataTableSource<Sales> {
     );
   }
 }
+
 //selected list goes here
 List<String> selectedIds = [];
-

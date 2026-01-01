@@ -1,7 +1,7 @@
 {
     "name": "ashkerty_food",
     "short_name": "ashkerty_food",
-    "start_url": ".",
+    "start_url": "https://ashkerty-food.web.app/",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",

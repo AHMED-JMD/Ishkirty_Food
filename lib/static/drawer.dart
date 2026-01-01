@@ -9,7 +9,7 @@ class MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(builder: (context, value, child){
+    return Consumer<AuthProvider>(builder: (context, value, child) {
       return Drawer(
         child: Column(
           children: [
@@ -18,40 +18,48 @@ class MyDrawer extends StatelessWidget {
               height: 250,
               color: Colors.teal[400],
               child: Padding(
-                padding: EdgeInsets.all(30),
+                padding: const EdgeInsets.all(30),
                 child: Column(
                   children: [
                     Container(
                       color: Colors.grey,
-                      child: Icon(Icons.person_pin, color: Colors.yellowAccent, size: 40,),
+                      child: const Icon(
+                        Icons.person_pin,
+                        color: Colors.yellowAccent,
+                        size: 40,
+                      ),
                     ),
                     Column(
                       children: [
                         Text(
                           '${value.user['username']}',
-                          style: TextStyle(color: Colors.white, fontSize: 28),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 28),
                         ),
                         InkWell(
-                          onTap: (){
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => UserProfile())
-                            );
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const UserProfile()));
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 'الملف الشخصي',
-                                style: TextStyle(color: Colors.grey[300], fontSize: 17),
+                                style: TextStyle(
+                                    color: Colors.grey[300], fontSize: 17),
                               ),
-                              Icon(Icons.edit_note),
+                              const Icon(Icons.edit_note),
                             ],
                           ),
                         ),
                       ],
                     ),
-
-                    SizedBox(height: 20,),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     CheckTime(),
                   ],
                 ),
@@ -60,13 +68,12 @@ class MyDrawer extends StatelessWidget {
             Column(
               children: [
                 const SizedBox(height: 20),
-
                 InkWell(
-                  onTap: (){
-                    Navigator.pushReplacementNamed(context, '/orders');
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, '/sales');
                   },
                   child: const ListTile(
-                    leading:  Icon(
+                    leading: Icon(
                       Icons.local_mall,
                       color: Colors.teal,
                     ),
@@ -77,7 +84,7 @@ class MyDrawer extends StatelessWidget {
                   ),
                 ),
                 InkWell(
-                  onTap: (){
+                  onTap: () {
                     Navigator.pushReplacementNamed(context, '/bills');
                   },
                   child: const ListTile(
@@ -92,7 +99,7 @@ class MyDrawer extends StatelessWidget {
                   ),
                 ),
                 InkWell(
-                  onTap: (){
+                  onTap: () {
                     Navigator.pushReplacementNamed(context, '/speices');
                   },
                   child: const ListTile(
@@ -107,7 +114,7 @@ class MyDrawer extends StatelessWidget {
                   ),
                 ),
                 InkWell(
-                  onTap: (){
+                  onTap: () {
                     Navigator.pushReplacementNamed(context, '/clients');
                   },
                   child: const ListTile(
@@ -121,10 +128,9 @@ class MyDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 InkWell(
-                  onTap: ()async {
-                    await Navigator.pushReplacementNamed(context, '/');
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, '/');
                     final auth_provider = context.read<AuthProvider>();
                     auth_provider.Logout();
                   },

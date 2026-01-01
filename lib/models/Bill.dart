@@ -19,14 +19,14 @@ class bill {
   late final String paymentMethod;
   late final String date;
   late final String shiftTime;
-  late final createdAt;
+  late final String createdAt;
   late final String updatedAt;
   late final Null ClientId;
   late final AdminAdminId;
   late final String comment;
   late final admin;
 
-  bill.fromJson(Map<String, dynamic> json){
+  bill.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     amount = json['amount'];
     isDeleted = null;

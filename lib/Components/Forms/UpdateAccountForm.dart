@@ -29,29 +29,29 @@ class AddAccount extends StatelessWidget {
                         FormBuilderDropdown(
                           name: 'name',
                           decoration:
-                              InputDecoration(labelText: 'اسم المستخدم'),
+                              const InputDecoration(labelText: 'اسم المستخدم'),
                           initialValue: data.name.toString(),
-                          items: ['${data.name}']
+                          items: [(data.name)]
                               .map((type) => DropdownMenuItem(
-                                  value: data.name, child: Text('$type')))
+                                  value: data.name, child: Text(type)))
                               .toList(),
                           validator: FormBuilderValidators.required(
                               errorText: "الرجاء ادخال جميع الجقول"),
                         ),
                         FormBuilderDropdown(
                           name: 'type',
-                          decoration:
-                              InputDecoration(labelText: 'اختر نوع التعديل'),
+                          decoration: const InputDecoration(
+                              labelText: 'اختر نوع التعديل'),
                           items: ['خصم', 'اضافة']
                               .map((type) => DropdownMenuItem(
-                                  value: type, child: Text('$type')))
+                                  value: type, child: Text(type)))
                               .toList(),
                           validator: FormBuilderValidators.required(
                               errorText: "الرجاء ادخال جميع الجقول"),
                         ),
                         FormBuilderTextField(
                           name: 'amount',
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'المبلغ',
                           ),
                           validator: FormBuilderValidators.required(
@@ -72,8 +72,8 @@ class AddAccount extends StatelessWidget {
                       width: 100,
                       child: TextButton(
                           style: TextButton.styleFrom(
-                              backgroundColor: const Color(0xff000000),
-                              primary: Colors.white),
+                            backgroundColor: const Color(0xff000000),
+                          ),
                           onPressed: () {
                             if (_formKey.currentState!.saveAndValidate()) {
                               //call add client
@@ -98,6 +98,6 @@ class AddAccount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Placeholder();
+    return const Placeholder();
   }
 }

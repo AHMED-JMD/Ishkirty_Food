@@ -26,7 +26,6 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getManagers();
   }
@@ -46,6 +45,7 @@ class _UserProfileState extends State<UserProfile> {
       managers = datas;
     });
   }
+
   //function to add new admin
   Future addAdmin(data) async {
     setState(() {
@@ -60,48 +60,56 @@ class _UserProfileState extends State<UserProfile> {
     // call get managers again to get new data
     getManagers();
 
-    if(response.statusCode ==200){
-      return ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Center(
-              child: Text('تمت اضافة مستخدم جديد بنجاح', style: TextStyle(fontSize: 22),),
-            ),
-            backgroundColor: Colors.green,
-        )
-      );
-
-    } else{
-      return ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Center(
-              child: Text('${response.body}', style: TextStyle(fontSize: 22),),
-            ),
-            backgroundColor: Colors.red,
-          )
-      );
+    if (response.statusCode == 200) {
+      return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Center(
+          child: Text(
+            'تمت اضافة مستخدم جديد بنجاح',
+            style: TextStyle(fontSize: 22),
+          ),
+        ),
+        backgroundColor: Colors.green,
+      ));
+    } else {
+      return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Center(
+          child: Text(
+            '${response.body}',
+            style: const TextStyle(fontSize: 22),
+          ),
+        ),
+        backgroundColor: Colors.red,
+      ));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(builder: (context, value, child){
+    return Consumer<AuthProvider>(builder: (context, value, child) {
       return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.teal,
-            leading:  IconButton(
-              icon: Icon(
+            leading: IconButton(
+              icon: const Icon(
                 Icons.home_work,
                 size: 37,
                 color: Colors.white,
               ),
-              onPressed: (){
+              onPressed: () {
                 Navigator.pushReplacementNamed(context, '/home');
               },
             ),
-            title: Center(child:Text("الملف الشخصي", style: TextStyle(fontSize: 25,)),),
-            actions: [LeadingDrawerBtn(),],
+            title: const Center(
+              child: Text("الملف الشخصي",
+                  style: TextStyle(
+                    fontSize: 25,
+                  )),
+            ),
+            actions: const [
+              LeadingDrawerBtn(),
+            ],
             toolbarHeight: 45,
           ),
           endDrawer: const MyDrawer(),
@@ -115,64 +123,98 @@ class _UserProfileState extends State<UserProfile> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('مرحبا,', style: TextStyle(fontSize: 23, color: Colors.grey),),
-                        SizedBox(width: 10,),
-                        Text('${value.user['username']}', style: TextStyle(fontSize: 30, color: Colors.black),)
+                        const Text(
+                          'مرحبا,',
+                          style: TextStyle(fontSize: 23, color: Colors.grey),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          '${value.user['username']}',
+                          style: const TextStyle(
+                              fontSize: 30, color: Colors.black),
+                        )
                       ],
                     ),
-                    SizedBox(height: 10,),
-                    value.user['role'] != 'admin' ?
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ChangePassword(admin_id: value.user['id']),
-                          SizedBox(width: 20,),
-                          TransferFormModal(admin_id: value.user['id']),
-                        ],
-                      )
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    value.user['role'] != 'admin'
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ChangePassword(admin_id: value.user!['id'] ?? ""),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              TransferFormModal(
+                                  admin_id: value.user['id'] ?? ""),
+                            ],
+                          )
                         : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ChangePassword(admin_id: value.user['id']),
-                            SizedBox(width: 20,),
-                            Add_Admin(addAdmin: addAdmin)
-                        ],
-                      ),
-                    SizedBox(height: 20,),
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ChangePassword(admin_id: value.user['id']),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Add_Admin(addAdmin: addAdmin)
+                            ],
+                          ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                   ],
                 ),
               ),
-              SizedBox(height: 80,),
-              data.length != 0 || isLoading == false
-                  ? Container(
-                    color: Colors.grey[100],
-                    child: value.user['role'] != 'admin' ?
-                    Column(
-                      children: [
-                        Center(
-                          child: Text('الفواتير المحررة اليوم', style: TextStyle(fontSize: 26, color: Colors.black),),
-                        ),
-                        SizedBox(height: 20,),
-                        UserBillsTable(admin_id: value.user['id']),
-                      ],
-                    ) : Column(
-                      children: [
-                        Center(
-                          child: Text('الكاشيرز', style: TextStyle(fontSize: 26, color: Colors.black),),
-                        ),
-                        SizedBox(height: 20,),
-                        ManagerTable(data: managers),
-                      ],
-                    )
-              )
-                  : Padding(
-                  padding: const EdgeInsets.only(top: 190.0),
-                  child: SpinKitPouringHourGlassRefined(
-                  color: Colors.teal,
-                  size: 70.0,
-                ),
+              const SizedBox(
+                height: 80,
               ),
-              SizedBox(height: 40,)
+              data.isNotEmpty || isLoading == false
+                  ? Container(
+                      color: Colors.grey[100],
+                      child: value.user['role'] != 'admin'
+                          ? Column(
+                              children: [
+                                const Center(
+                                  child: Text(
+                                    'الفواتير المحررة اليوم',
+                                    style: TextStyle(
+                                        fontSize: 26, color: Colors.black),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                UserBillsTable(admin_id: value.user['id']),
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                const Center(
+                                  child: Text(
+                                    'الكاشيرز',
+                                    style: TextStyle(
+                                        fontSize: 26, color: Colors.black),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                ManagerTable(data: managers),
+                              ],
+                            ))
+                  : const Padding(
+                      padding: EdgeInsets.only(top: 190.0),
+                      child: SpinKitPouringHourGlassRefined(
+                        color: Colors.teal,
+                        size: 70.0,
+                      ),
+                    ),
+              const SizedBox(
+                height: 40,
+              )
             ],
           ),
         ),

@@ -1,18 +1,17 @@
-import 'package:ashkerty_food/models/Bill.dart';
+import 'package:ashkerty_food/models/sales.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
-import '../../widgets/BillDetailes.dart';
 
-class ClientBillTable extends StatefulWidget {
+class BilldetailsTable extends StatefulWidget {
   final List data;
-  const ClientBillTable({Key? key, required this.data}) : super(key: key);
+  const BilldetailsTable({Key? key, required this.data}) : super(key: key);
 
   @override
-  State<ClientBillTable> createState() => _ClientBillTableState();
+  State<BilldetailsTable> createState() => _BilldetailsTableState();
 }
 
-class _ClientBillTableState extends State<ClientBillTable> {
+class _BilldetailsTableState extends State<BilldetailsTable> {
   var rowsPerPage = 10;
   late final source = ExampleSource(data: widget.data, context: context);
   final _searchController = TextEditingController();
@@ -24,11 +23,8 @@ class _ClientBillTableState extends State<ClientBillTable> {
     super.initState();
     _searchController.text = '';
   }
-  //server side Functions -----------
-
+  //server side Functions ------------------
 //-------------------------------------
-
-  //delete modal
 
 //--------------------------------------------------------
 
@@ -57,30 +53,33 @@ class _ClientBillTableState extends State<ClientBillTable> {
               },
               columns: const [
                 DataColumn(
-                    label: Text(
-                  'رقم الفاتورة',
-                  style: TextStyle(fontSize: 20),
-                )),
+                  label: Center(
+                      child: Text(
+                    'الصنف ',
+                    style: TextStyle(fontSize: 20),
+                  )),
+                ),
                 DataColumn(
-                    label: Text(
-                  'تفاصيل الفاتورة',
-                  style: TextStyle(fontSize: 20),
-                )),
+                  label: Center(
+                      child: Text(
+                    'الكمية',
+                    style: TextStyle(fontSize: 20),
+                  )),
+                ),
                 DataColumn(
-                    label: Text(
-                  'وقت الفاتورة',
-                  style: TextStyle(fontSize: 20),
-                )),
+                  label: Center(
+                      child: Text(
+                    'سعر الوحدة ',
+                    style: TextStyle(fontSize: 20),
+                  )),
+                ),
                 DataColumn(
-                    label: Text(
-                  ' قيمة الفاتورة ',
-                  style: TextStyle(fontSize: 20),
-                )),
-                DataColumn(
-                    label: Text(
-                  ' الوردية',
-                  style: TextStyle(fontSize: 20),
-                )),
+                  label: Center(
+                      child: Text(
+                    'السعر الكلي ',
+                    style: TextStyle(fontSize: 20),
+                  )),
+                ),
               ],
             ),
           ],
@@ -90,7 +89,7 @@ class _ClientBillTableState extends State<ClientBillTable> {
   }
 }
 
-class ExampleSource extends AdvancedDataTableSource<bill> {
+class ExampleSource extends AdvancedDataTableSource<Sales> {
   List data;
   BuildContext context;
   ExampleSource({required this.data, required this.context});
@@ -100,56 +99,29 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   @override
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
-    //setting date & time
-    var now = DateTime.parse(currentRowData.createdAt);
-    String date = '${now.year}/${now.month}/${now.day}';
-    String time = '${now.hour}:${now.minute}';
-    String amPm = now.hour > 12 ? 'PM' : 'AM';
-
     return DataRow(cells: [
+      DataCell(Text(
+        currentRowData.name,
+        style: const TextStyle(fontSize: 20),
+      )),
       DataCell(Padding(
-        padding: const EdgeInsets.fromLTRB(8, 8, 50, 8),
+        padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
         child: Text(
-          currentRowData.id.toString(),
+          currentRowData.quantity.toString(),
           style: const TextStyle(fontSize: 20),
         ),
       )),
-      DataCell(
-        Padding(
-          padding: const EdgeInsets.fromLTRB(8, 5, 8, 5),
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      BillDetailes(billId: currentRowData.id.toString()),
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-            child: const Text('التفاصيل',
-                style: TextStyle(fontSize: 20, color: Colors.white)),
-          ),
-        ),
-      ),
-      DataCell(Text(
-        '($time $amPm) - $date',
-        style: const TextStyle(fontSize: 20),
-      )),
-      DataCell(
-        Padding(
-          padding: const EdgeInsets.fromLTRB(8, 8, 35, 8),
-          child: Text(
-            currentRowData.amount.toString(),
-            style: const TextStyle(fontSize: 20),
-          ),
-        ),
-      ),
       DataCell(Padding(
-        padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
+        padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
         child: Text(
-          currentRowData.shiftTime,
+          currentRowData.price.toString(),
+          style: const TextStyle(fontSize: 20),
+        ),
+      )),
+      DataCell(Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
+        child: Text(
+          currentRowData.amount.toString(),
           style: const TextStyle(fontSize: 20),
         ),
       )),
@@ -174,13 +146,13 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   }
 
   @override
-  Future<RemoteDataSourceDetails<bill>> getNextPage(
+  Future<RemoteDataSourceDetails<Sales>> getNextPage(
       NextPageRequest pageRequest) async {
     await Future.delayed(const Duration(milliseconds: 400));
     return RemoteDataSourceDetails(
       data.length,
       (data)
-          .map((json) => bill.fromJson(json))
+          .map((json) => Sales.fromJson(json))
           .skip(pageRequest.offset)
           .take(pageRequest.pageSize)
           .toList(),

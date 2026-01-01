@@ -30,7 +30,7 @@ class _MyCartState extends State<MyCart> {
     //call server
     final res = await APISpieces.GetFavs();
 
-    if(res != false){
+    if (res != false) {
       setState(() {
         favSpieces = res;
       });
@@ -41,9 +41,12 @@ class _MyCartState extends State<MyCart> {
   Widget _cart(BuildContext context, Cart item, cartProvider) {
     List<Widget> addonWidgets = [];
 
-    if (item.addons.length != 0) {
+    if (item.addons.isNotEmpty) {
       addonWidgets = item.addons.map((add) {
-        return Text('$add + ', style: TextStyle(color: Colors.grey[600]),);
+        return Text(
+          '$add + ',
+          style: TextStyle(color: Colors.grey[600]),
+        );
       }).toList();
     }
 
@@ -52,8 +55,8 @@ class _MyCartState extends State<MyCart> {
       children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
-          child: Container(
-            width: MediaQuery.of(context).size.width/3.5,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width / 3.5,
             child: Card(
               color: Colors.grey[100],
               elevation: 3,
@@ -66,8 +69,8 @@ class _MyCartState extends State<MyCart> {
                         padding: const EdgeInsets.only(right: 10.0),
                         child: Text(
                           "${item.spices} : ${item.unit_price}",
-                          style: TextStyle(
-                              fontSize: 26,
+                          style: const TextStyle(
+                              fontSize: 20,
                               color: Colors.black,
                               fontWeight: FontWeight.bold),
                         ),
@@ -77,24 +80,22 @@ class _MyCartState extends State<MyCart> {
                           //delete from cart provider
                           cartProvider.deletefromCart(item);
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.delete,
                           color: Colors.redAccent,
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
-                  if(item.addons.length != 0)
+                  if (item.addons.isNotEmpty)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ...addonWidgets
-                      ],
+                      children: [...addonWidgets],
                     ),
-                  Text(
+                  const Text(
                     "الكمية",
                     style: TextStyle(
                       fontSize: 22,
@@ -108,7 +109,7 @@ class _MyCartState extends State<MyCart> {
                           //add amount
                           cartProvider.addAmount(item);
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.add_box,
                           color: Colors.teal,
                           size: 27,
@@ -132,13 +133,13 @@ class _MyCartState extends State<MyCart> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 15,
                   ),
                   Text(
                     "السعر الكلي: ${item.total_price}",
                     textAlign: TextAlign.left,
-                    style: TextStyle(fontSize: 21, color: Colors.black),
+                    style: const TextStyle(fontSize: 21, color: Colors.black),
                   )
                 ],
               ),
@@ -153,26 +154,24 @@ class _MyCartState extends State<MyCart> {
   Widget build(BuildContext context) {
     return KeyboardWidget(
       bindings: favSpieces.map((theKey) {
-        LogicalKeyboardKey key = KeyBoardKeys[theKey['favBtn']] ?? LogicalKeyboardKey.f1;
+        LogicalKeyboardKey key =
+            KeyBoardKeys[theKey['favBtn']] ?? LogicalKeyboardKey.f1;
 
-        return KeyAction(
-            key,
-            'اضف ${theKey['name']} الى الفاتورة',
-                () {
-              //perform action here
-              Cart model = Cart(
-                  spices: theKey['name'],
-                  counter: 1,
-                  category: theKey['category'],
-                  addons: [],
-                  unit_price: theKey['price'],
-                  total_price: theKey['price']);
-              //add to provider
-              final cartProvider = context.read<CartProvider>();
-              cartProvider.addToCart(model);
+        return KeyAction(key, 'اضف ${theKey['name']} الى الفاتورة', () {
+          //perform action here
+          Cart model = Cart(
+              spices: theKey['name'],
+              counter: 1,
+              category: theKey['category'],
+              addons: [],
+              unit_price: theKey['price'],
+              total_price: theKey['price']);
+          //add to provider
+          final cartProvider = context.read<CartProvider>();
+          cartProvider.addToCart(model);
 
-              Navigator.pushNamed(context, '/cart');
-            }, isControlPressed: theKey['isControll'] ?? false);
+          Navigator.pushNamed(context, '/cart');
+        }, isControlPressed: theKey['isControll'] ?? false);
       }).toList(),
       child: Focus(
           autofocus: true,
@@ -193,58 +192,61 @@ class _MyCartState extends State<MyCart> {
                       },
                     ),
                     centerTitle: true,
-                    title: Text('سلة الفواتير'),
+                    title: const Text('سلة الفواتير'),
                   ),
                   body: value.cart.length != 0
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                               Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
+                                padding: const EdgeInsets.only(top: 0.0),
                                 child: Container(
-                                  width: MediaQuery.of(context).size.width/1.5,
-                                  height: MediaQuery.of(context).size.height/1.2,
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.5,
+                                  height:
+                                      MediaQuery.of(context).size.height / 1.2,
                                   color: Colors.grey[100],
                                   child: LayoutBuilder(
-                                    builder: (BuildContext context, BoxConstraints constraints){
-                                      if(constraints.maxWidth > 1400){
+                                    builder: (BuildContext context,
+                                        BoxConstraints constraints) {
+                                      if (constraints.maxWidth > 1400) {
                                         return GridView.builder(
-                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 4
-                                          ),
+                                          gridDelegate:
+                                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                                  crossAxisCount: 5),
                                           shrinkWrap: true,
-                                          physics: ScrollPhysics(),
+                                          physics: const ScrollPhysics(),
                                           itemCount: value.cart.length,
                                           itemBuilder: (context, index) {
                                             //current item
                                             var item = value.cart[index];
                                             var cartProvider =
-                                            context.read<CartProvider>();
+                                                context.read<CartProvider>();
                                             //call cart widget and iterate
-                                            return _cart(context, item, cartProvider);
+                                            return _cart(
+                                                context, item, cartProvider);
                                           },
                                         );
-                                      }else{
+                                      } else {
                                         return GridView.builder(
-                                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 3
-                                          ),
+                                          gridDelegate:
+                                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                                  crossAxisCount: 4),
                                           shrinkWrap: true,
-                                          physics: ScrollPhysics(),
+                                          physics: const ScrollPhysics(),
                                           itemCount: value.cart.length,
                                           itemBuilder: (context, index) {
                                             //current item
                                             var item = value.cart[index];
                                             var cartProvider =
-                                            context.read<CartProvider>();
+                                                context.read<CartProvider>();
                                             //call cart widget and iterate
-                                            return _cart(context, item, cartProvider);
+                                            return _cart(
+                                                context, item, cartProvider);
                                           },
                                         );
                                       }
-
                                     },
-
                                   ),
                                 ),
                               ),
@@ -259,27 +261,26 @@ class _MyCartState extends State<MyCart> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => MyHomePage()));
+                                          builder: (context) =>
+                                              const MyHomePage()));
                                 },
-                                style: ElevatedButton.styleFrom(
-                                    primary: Colors.grey[200]),
-                                label: Text(
+                                label: const Text(
                                   "Go",
                                   style: TextStyle(
                                     color: Colors.teal,
                                     fontSize: 23,
                                   ),
                                 ),
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.shopping_cart_checkout,
                                   color: Colors.teal,
                                   size: 30,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 20,
                               ),
-                              Text(
+                              const Text(
                                 'سلة الفواتير فارغة قم باضافة اصناف ',
                                 style: TextStyle(fontSize: 24),
                               ),

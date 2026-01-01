@@ -24,8 +24,9 @@ class _DeletedBillsState extends State<DeletedBills> {
     getBills();
     super.initState();
   }
+
   //server func to get bills
-  Future getBills () async {
+  Future getBills() async {
     setState(() {
       isLoading = true;
       data = [];
@@ -36,21 +37,24 @@ class _DeletedBillsState extends State<DeletedBills> {
     datas['isDeleted'] = true;
     datas['todayDate'] = '${now.year}-${now.month}-${now.day}';
 
-    final response = await APIBill.GetAll(datas,);
+    final response = await APIBill.GetAll(
+      datas,
+    );
 
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       var res = jsonDecode(response.body);
 
       setState(() {
         isLoading = false;
         data = res;
       });
-    }else{
+    } else {
       setState(() {
         isLoading = false;
       });
     }
   }
+
   // //search dates
   Future searchDates(datas) async {
     setState(() {
@@ -134,14 +138,14 @@ class _DeletedBillsState extends State<DeletedBills> {
               const SizedBox(
                 height: 10,
               ),
-              data.length != 0 || isLoading == false
+              data.isNotEmpty || isLoading == false
                   ? Container(
                       color: Colors.grey[100],
                       child: DeletedBillsTable(
                         data: data,
                       ))
-                  : Padding(
-                      padding: const EdgeInsets.only(top: 190.0),
+                  : const Padding(
+                      padding: EdgeInsets.only(top: 190.0),
                       child: SpinKitPouringHourGlassRefined(
                         color: Colors.teal,
                         size: 70.0,

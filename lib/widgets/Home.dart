@@ -6,7 +6,7 @@ import 'package:ashkerty_food/providers/cart_provider.dart';
 import 'package:ashkerty_food/static/CartButton.dart';
 import 'package:ashkerty_food/static/CheckTime.dart';
 import 'package:ashkerty_food/static/drawer.dart';
-import 'package:ashkerty_food/static/spieces_nav.dart';
+import 'package:ashkerty_food/Components/menu_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../static/HomeDrawerbut.dart';
@@ -34,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //call server
     final res = await APISpieces.GetFavs();
 
-    if(res != false){
+    if (res != false) {
       setState(() {
         favSpieces = res;
       });
@@ -45,20 +45,18 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return KeyboardWidget(
       bindings: favSpieces.map((theKey) {
-        LogicalKeyboardKey key = KeyBoardKeys[theKey['favBtn']] ?? LogicalKeyboardKey.f1;
+        LogicalKeyboardKey key =
+            KeyBoardKeys[theKey['favBtn']] ?? LogicalKeyboardKey.f1;
 
-        return KeyAction(
-            key,
-            'اضف ${theKey['name']} الى الفاتورة',
-                () {
+        return KeyAction(key, 'اضف ${theKey['name']} الى الفاتورة', () {
           //perform action here
           Cart model = Cart(
-            spices: theKey['name'],
-            counter: 1,
-            category: theKey['category'],
-            addons: [],
-            unit_price: theKey['price'],
-            total_price: theKey['price']);
+              spices: theKey['name'],
+              counter: 1,
+              category: theKey['category'],
+              addons: [],
+              unit_price: theKey['price'],
+              total_price: theKey['price']);
           //add to provider
           final cartProvider = context.read<CartProvider>();
           cartProvider.addToCart(model);
@@ -84,15 +82,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.pushReplacementNamed(context, '/home');
                     },
                   ),
-                  toolbarHeight: MediaQuery.of(context).size.height/9.5,
+                  toolbarHeight: MediaQuery.of(context).size.height / 9.5,
                   title: Image.asset(
                     "assets/images/ef2.jpg",
-                    height: MediaQuery.of(context).size.height/9.5,
+                    height: MediaQuery.of(context).size.height / 9.5,
                   ),
                   centerTitle: true,
                   elevation: 0,
                   backgroundColor: Colors.transparent,
-                  actions: [
+                  actions: const [
                     CheckTime(),
                     SizedBox(
                       width: 20,
@@ -106,26 +104,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
-                      //custom nav in static folder
-                      // SpiecesNav(),
+                      //custom nav in component folder
                       Row(
                         children: [
                           Expanded(
-                              child: Container(
-                                height: MediaQuery.of(context).size.height,
-                                child: ListView(
-                                    children: [
-                                      SpiecesNav()
-                                    ]
-                                ),
-                              )
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width/3.5,
-                            height: MediaQuery.of(context).size.height/1.1,
+                              child: SizedBox(
+                            height: MediaQuery.of(context).size.height,
+                            child: ListView(children: const [Menu_Nav()]),
+                          )),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width / 5,
+                            height: MediaQuery.of(context).size.height / 1.1,
                             child: Padding(
                               padding: const EdgeInsets.only(left: 5.0),
                               child: CartForm(),
@@ -137,40 +129,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
-              floatingActionButton: CartButton()
-          ),
+              floatingActionButton: const CartButton()),
         ),
       ),
     );
   }
 }
-
-// [
-// KeyAction(
-// LogicalKeyboardKey.f2,
-// 'اضف بيرقر الى الفاتورة',
-// () {
-// // Perform your action here
-// Cart model = Cart(
-// spices: 'burger',
-// counter: 1,
-// unit_price: 1300,
-// total_price: 1300);
-// //add to provider
-// final cartProvider = context.read<CartProvider>();
-// cartProvider.addToCart(model);
-//
-// Navigator.pushNamed(context, '/cart');
-// },
-// ),
-// KeyAction(LogicalKeyboardKey.keyF, 'اضف فول الى الفاتورة', () {
-// // Perform your action here
-// Cart model = Cart(
-// spices: 'fool', counter: 1, unit_price: 800, total_price: 800);
-// //add to provider
-// final cartProvider = context.read<CartProvider>();
-// cartProvider.addToCart(model);
-//
-// Navigator.pushNamed(context, '/cart');
-// }, isControlPressed: true),
-// ]

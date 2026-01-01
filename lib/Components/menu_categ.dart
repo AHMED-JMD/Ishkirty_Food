@@ -3,28 +3,31 @@ import 'package:flutter/material.dart';
 import 'package:ashkerty_food/API/Spieces.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class Toppings extends StatefulWidget {
+class MenuCategory extends StatefulWidget {
+  final String category;
+
+  const MenuCategory({super.key, required this.category});
+
   @override
-  State<Toppings> createState() => _ToppingsState();
+  State<MenuCategory> createState() => _MenuCategoryState();
 }
 
-class _ToppingsState extends State<Toppings> {
+class _MenuCategoryState extends State<MenuCategory> {
   List data = [];
   bool isLoading = false;
 
   @override
   void initState() {
-    // TODO: implement initState
-    getData();
+    getData(widget.category);
     super.initState();
   }
 
-  Future getData() async {
+  Future getData(String category) async {
     setState(() {
       isLoading = true;
     });
 
-    final response = await APISpieces.getByType({'category': 'اضافات'});
+    final response = await APISpieces.getByType({'category': category});
 
     if (response != false) {
       setState(() {
@@ -43,24 +46,25 @@ class _ToppingsState extends State<Toppings> {
         textDirection: TextDirection.rtl,
         child: Column(
           children: [
-            const Padding(
-              padding: EdgeInsets.only(right: 28.0),
+            Padding(
+              padding: const EdgeInsets.only(top: 10, right: 28.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'إضافات',
+                    widget.category,
                     textAlign: TextAlign.right,
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 28, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             isLoading
-                ? SpinKitThreeBounce(
+                ? const SpinKitThreeBounce(
                     color: Colors.grey,
                     size: 30,
                   )

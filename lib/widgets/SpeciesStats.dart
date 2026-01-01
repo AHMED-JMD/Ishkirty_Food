@@ -27,7 +27,6 @@ class _SpeciesStatsState extends State<SpeciesStats> {
 
   @override
   void initState() {
-    // TODO: implement initState
     getSpeicesSales();
     super.initState();
   }
@@ -40,8 +39,8 @@ class _SpeciesStatsState extends State<SpeciesStats> {
 
     //server call
     Map datas = {};
-    DateTime monthBeforeDate = today_date.subtract(Duration(days: 30));
-    DateTime weekBeforeDate = today_date.subtract(Duration(days: 7));
+    DateTime monthBeforeDate = today_date.subtract(const Duration(days: 30));
+    DateTime weekBeforeDate = today_date.subtract(const Duration(days: 7));
 
     datas['name'] = widget.name;
     datas['curr_date'] = today_date.toIso8601String();
@@ -110,14 +109,14 @@ class _SpeciesStatsState extends State<SpeciesStats> {
                 color: Colors.white,
               ),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/orders');
+                Navigator.pushReplacementNamed(context, '/sales');
               },
             ),
 
             title: Center(
                 child: Text(
-              "مبيعات ${widget.name}",
-              style: TextStyle(fontSize: 25),
+              "مبيعات ال${widget.name} ",
+              style: const TextStyle(fontSize: 25, color: Colors.white),
             )),
             actions: const [
               LeadingDrawerBtn(),
@@ -132,7 +131,7 @@ class _SpeciesStatsState extends State<SpeciesStats> {
                     width: 300,
                     height: 100,
                     color: Colors.grey[200],
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
@@ -157,7 +156,7 @@ class _SpeciesStatsState extends State<SpeciesStats> {
                         height: 30,
                       ),
                       SearchInDates(searchDates: searchSales),
-                      SizedBox(
+                      const SizedBox(
                         height: 35,
                       ),
                       Row(

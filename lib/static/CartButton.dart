@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CartButton extends StatelessWidget {
+  const CartButton({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<CartProvider>(builder: (context, value, child) {
@@ -11,29 +13,29 @@ class CartButton extends StatelessWidget {
         children: [
           FloatingActionButton(
             onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => MyCart()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const MyCart()));
             },
-            child: Icon(Icons.shopping_cart),
             backgroundColor: Colors.teal,
             tooltip: 'السلة',
+            child: const Icon(Icons.shopping_cart),
           ),
           value.cart.length > 0
               ? Positioned(
                   right: 0,
                   child: Container(
-                    padding: EdgeInsets.all(2),
+                    padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    constraints: BoxConstraints(
+                    constraints: const BoxConstraints(
                       minWidth: 16,
                       minHeight: 16,
                     ),
                     child: Text(
                       value.cart.length.toString(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 12,
                       ),
@@ -41,7 +43,7 @@ class CartButton extends StatelessWidget {
                     ),
                   ),
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
         ],
       );
     });
