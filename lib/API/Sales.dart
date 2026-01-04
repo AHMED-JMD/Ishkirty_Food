@@ -35,12 +35,13 @@ class APISales {
   }
 
   //get all speices sales
-  static Future allSpeicesSales() async {
+  static Future allSpeicesSales(data) async {
     try {
       Map<String, String> configHeaders = {"Content-Type": "application/json"};
 
       final url = Uri.parse('$apiUrl/all_spieces_sales');
-      Response response = await get(url, headers: configHeaders);
+      Response response =
+          await post(url, headers: configHeaders, body: jsonEncode(data));
 
       return response;
     } catch (e) {

@@ -1,21 +1,21 @@
+import 'package:ashkerty_food/static/formatter.dart';
 import 'package:flutter/material.dart';
 import 'my_icon_icons.dart';
 // import 'package:money_formatter/money_formatter.dart';
 
 class SalesCard extends StatelessWidget {
-  final String Period;
-  final int CashAmount;
-  final int BankakAmount;
-  final int AccountsAmount;
   final String period;
+  final int cashAmount;
+  final int bankakAmount;
+  final int accountsAmount;
 
-  SalesCard(
-      {super.key,
-      required this.Period,
-      required this.CashAmount,
-      required this.BankakAmount,
-      required this.AccountsAmount,
-      required this.period});
+  SalesCard({
+    super.key,
+    required this.period,
+    required this.cashAmount,
+    required this.bankakAmount,
+    required this.accountsAmount,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class SalesCard extends StatelessWidget {
         ),
         Center(
             child: Text(
-          Period,
+          period,
           style: const TextStyle(fontSize: 20),
         )),
         Row(
@@ -44,7 +44,7 @@ class SalesCard extends StatelessWidget {
                 size: 50,
               ),
               Text(
-                '${CashAmount.toDouble()}',
+                numberFormatter(cashAmount),
                 style: const TextStyle(fontSize: 20),
               ),
             ]),
@@ -58,7 +58,7 @@ class SalesCard extends StatelessWidget {
                 size: 50,
               ),
               Text(
-                '${BankakAmount.toDouble()}',
+                numberFormatter(bankakAmount),
                 style: const TextStyle(fontSize: 20),
               ),
             ]),
@@ -72,7 +72,7 @@ class SalesCard extends StatelessWidget {
                 color: Color(0xff0c283f),
               ),
               Text(
-                '${AccountsAmount.toDouble()}',
+                numberFormatter(accountsAmount),
                 style: const TextStyle(fontSize: 20),
               ),
             ]),

@@ -331,7 +331,7 @@ class _CartFormState extends State<CartForm> {
                                   style: TextStyle(
                                       fontSize:
                                           MediaQuery.of(context).size.width /
-                                              70),
+                                              80),
                                 ),
                               ),
                             )

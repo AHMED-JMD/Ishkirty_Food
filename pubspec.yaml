@@ -52,6 +52,7 @@ dev_dependencies:
   image_card: ^0.0.4
   form_builder_validators:
   flutter_form_builder:
+  intl: ^0.20.2
   advanced_datatable: ^0.0.8
   google_fonts:
 

@@ -1,27 +1,27 @@
 import 'package:ashkerty_food/models/cart_model.dart';
 import 'package:ashkerty_food/providers/cart_provider.dart';
+import 'package:ashkerty_food/static/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_card/image_card.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
-class GridCart extends StatefulWidget {
+class Menucard extends StatefulWidget {
   final Map speices;
   final double widths;
   final double height;
-  const GridCart({
-    super.key,
-    required this.speices,
-    required this.widths,
-    required this.height,
-  });
+  const Menucard(
+      {super.key,
+      required this.speices,
+      required this.widths,
+      required this.height});
 
   @override
-  State<GridCart> createState() => _GridCartState();
+  State<Menucard> createState() => _MenucardState();
 }
 
-class _GridCartState extends State<GridCart> {
+class _MenucardState extends State<Menucard> {
   bool isAdded = false;
   int amount = 1;
   late Cart model;
@@ -141,7 +141,7 @@ class _GridCartState extends State<GridCart> {
             // tags: [ _tag('Product', () {}), ],
             title: Center(
               child: Text(
-                  '${widget.speices['name']}  ${widget.speices['price']}-جنيه',
+                  '${widget.speices['name']} : ${numberFormatter(widget.speices['price'])}',
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: MediaQuery.of(context).size.width / 100)),

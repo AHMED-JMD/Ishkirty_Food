@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:ashkerty_food/Components/tables/SaleTable.dart';
+import 'package:ashkerty_food/Components/GridBuilder.dart';
+import 'package:ashkerty_food/static/formatter.dart';
 import 'package:ashkerty_food/widgets/SpeciesStats.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:ashkerty_food/API/Bill.dart';
 import 'package:ashkerty_food/API/Sales.dart';
 import 'package:ashkerty_food/static/SearchDates.dart';
 import 'package:ashkerty_food/static/drawer.dart';
@@ -23,7 +23,15 @@ class Sales extends StatefulWidget {
 
 class _SalesState extends State<Sales> {
   bool isLoading = false;
-  List data = [];
+  int cashMor = 0;
+  int bankMor = 0;
+  int accountMor = 0;
+  int totalMor = 0;
+  int cashEv = 0;
+  int bankEv = 0;
+  int accountEv = 0;
+  int totalEv = 0;
+
   List spieces = [];
   String period = 'اليوم';
   DateTime todayDate = DateTime.now();
@@ -31,8 +39,9 @@ class _SalesState extends State<Sales> {
 
   @override
   void initState() {
-    getSpiecesSales();
-    getTodaySales();
+    //initially get today's sales
+    getSpiecesSales(todayDate, todayDate);
+    getTotalSales(todayDate, todayDate);
     super.initState();
   }
 
@@ -40,42 +49,65 @@ class _SalesState extends State<Sales> {
   Future searchDates(datas) async {
     setState(() {
       isLoading = true;
-      data = [];
     });
 
     //server call
-    Map mod_datas = {};
-    mod_datas['start_date'] = datas['start_date'];
-    mod_datas['end_date'] = datas['end_date'];
-    mod_datas['isDeleted'] = false;
+    Map modDatas = {};
+    modDatas['start_date'] = datas['start_date'];
+    modDatas['end_date'] = datas['end_date'];
 
-    final response = await APIBill.Search(mod_datas);
+    final response = await APISales.TodaySales(modDatas);
     //response validity
     if (response.statusCode == 200) {
       final res = jsonDecode(response.body);
 
+      //check week or month before setting period
+      String sPeriod = '';
+      final int diffDays =
+          DateTime.parse(datas['end_date']).difference(todayDate).inDays;
+
+      if (diffDays == 7) {
+        sPeriod = 'الإسبوع';
+      } else if (diffDays == 30) {
+        sPeriod = 'الشهر';
+      } else {
+        sPeriod = 'فترة زمنية';
+      }
+
       setState(() {
         isLoading = false;
-        data = res;
-        period = 'فترة زمنية';
+        cashMor = res["cashMor"].toInt();
+        bankMor = res["bankMor"].toInt();
+        accountMor = res["accountMor"].toInt();
+        totalMor = res["totalMor"].toInt();
+        cashEv = res["cashEv"].toInt();
+        bankEv = res["bankEv"].toInt();
+        accountEv = res["accountEv"].toInt();
+        totalEv = res["totalEv"].toInt();
+        period = sPeriod;
       });
     } else {
       setState(() {
         isLoading = false;
       });
     }
+
+    // call total sales (pass DateTime objects, not strings)
+    final DateTime startDt = DateTime.parse(datas['start_date']);
+    final DateTime endDt = DateTime.parse(datas['end_date']);
+    getSpiecesSales(startDt, endDt);
   }
 
   //get current dat
-  Future getTodaySales() async {
+  Future getTotalSales(DateTime startDate, DateTime endDate) async {
     setState(() {
       isLoading = true;
-      data = [];
     });
 
     //server call
     Map datas = {};
-    datas['curr_date'] = todayDate.toIso8601String();
+    datas['start_date'] = startDate.toIso8601String();
+    datas['end_date'] = endDate.toIso8601String();
     final response = await APISales.TodaySales(datas);
     //response validity
     if (response.statusCode == 200) {
@@ -83,7 +115,14 @@ class _SalesState extends State<Sales> {
 
       setState(() {
         isLoading = false;
-        data = res;
+        cashMor = res["cashMor"].toInt();
+        bankMor = res["bankMor"].toInt();
+        accountMor = res["accountMor"].toInt();
+        totalMor = res["totalMor"].toInt();
+        cashEv = res["cashEv"].toInt();
+        bankEv = res["bankEv"].toInt();
+        accountEv = res["accountEv"].toInt();
+        totalEv = res["totalEv"].toInt();
         period = 'اليوم';
       });
     } else {
@@ -94,14 +133,18 @@ class _SalesState extends State<Sales> {
   }
 
   //get spieces sales
-  Future getSpiecesSales() async {
+  Future getSpiecesSales(DateTime startDtae, DateTime endDate) async {
     setState(() {
       isLoading = true;
       spieces = [];
     });
 
     //server call
-    final response = await APISales.allSpeicesSales();
+    Map data = {};
+    data['start_date'] = startDtae.toIso8601String();
+    data['end_date'] = endDate.toIso8601String();
+
+    final response = await APISales.allSpeicesSales(data);
     //response validity
     if (response.statusCode == 200) {
       final res = jsonDecode(response.body);
@@ -117,36 +160,9 @@ class _SalesState extends State<Sales> {
     }
   }
 
-  //dart function to get sums
-  num calculateSum(List data, String paymentMethod, String shiftTime) {
-    num sum = 0;
-    for (var item in data) {
-      if (item["paymentMethod"] == paymentMethod &&
-          item['shiftTime'] == shiftTime) {
-        sum += item["amount"] ?? 0;
-      }
-    }
-    return sum;
-  }
-
   @override
   Widget build(BuildContext context) {
     //getting the morning variables values
-    num totalMor = calculateSum(data, "كاش", "صباحية") +
-        calculateSum(data, "بنكك", "صباحية") +
-        calculateSum(data, "حساب", "صباحية");
-
-    num cashMor = calculateSum(data, "كاش", "صباحية");
-    num bankMor = calculateSum(data, "بنكك", "صباحية");
-    num accountMor = calculateSum(data, "حساب", "صباحية");
-    //getting the variables values
-    num totalEv = calculateSum(data, "كاش", "مسائية") +
-        calculateSum(data, "بنكك", "مسائية") +
-        calculateSum(data, "حساب", "مسائية");
-
-    num cashEv = calculateSum(data, "كاش", "مسائية");
-    num bankEv = calculateSum(data, "بنكك", "مسائية");
-    num accountEv = calculateSum(data, "حساب", "مسائية");
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -188,63 +204,81 @@ class _SalesState extends State<Sales> {
                   size: 50,
                 ),
               const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                'إجمالي الإيرادات',
-                style: TextStyle(fontSize: 30),
-              ),
-              Text(
-                '${totalEv.toDouble() + totalMor.toDouble()}',
-                style: const TextStyle(fontSize: 30),
-              ),
-              const SizedBox(
-                height: 10,
+                height: 20,
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Container(
-                    width: 250,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      border: Border.all(
-                        width: 2,
+                  Column(
+                    children: [
+                      Text(
+                        'إجمالي الإيرادات $period',
+                        style: const TextStyle(fontSize: 30),
                       ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: SalesCard(
-                      Period: 'الوردية الصباحية',
-                      CashAmount: cashMor.toInt(),
-                      BankakAmount: bankMor.toInt(),
-                      AccountsAmount: accountMor.toInt(),
-                      period: period,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 30,
-                  ),
-                  Container(
-                    width: 250,
-                    decoration: BoxDecoration(
-                      color: const Color(0xffefecec),
-                      border: Border.all(
-                        width: 2,
+                      Text(
+                        numberFormatter(totalMor + totalEv),
+                        style: const TextStyle(fontSize: 30),
                       ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: SalesCard(
-                      Period: 'الوردية المسائية',
-                      CashAmount: cashEv.toInt(),
-                      BankakAmount: bankEv.toInt(),
-                      AccountsAmount: accountEv.toInt(),
-                      period: period,
-                    ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 250,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          border: Border.all(
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: SalesCard(
+                          period: 'الوردية الصباحية',
+                          cashAmount: cashMor,
+                          bankakAmount: bankMor,
+                          accountsAmount: accountMor,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 30,
+                      ),
+                      Container(
+                        width: 250,
+                        decoration: BoxDecoration(
+                          color: const Color(0xffefecec),
+                          border: Border.all(
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: SalesCard(
+                          period: 'الوردية المسائية',
+                          cashAmount: cashEv,
+                          bankakAmount: bankEv,
+                          accountsAmount: accountEv,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
+              const SizedBox(
+                height: 90,
+              ),
+              const Text(
+                'الإيرادات بالصنف',
+                style: TextStyle(fontSize: 30),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               spieces.isNotEmpty
-                  ? Center(child: SalesTable(data: spieces))
+                  ? Center(
+                      child: GridViewBuilder(
+                      data: spieces,
+                      flag: "sales",
+                    ))
                   : const Padding(
                       padding: EdgeInsets.only(top: 20.0),
                       child: SpinKitCubeGrid(
@@ -324,7 +358,10 @@ class _SalesState extends State<Sales> {
                             datas['end_date'] = todayDate.toIso8601String();
                             datas['isDeleted'] = false;
 
-                            searchDates(datas);
+                            //for total sales
+                            getTotalSales(weekBeforeDate, todayDate);
+                            //for spieces sales
+                            getSpiecesSales(weekBeforeDate, todayDate);
                           },
                           child: const Text(
                             'إيرادات الإسبوع',
@@ -346,7 +383,10 @@ class _SalesState extends State<Sales> {
                             datas['end_date'] = todayDate.toIso8601String();
                             datas['isDeleted'] = false;
 
-                            searchDates(datas);
+                            //for total sales
+                            getTotalSales(monthBeforeDate, todayDate);
+                            //for spieces sales
+                            getSpiecesSales(monthBeforeDate, todayDate);
                           },
                           child: const Text(
                             'إيرادات الشهر',
@@ -354,10 +394,10 @@ class _SalesState extends State<Sales> {
                           )),
                     ),
                     PopupMenuItem(
-                      value: 'year',
+                      value: 'day',
                       child: InkWell(
                           onTap: () {
-                            getTodaySales();
+                            getTotalSales(todayDate, todayDate);
                           },
                           child: const Text(
                             'إيرادات اليوم',

@@ -1,4 +1,4 @@
-import 'package:ashkerty_food/static/GridBuilder.dart';
+import 'package:ashkerty_food/Components/GridBuilder.dart';
 import 'package:flutter/material.dart';
 import 'package:ashkerty_food/API/Spieces.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -72,6 +72,7 @@ class _MenuCategoryState extends State<MenuCategory> {
                     padding: const EdgeInsets.only(right: 8.0),
                     child: GridViewBuilder(
                       data: data,
+                      flag: "menu",
                     ),
                   )
           ],
