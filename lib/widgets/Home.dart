@@ -114,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           Expanded(
                               child: SizedBox(
                             height: MediaQuery.of(context).size.height,
-                            child: ListView(children: const [Menu_Nav()]),
+                            child: ListView(children: const [MenuNav()]),
                           )),
                           SizedBox(
                             width: MediaQuery.of(context).size.width / 5,
