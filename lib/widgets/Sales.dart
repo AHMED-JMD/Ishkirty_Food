@@ -225,7 +225,7 @@ class _SalesState extends State<Sales> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        width: 250,
+                        width: 330,
                         decoration: BoxDecoration(
                           color: Colors.grey[200],
                           border: Border.all(
@@ -244,7 +244,7 @@ class _SalesState extends State<Sales> {
                         width: 30,
                       ),
                       Container(
-                        width: 250,
+                        width: 330,
                         decoration: BoxDecoration(
                           color: const Color(0xffefecec),
                           border: Border.all(

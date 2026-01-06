@@ -83,7 +83,7 @@ class _MenuNavState extends State<MenuNav> {
                     });
                   },
                   child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 700),
+                    duration: const Duration(milliseconds: 185),
                     width: 140,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 10),
