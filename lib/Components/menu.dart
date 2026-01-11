@@ -21,7 +21,8 @@ List menuPages = [
         ),
       ],
     ),
-    'name': 'الكل'
+    'name': 'الكل',
+    'icon': Icons.restaurant_menu,
   },
   //---------------Menu Items------------------------------------------
   {
@@ -32,7 +33,8 @@ List menuPages = [
         ),
       ],
     ),
-    'name': 'تقليدي'
+    'name': 'تقليدي',
+    'icon': Icons.fastfood,
   },
   {
     'widget': Container(
@@ -40,7 +42,15 @@ List menuPages = [
         category: 'لحوم',
       ),
     ),
-    'name': 'اللحوم'
+    'name': 'اللحوم',
+    'icon': Icons.set_meal,
+  },
+  {
+    'widget': const MenuCategory(
+      category: 'عصائر',
+    ),
+    'name': 'العصائر',
+    'icon': Icons.local_drink,
   },
   {
     'widget': const SizedBox(
@@ -48,12 +58,7 @@ List menuPages = [
         category: 'اضافات',
       ),
     ),
-    'name': 'إضافات'
-  },
-  {
-    'widget': const MenuCategory(
-      category: 'عصائر',
-    ),
-    'name': 'العصائر'
+    'name': 'إضافات',
+    'icon': Icons.add_circle,
   },
 ];

@@ -83,6 +83,23 @@ class MyDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
+                value.user != null && value.user['role'] == 'admin'
+                    ? InkWell(
+                        onTap: () {
+                          Navigator.pushReplacementNamed(context, '/store');
+                        },
+                        child: const ListTile(
+                          leading: Icon(
+                            Icons.store,
+                            color: Colors.teal,
+                          ),
+                          title: Text(
+                            'المخزن',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ),
+                      )
+                    : const SizedBox(),
                 InkWell(
                   onTap: () {
                     Navigator.pushReplacementNamed(context, '/bills');

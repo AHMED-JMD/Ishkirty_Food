@@ -1,4 +1,4 @@
-import 'package:ashkerty_food/models/SpieSales.dart';
+import 'package:ashkerty_food/models/StockItem.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
@@ -62,14 +62,28 @@ class _SalesTableState extends State<SalesTable> {
                 DataColumn(
                   label: Center(
                       child: Text(
-                    'النوع',
+                    'سعر البيع',
                     style: TextStyle(fontSize: 20),
                   )),
                 ),
                 DataColumn(
                   label: Center(
                       child: Text(
-                    ' الايرادات ',
+                    ' سعر الشراء ',
+                    style: TextStyle(fontSize: 20),
+                  )),
+                ),
+                DataColumn(
+                  label: Center(
+                      child: Text(
+                    'الكمية',
+                    style: TextStyle(fontSize: 20),
+                  )),
+                ),
+                DataColumn(
+                  label: Center(
+                      child: Text(
+                    ' ',
                     style: TextStyle(fontSize: 20),
                   )),
                 ),
@@ -82,7 +96,7 @@ class _SalesTableState extends State<SalesTable> {
   }
 }
 
-class ExampleSource extends AdvancedDataTableSource<SpiecesSales> {
+class ExampleSource extends AdvancedDataTableSource<StockItem> {
   List data;
   BuildContext context;
   ExampleSource({required this.data, required this.context});
@@ -100,17 +114,25 @@ class ExampleSource extends AdvancedDataTableSource<SpiecesSales> {
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
         child: Text(
-          currentRowData.category,
+          currentRowData.buyPrice.toString(),
           style: const TextStyle(fontSize: 20),
         ),
       )),
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
         child: Text(
-          currentRowData.totSales.toString(),
+          currentRowData.sellPrice.toString(),
           style: const TextStyle(fontSize: 20),
         ),
       )),
+      DataCell(Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
+        child: Text(
+          currentRowData.quantity.toString(),
+          style: const TextStyle(fontSize: 20),
+        ),
+      )),
+      DataCell(Container()),
     ]);
   }
 
@@ -132,13 +154,13 @@ class ExampleSource extends AdvancedDataTableSource<SpiecesSales> {
   }
 
   @override
-  Future<RemoteDataSourceDetails<SpiecesSales>> getNextPage(
+  Future<RemoteDataSourceDetails<StockItem>> getNextPage(
       NextPageRequest pageRequest) async {
     await Future.delayed(const Duration(milliseconds: 400));
     return RemoteDataSourceDetails(
       data.length,
       (data)
-          .map((json) => SpiecesSales.fromJson(json))
+          .map((json) => StockItem.fromJson(json))
           .skip(pageRequest.offset)
           .take(pageRequest.pageSize)
           .toList(),
