@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'package:ashkerty_food/API/Bill.dart';
 import 'package:ashkerty_food/Components/tables/BillTable.dart';
+import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/SearchDates.dart';
 import 'package:ashkerty_food/static/dropDownBtn.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
+import 'package:ashkerty_food/widgets/DeletedBills.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 
 class Bills extends StatefulWidget {
   const Bills({super.key});
@@ -77,71 +80,103 @@ class _BillsState extends State<Bills> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.teal,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.home_work,
-              size: 37,
-              color: Colors.white,
+    return Consumer<AuthProvider>(builder: (context, value, child) {
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.teal,
+            leading: IconButton(
+              icon: const Icon(
+                Icons.home_work,
+                size: 37,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/home');
+              },
             ),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, '/home');
-            },
-          ),
-          title: const Center(
-              child: Text(
-            "الفواتير",
-            style: TextStyle(fontSize: 25),
-          )),
-          actions: const [
-            LeadingDrawerBtn(),
-          ],
-          toolbarHeight: 45,
-        ),
-        //custom drawer in static folder
-        endDrawer: const MyDrawer(),
-
-        body: ListView(children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(
-                height: 90,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SearchInDates(searchDates: searchDates),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 28.0),
-                    child: MyDropdownButton(searchDates: searchDates),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              data.isNotEmpty || isLoading == false
-                  ? Container(
-                      color: Colors.grey[100],
-                      child: billTable(
-                        data: data,
-                      ))
-                  : const Padding(
-                      padding: EdgeInsets.only(top: 190.0),
-                      child: SpinKitPouringHourGlassRefined(
-                        color: Colors.teal,
-                        size: 70.0,
-                      ),
-                    ),
+            title: const Center(
+                child: Text(
+              "الفواتير",
+              style: TextStyle(fontSize: 25),
+            )),
+            actions: const [
+              LeadingDrawerBtn(),
             ],
+            toolbarHeight: 45,
           ),
-        ]),
-      ),
-    );
+          //custom drawer in static folder
+          endDrawer: const MyDrawer(),
+
+          body: ListView(children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  height: 90,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SearchInDates(searchDates: searchDates),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 28.0),
+                          child: MyDropdownButton(searchDates: searchDates),
+                        ),
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        value.user != null && value.user['role'] == 'admin'
+                            ? ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const DeletedBills(),
+                                    ),
+                                  );
+                                },
+                                label: const Text(
+                                  'الفواتير المحذوفة',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.teal),
+                                icon: const Icon(
+                                  Icons.delete_forever_outlined,
+                                  size: 30,
+                                  color: Colors.black,
+                                ))
+                            : const SizedBox(),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                data.isNotEmpty || isLoading == false
+                    ? Container(
+                        color: Colors.grey[100],
+                        child: billTable(
+                          data: data,
+                        ))
+                    : const Padding(
+                        padding: EdgeInsets.only(top: 190.0),
+                        child: SpinKitPouringHourGlassRefined(
+                          color: Colors.teal,
+                          size: 70.0,
+                        ),
+                      ),
+              ],
+            ),
+          ]),
+        ),
+      );
+    });
   }
 }

@@ -1,24 +1,25 @@
 import 'dart:convert';
+import 'package:ashkerty_food/models/PurchaseRequest.dart';
+import 'package:ashkerty_food/models/StockItem.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/drawer.dart';
-import 'package:ashkerty_food/static/formatter.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
-import 'package:ashkerty_food/widgets/PurchaseRequest.dart';
+import 'package:ashkerty_food/static/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../API/Store.dart' as api;
-import '../models/StockItem.dart';
 
-class StorePage extends StatefulWidget {
-  const StorePage({Key? key}) : super(key: key);
+class PurchaseRequestPage extends StatefulWidget {
+  const PurchaseRequestPage({Key? key}) : super(key: key);
 
   @override
-  State<StorePage> createState() => _StorePageState();
+  State<PurchaseRequestPage> createState() => _PurchaseRequestPageState();
 }
 
-class _StorePageState extends State<StorePage> {
-  List<StockItem> _items = [];
-  List<StockItem> _filtered = [];
+class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
+  List<PurchaseRequest> _items = [];
+  List<PurchaseRequest> _filtered = [];
+  List<StockItem> stores = [];
   bool _loading = true;
   String _search = '';
 
@@ -26,26 +27,32 @@ class _StorePageState extends State<StorePage> {
   void initState() {
     super.initState();
     _load();
+    _loadStores();
   }
 
   Future _load() async {
-    setState(() {
-      _loading = true;
-    });
+    setState(() => _loading = true);
+    final res = await api.APIStore.getPurchases();
+    if (res.statusCode == 200) {
+      final body = jsonDecode(res.body);
 
+      List data = List.from(body);
+      _items = data.map((e) => PurchaseRequest.fromJson(e)).toList();
+    }
+    _applyFilter();
+    setState(() => _loading = false);
+  }
+
+  Future _loadStores() async {
     //call
     final res = await api.APIStore.getItems();
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
       List data = List.from(body);
-      _items = data.map((e) => StockItem.fromJson(e)).toList();
+      stores = data.map((e) => StockItem.fromJson(e)).toList();
     } else {
       // keep empty or show error
     }
-    _applyFilter();
-    setState(() {
-      _loading = false;
-    });
   }
 
   void _applyFilter() {
@@ -53,27 +60,21 @@ class _StorePageState extends State<StorePage> {
       _filtered = List.from(_items);
     } else {
       final q = _search.toLowerCase();
-      _filtered =
-          _items.where((it) => it.name.toLowerCase().contains(q)).toList();
+      _filtered = _items
+          .where((it) => it.vendor.toString().toLowerCase().contains(q))
+          .toList();
     }
   }
 
   double get totalStockValue =>
       _items.fold(0.0, (p, e) => p + e.buyPrice * e.quantity);
 
-  void _showForm({StockItem? item}) {
-    final nameCtrl = TextEditingController(text: item?.name ?? '');
-    final sellCtrl = TextEditingController(
-        text: item != null ? item.sellPrice.toString() : '');
-    final buyCtrl = TextEditingController(
-        text: item != null ? item.buyPrice.toString() : '');
-    final qtyCtrl = TextEditingController(
-        text: item != null ? item.quantity.toString() : '');
-    bool isKilo = item != null
-        ? item.isKilo
-            ? true
-            : false
-        : false;
+  void _showForm() {
+    final vendorCtrl = TextEditingController();
+    final qtyCtrl = TextEditingController();
+    final priceCtrl = TextEditingController();
+    final storeCtrl = TextEditingController();
+    DateTime? pickedDate;
     final formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -81,9 +82,7 @@ class _StorePageState extends State<StorePage> {
         builder: (_) => StatefulBuilder(
                 builder: (BuildContext context, StateSetter setState) {
               return AlertDialog(
-                title: Center(
-                    child: Text(
-                        item == null ? 'اضافة عنصر للمخزون' : 'تعديل العنصر')),
+                title: const Center(child: Text('اضافة طلب شراء')),
                 content: Form(
                   key: formKey,
                   child: Directionality(
@@ -93,17 +92,32 @@ class _StorePageState extends State<StorePage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           TextFormField(
-                            controller: nameCtrl,
+                            controller: vendorCtrl,
                             decoration:
-                                const InputDecoration(labelText: 'الاسم'),
+                                const InputDecoration(labelText: 'المورد'),
                             validator: (v) => (v == null || v.trim().isEmpty)
                                 ? 'Required'
                                 : null,
                           ),
-                          TextFormField(
-                            controller: sellCtrl,
+                          DropdownButtonFormField<String>(
                             decoration:
-                                const InputDecoration(labelText: 'سعر البيع'),
+                                const InputDecoration(labelText: 'اختر المخزن'),
+                            items: stores
+                                .map((s) => DropdownMenuItem(
+                                      value: s.id ?? '',
+                                      child: Text(s.name),
+                                    ))
+                                .toList(),
+                            onChanged: (val) {
+                              storeCtrl.text = val ?? '';
+                            },
+                            validator: (v) =>
+                                (v == null || v.isEmpty) ? 'Required' : null,
+                          ),
+                          TextFormField(
+                            controller: qtyCtrl,
+                            decoration:
+                                const InputDecoration(labelText: 'الكمية'),
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
                             validator: (v) => double.tryParse(v ?? '') == null
@@ -111,7 +125,7 @@ class _StorePageState extends State<StorePage> {
                                 : null,
                           ),
                           TextFormField(
-                            controller: buyCtrl,
+                            controller: priceCtrl,
                             decoration:
                                 const InputDecoration(labelText: 'سعر الشراء'),
                             keyboardType: const TextInputType.numberWithOptions(
@@ -120,26 +134,29 @@ class _StorePageState extends State<StorePage> {
                                 ? 'Invalid'
                                 : null,
                           ),
-                          TextFormField(
-                            controller: qtyCtrl,
-                            readOnly: item != null ? true : false,
-                            decoration:
-                                const InputDecoration(labelText: 'الكمية'),
-                            keyboardType: const TextInputType.numberWithOptions(
-                                decimal: true),
-                            validator: (v) => int.tryParse(v ?? '') == null
-                                ? 'Invalid'
-                                : null,
-                          ),
-                          CheckboxListTile(
-                            title: const Text('الكمية بالكيلو'),
-                            value: isKilo,
-                            onChanged: (val) {
-                              isKilo = val!;
-                              setState(() {});
-                            },
-                            controlAffinity: ListTileControlAffinity.leading,
-                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(pickedDate == null
+                                    ? 'اختر التاريخ'
+                                    : pickedDate.toString().split(' ').first),
+                              ),
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    final d = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime(2000),
+                                        lastDate: DateTime(2100));
+                                    if (d != null) {
+                                      pickedDate = d;
+                                      setState(() {});
+                                    }
+                                  },
+                                  child: const Text('تحديد'))
+                            ],
+                          )
                         ],
                       ),
                     ),
@@ -148,55 +165,42 @@ class _StorePageState extends State<StorePage> {
                 actions: [
                   TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        'الغاء',
-                        style: TextStyle(color: Colors.black),
-                      )),
+                      child: const Text('الغاء',
+                          style: TextStyle(color: Colors.black))),
                   ElevatedButton(
                     onPressed: () async {
                       if (!formKey.currentState!.validate()) return;
                       final dto = {
-                        if (item?.id != null) 'id': item!.id,
-                        'name': nameCtrl.text.trim(),
-                        'sell_price': double.parse(sellCtrl.text.trim()),
-                        'buy_price': double.parse(buyCtrl.text.trim()),
-                        'quantity': int.parse(qtyCtrl.text.trim()),
-                        'isKilo': isKilo,
+                        'store_item': storeCtrl.text.trim(),
+                        'vendor': vendorCtrl.text.trim(),
+                        'quantity': double.parse(qtyCtrl.text.trim()),
+                        'buy_price': double.parse(priceCtrl.text.trim()),
+                        'date':
+                            (pickedDate ?? DateTime.now()).toIso8601String(),
                       };
-
                       Navigator.pop(context);
-                      // call API
-                      if (item == null) {
-                        final res = await api.APIStore.addItem(dto);
-                        if (res.statusCode == 200) {
-                          await _load();
-                        } else {
-                          _showError(res.body);
-                        }
+                      final res = await api.APIStore.addPurchase(dto);
+                      if (res.statusCode == 200) {
+                        await _load();
                       } else {
-                        final res = await api.APIStore.updateItem(dto);
-                        if (res.statusCode == 200) {
-                          await _load();
-                        } else {
-                          _showError(res.body);
-                        }
+                        _showError(res.body);
                       }
                     },
-                    child:
-                        const Text('حفظ', style: TextStyle(color: Colors.teal)),
+                    child: const Text('اضافة',
+                        style: TextStyle(color: Colors.teal)),
                   ),
                 ],
               );
             }));
   }
 
-  void _confirmDelete(StockItem it) {
+  void _confirmDelete(PurchaseRequest it) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Center(child: Text('حذف العنصر')),
+        title: const Center(child: Text('حذف طلب الشراء')),
         content: Text(
-          "سيتم حذف ${it.name} ولن يكون هناك صنف مرتبط به",
+          "سيتم حذف طلب الشراء للمورد ${it.vendor}",
           textDirection: TextDirection.rtl,
         ),
         actions: [
@@ -207,7 +211,7 @@ class _StorePageState extends State<StorePage> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-              final res = await api.APIStore.deleteItem({'id': it.id});
+              final res = await api.APIStore.deletePurchase({'id': it.id});
               if (res.statusCode == 200) {
                 await _load();
               } else {
@@ -242,25 +246,23 @@ class _StorePageState extends State<StorePage> {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.teal,
             leading: IconButton(
               icon: const Icon(
-                Icons.home_work,
+                Icons.arrow_back,
                 size: 37,
                 color: Colors.white,
               ),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/home');
+                Navigator.pushReplacementNamed(context, '/store');
               },
             ),
+            backgroundColor: Colors.teal,
             title: const Center(
                 child: Text(
-              "المخزن",
+              "طلبات الشراء",
               style: TextStyle(fontSize: 25),
             )),
-            actions: const [
-              LeadingDrawerBtn(),
-            ],
+            actions: const [LeadingDrawerBtn()],
             toolbarHeight: 45,
           ),
           endDrawer: const MyDrawer(),
@@ -298,7 +300,7 @@ class _StorePageState extends State<StorePage> {
                                 child: TextField(
                                   decoration: const InputDecoration(
                                       prefixIcon: Icon(Icons.search),
-                                      hintText: 'ايجاد منتج بالاسم .....'),
+                                      hintText: 'ايجاد طلب بالمورد .....'),
                                   onChanged: (v) {
                                     setState(() {
                                       _search = v;
@@ -314,21 +316,7 @@ class _StorePageState extends State<StorePage> {
                                   Icons.add_circle,
                                   size: 30,
                                 ),
-                                tooltip: "اضافة منتج",
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) =>
-                                              const PurchaseRequestPage()));
-                                },
-                                icon: const Icon(
-                                  Icons.shopping_cart,
-                                  size: 28,
-                                ),
-                                tooltip: "طلبات الشراء",
+                                tooltip: "اضافة طلب",
                               )
                             ],
                           ),
@@ -350,7 +338,7 @@ class _StorePageState extends State<StorePage> {
                                         const Icon(Icons.inventory_2,
                                             color: Colors.teal),
                                         const SizedBox(height: 8),
-                                        const Text('اجمالي الاصناف',
+                                        const Text('اجمالي طلبات الشراء',
                                             style: TextStyle(fontSize: 12)),
                                         const SizedBox(height: 6),
                                         Text(
@@ -381,7 +369,7 @@ class _StorePageState extends State<StorePage> {
                                         const Icon(Icons.monetization_on,
                                             color: Colors.orange),
                                         const SizedBox(height: 8),
-                                        const Text('قيمة المخزون',
+                                        const Text('قيمة المشتروات',
                                             style: TextStyle(fontSize: 12)),
                                         const SizedBox(height: 6),
                                         Text(
@@ -414,68 +402,53 @@ class _StorePageState extends State<StorePage> {
                                         child: DataTable(
                                           columns: const [
                                             DataColumn(
-                                                label: Text(
-                                              'الاسم',
-                                              style: TextStyle(fontSize: 20),
-                                            )),
+                                                label: Text('المورد',
+                                                    style: TextStyle(
+                                                        fontSize: 20))),
                                             DataColumn(
-                                                label: Text(
-                                              'سعر البيع',
-                                              style: TextStyle(fontSize: 20),
-                                            )),
+                                                label: Text('الكمية',
+                                                    style: TextStyle(
+                                                        fontSize: 20))),
                                             DataColumn(
-                                                label: Text(
-                                              'سعر الشراء',
-                                              style: TextStyle(fontSize: 20),
-                                            )),
+                                                label: Text('سعر الشراء',
+                                                    style: TextStyle(
+                                                        fontSize: 20))),
                                             DataColumn(
-                                                label: Text(
-                                              'الكمية',
-                                              style: TextStyle(fontSize: 20),
-                                            )),
+                                                label: Text('التاريخ',
+                                                    style: TextStyle(
+                                                        fontSize: 20))),
                                             DataColumn(
-                                                label: Text(
-                                              'الإجراءات',
-                                              style: TextStyle(fontSize: 20),
-                                            )),
+                                                label: Text('الإجراءات',
+                                                    style: TextStyle(
+                                                        fontSize: 20))),
                                           ],
                                           rows: _filtered.map((it) {
                                             return DataRow(cells: [
+                                              DataCell(Text(it.vendor,
+                                                  style: const TextStyle(
+                                                      fontSize: 17))),
                                               DataCell(Text(
-                                                it.name,
-                                                style: const TextStyle(
-                                                    fontSize: 17),
-                                              )),
+                                                  numberFormatter(it.quantity,
+                                                      fractionDigits: 2),
+                                                  style: const TextStyle(
+                                                      fontSize: 17))),
                                               DataCell(Text(
-                                                "${numberFormatter(it.sellPrice)} (جنيه)",
-                                                style: const TextStyle(
-                                                    fontSize: 17),
-                                              )),
+                                                  numberFormatter(it.buyPrice),
+                                                  style: const TextStyle(
+                                                      fontSize: 17))),
                                               DataCell(Text(
-                                                "${numberFormatter(it.buyPrice)} (جنيه)",
-                                                style: const TextStyle(
-                                                    fontSize: 17),
-                                              )),
-                                              DataCell(Text(
-                                                it.isKilo
-                                                    ? "${numberFormatter(it.quantity, fractionDigits: 2)} / كجم"
-                                                    : "${numberFormatter(it.quantity)} / قطع",
-                                                style: const TextStyle(
-                                                    fontSize: 17),
-                                              )),
+                                                  (it.date)
+                                                      .toString()
+                                                      .split('T')
+                                                      .first,
+                                                  style: const TextStyle(
+                                                      fontSize: 17))),
                                               DataCell(Row(
                                                 children: [
                                                   IconButton(
-                                                    icon: const Icon(Icons.edit,
-                                                        size: 18),
-                                                    onPressed: () =>
-                                                        _showForm(item: it),
-                                                  ),
-                                                  IconButton(
                                                     icon: const Icon(
-                                                      Icons.delete,
-                                                      size: 18,
-                                                    ),
+                                                        Icons.delete,
+                                                        size: 18),
                                                     onPressed: () =>
                                                         _confirmDelete(it),
                                                   ),

@@ -1,5 +1,4 @@
 import 'package:ashkerty_food/models/Bill.dart';
-import 'package:ashkerty_food/widgets/DeletedBills.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
@@ -40,34 +39,6 @@ class _billTableState extends State<billTable> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                const SizedBox(
-                  width: 10,
-                ),
-                ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DeletedBills(),
-                        ),
-                      );
-                    },
-                    label: const Text(
-                      'الفواتير المحذوفة',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-                    icon: const Icon(
-                      Icons.delete_forever_outlined,
-                      size: 30,
-                      color: Colors.black,
-                    )),
-              ],
-            ),
             const SizedBox(
               height: 20,
             ),
