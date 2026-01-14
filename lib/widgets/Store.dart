@@ -120,6 +120,15 @@ class _StorePageState extends State<StorePage> {
                                 ? 'Invalid'
                                 : null,
                           ),
+                          CheckboxListTile(
+                            title: const Text('الكمية بالكيلو'),
+                            value: isKilo,
+                            onChanged: (val) {
+                              isKilo = val!;
+                              setState(() {});
+                            },
+                            controlAffinity: ListTileControlAffinity.leading,
+                          ),
                           TextFormField(
                             controller: qtyCtrl,
                             readOnly: item != null ? true : false,
@@ -130,15 +139,6 @@ class _StorePageState extends State<StorePage> {
                             validator: (v) => int.tryParse(v ?? '') == null
                                 ? 'Invalid'
                                 : null,
-                          ),
-                          CheckboxListTile(
-                            title: const Text('الكمية بالكيلو'),
-                            value: isKilo,
-                            onChanged: (val) {
-                              isKilo = val!;
-                              setState(() {});
-                            },
-                            controlAffinity: ListTileControlAffinity.leading,
                           ),
                         ],
                       ),

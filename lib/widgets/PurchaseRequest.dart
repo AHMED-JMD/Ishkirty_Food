@@ -22,17 +22,24 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
   List<StockItem> stores = [];
   bool _loading = true;
   String _search = '';
+  final todayDate = DateTime.now();
+  String period = "";
 
   @override
   void initState() {
     super.initState();
-    _load();
+    _load(todayDate, todayDate, "اليوم");
     _loadStores();
   }
 
-  Future _load() async {
+  Future _load(DateTime startDate, DateTime endDate, period) async {
     setState(() => _loading = true);
-    final res = await api.APIStore.getPurchases();
+
+    final res = await api.APIStore.getPurchasesByDate({
+      'startDate': startDate.toIso8601String(),
+      'endDate': endDate.toIso8601String()
+    });
+
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
 
@@ -40,7 +47,10 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
       _items = data.map((e) => PurchaseRequest.fromJson(e)).toList();
     }
     _applyFilter();
-    setState(() => _loading = false);
+    setState(() {
+      _loading = false;
+      this.period = period;
+    });
   }
 
   Future _loadStores() async {
@@ -74,7 +84,7 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
     final qtyCtrl = TextEditingController();
     final priceCtrl = TextEditingController();
     final storeCtrl = TextEditingController();
-    DateTime? pickedDate;
+    DateTime pickedDate = todayDate;
     final formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -138,9 +148,8 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                           Row(
                             children: [
                               Expanded(
-                                child: Text(pickedDate == null
-                                    ? 'اختر التاريخ'
-                                    : pickedDate.toString().split(' ').first),
+                                child: Text(
+                                    pickedDate.toString().split(' ').first),
                               ),
                               ElevatedButton(
                                   onPressed: () async {
@@ -175,13 +184,12 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                         'vendor': vendorCtrl.text.trim(),
                         'quantity': double.parse(qtyCtrl.text.trim()),
                         'buy_price': double.parse(priceCtrl.text.trim()),
-                        'date':
-                            (pickedDate ?? DateTime.now()).toIso8601String(),
+                        'date': pickedDate.toIso8601String(),
                       };
                       Navigator.pop(context);
                       final res = await api.APIStore.addPurchase(dto);
                       if (res.statusCode == 200) {
-                        await _load();
+                        await _load(todayDate, todayDate, "اليوم");
                       } else {
                         _showError(res.body);
                       }
@@ -213,7 +221,7 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
               Navigator.pop(context);
               final res = await api.APIStore.deletePurchase({'id': it.id});
               if (res.statusCode == 200) {
-                await _load();
+                await _load(todayDate, todayDate, "اليوم");
               } else {
                 _showError(res.body);
               }
@@ -317,7 +325,92 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                                   size: 30,
                                 ),
                                 tooltip: "اضافة طلب",
-                              )
+                              ),
+                              const SizedBox(width: 10),
+                              const Text(
+                                "تصفية بالتاريخ: ",
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                              PopupMenuButton(
+                                icon: const Icon(
+                                  Icons.date_range_rounded,
+                                  size: 36,
+                                  color: Colors.teal,
+                                ),
+                                tooltip: "تصفية",
+                                onSelected: (value) {},
+                                itemBuilder: (BuildContext context) {
+                                  return [
+                                    PopupMenuItem(
+                                      value: 'week',
+                                      onTap: () {
+                                        // Get the date of a week before the current date
+                                        DateTime weekBeforeDate = todayDate
+                                            .subtract(const Duration(days: 7));
+
+                                        //call server
+                                        _load(weekBeforeDate, todayDate,
+                                            "الإسبوع");
+                                      },
+                                      child: const Text(
+                                        'طلبات الإسبوع',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                        value: 'month',
+                                        onTap: () {
+                                          // Get the date of a week before the current date
+                                          DateTime monthBeforeDate =
+                                              todayDate.subtract(
+                                                  const Duration(days: 30));
+                                          //call server
+                                          _load(monthBeforeDate, todayDate,
+                                              "الشهر");
+                                        },
+                                        child: const Text(
+                                          'طلبات الشهر',
+                                          style: TextStyle(color: Colors.black),
+                                        )),
+                                    PopupMenuItem(
+                                        value: 'day',
+                                        onTap: () => _load(
+                                            todayDate, todayDate, "اليوم"),
+                                        child: const Text(
+                                          'طلبات اليوم',
+                                          style: TextStyle(color: Colors.black),
+                                        )),
+                                    PopupMenuItem(
+                                      value: 'search_day',
+                                      child: Form(
+                                          child: Row(
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: () async {
+                                              final d = await showDatePicker(
+                                                  context: context,
+                                                  initialDate: DateTime.now(),
+                                                  firstDate: DateTime(2000),
+                                                  lastDate: DateTime(2100));
+                                              if (d != null) {
+                                                //call server
+                                                _load(d, d, "يوم محدد");
+                                              }
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text(
+                                              'تحديد يوم',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                          ),
+                                        ],
+                                      )),
+                                    ),
+                                  ];
+                                },
+                              ),
                             ],
                           ),
                           Row(
@@ -387,7 +480,7 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                           )
                         ],
                       ),
-                      const SizedBox(height: 60),
+                      const SizedBox(height: 80),
                       Expanded(
                         child: _loading
                             ? const Center(child: CircularProgressIndicator())
@@ -397,10 +490,21 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                                   crossAxisAlignment:
                                       CrossAxisAlignment.stretch,
                                   children: [
+                                    Center(
+                                      child: Text(
+                                        'طلبات الشراء: ($period)',
+                                        style: const TextStyle(fontSize: 30),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 30),
                                     Expanded(
                                       child: SingleChildScrollView(
                                         child: DataTable(
                                           columns: const [
+                                            DataColumn(
+                                                label: Text('الصنف',
+                                                    style: TextStyle(
+                                                        fontSize: 20))),
                                             DataColumn(
                                                 label: Text('المورد',
                                                     style: TextStyle(
@@ -424,21 +528,25 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                                           ],
                                           rows: _filtered.map((it) {
                                             return DataRow(cells: [
+                                              DataCell(Text(it.store.name,
+                                                  style: const TextStyle(
+                                                      fontSize: 17))),
                                               DataCell(Text(it.vendor,
                                                   style: const TextStyle(
                                                       fontSize: 17))),
                                               DataCell(Text(
-                                                  numberFormatter(it.quantity,
-                                                      fractionDigits: 2),
+                                                  it.store.isKilo
+                                                      ? '${it.quantity} / كجم'
+                                                      : '${it.quantity} / قطعة',
                                                   style: const TextStyle(
                                                       fontSize: 17))),
                                               DataCell(Text(
-                                                  numberFormatter(it.buyPrice),
+                                                  "${numberFormatter(it.buyPrice)} (جنيه)",
                                                   style: const TextStyle(
                                                       fontSize: 17))),
                                               DataCell(Text(
                                                   (it.date)
-                                                      .toString()
+                                                      .toIso8601String()
                                                       .split('T')
                                                       .first,
                                                   style: const TextStyle(

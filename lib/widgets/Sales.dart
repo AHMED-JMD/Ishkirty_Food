@@ -216,7 +216,7 @@ class _SalesState extends State<Sales> {
                         style: const TextStyle(fontSize: 30),
                       ),
                       Text(
-                        numberFormatter(totalMor + totalEv),
+                        "${numberFormatter(totalMor + totalEv)} / (جنيه) ",
                         style: const TextStyle(fontSize: 30),
                       ),
                     ],
@@ -345,64 +345,44 @@ class _SalesState extends State<Sales> {
                   return [
                     PopupMenuItem(
                       value: 'week',
-                      child: InkWell(
-                          onTap: () {
-                            // Get the date of a week before the current date
-                            DateTime weekBeforeDate =
-                                todayDate.subtract(const Duration(days: 7));
+                      onTap: () {
+                        // Get the date of a week before the current date
+                        DateTime weekBeforeDate =
+                            todayDate.subtract(const Duration(days: 7));
 
-                            //call server
-                            Map datas = {};
-                            datas['start_date'] =
-                                weekBeforeDate.toIso8601String();
-                            datas['end_date'] = todayDate.toIso8601String();
-                            datas['isDeleted'] = false;
-
-                            //for total sales
-                            getTotalSales(weekBeforeDate, todayDate);
-                            //for spieces sales
-                            getSpiecesSales(weekBeforeDate, todayDate);
-                          },
-                          child: const Text(
-                            'إيرادات الإسبوع',
-                            style: TextStyle(fontSize: 20, color: Colors.black),
-                          )),
+                        //for total sales
+                        getTotalSales(weekBeforeDate, todayDate);
+                        //for spieces sales
+                        getSpiecesSales(weekBeforeDate, todayDate);
+                      },
+                      child: const Text(
+                        'إيرادات الإسبوع',
+                        style: TextStyle(fontSize: 20, color: Colors.black),
+                      ),
                     ),
                     PopupMenuItem(
                       value: 'month',
-                      child: InkWell(
-                          onTap: () {
-                            // Get the date of a week before the current date
-                            DateTime monthBeforeDate =
-                                todayDate.subtract(const Duration(days: 30));
-
-                            //call server
-                            Map datas = {};
-                            datas['start_date'] =
-                                monthBeforeDate.toIso8601String();
-                            datas['end_date'] = todayDate.toIso8601String();
-                            datas['isDeleted'] = false;
-
-                            //for total sales
-                            getTotalSales(monthBeforeDate, todayDate);
-                            //for spieces sales
-                            getSpiecesSales(monthBeforeDate, todayDate);
-                          },
-                          child: const Text(
-                            'إيرادات الشهر',
-                            style: TextStyle(fontSize: 20, color: Colors.black),
-                          )),
+                      onTap: () {
+                        // Get the date of a week before the current date
+                        DateTime monthBeforeDate =
+                            todayDate.subtract(const Duration(days: 30));
+                        //for total sales
+                        getTotalSales(monthBeforeDate, todayDate);
+                        //for spieces sales
+                        getSpiecesSales(monthBeforeDate, todayDate);
+                      },
+                      child: const Text(
+                        'إيرادات الشهر',
+                        style: TextStyle(fontSize: 20, color: Colors.black),
+                      ),
                     ),
                     PopupMenuItem(
                       value: 'day',
-                      child: InkWell(
-                          onTap: () {
-                            getTotalSales(todayDate, todayDate);
-                          },
-                          child: const Text(
-                            'إيرادات اليوم',
-                            style: TextStyle(fontSize: 20, color: Colors.black),
-                          )),
+                      onTap: () => getTotalSales(todayDate, todayDate),
+                      child: const Text(
+                        'إيرادات اليوم',
+                        style: TextStyle(fontSize: 20, color: Colors.black),
+                      ),
                     ),
                   ];
                 },

@@ -99,6 +99,18 @@ class APIStore {
     }
   }
 
+  static Future getPurchasesByDate(data) async {
+    try {
+      Map<String, String> headers = {"Content-Type": "application/json"};
+      final url = Uri.parse('$storeApiUrl/purchase/date');
+      Response response =
+          await post(url, headers: headers, body: jsonEncode(data));
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   static Future addPurchase(data) async {
     try {
       Map<String, String> headers = {"Content-Type": "application/json"};
