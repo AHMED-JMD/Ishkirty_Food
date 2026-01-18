@@ -7,6 +7,7 @@ import 'package:ashkerty_food/widgets/Login.dart';
 import 'package:ashkerty_food/widgets/Profile.dart';
 import 'package:ashkerty_food/widgets/Store.dart';
 import 'package:ashkerty_food/widgets/clients.dart';
+import 'package:ashkerty_food/widgets/Employee.dart';
 import 'package:ashkerty_food/widgets/Sales.dart';
 import 'package:ashkerty_food/widgets/Bills.dart';
 import 'package:ashkerty_food/widgets/speices.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
           '/del_bills': (context) => const DeletedBills(),
           '/speices': (context) => const Speices(),
           '/clients': (context) => const Clients(),
+          '/employees': (context) => const EmployeePage(),
         },
       ),
     );

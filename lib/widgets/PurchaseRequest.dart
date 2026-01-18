@@ -428,7 +428,7 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        const Icon(Icons.inventory_2,
+                                        const Icon(Icons.shopping_bag,
                                             color: Colors.teal),
                                         const SizedBox(height: 8),
                                         const Text('اجمالي طلبات الشراء',
