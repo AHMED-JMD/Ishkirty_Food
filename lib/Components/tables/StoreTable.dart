@@ -114,13 +114,6 @@ class ExampleSource extends AdvancedDataTableSource<StockItem> {
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
         child: Text(
-          currentRowData.buyPrice.toString(),
-          style: const TextStyle(fontSize: 20),
-        ),
-      )),
-      DataCell(Padding(
-        padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
-        child: Text(
           currentRowData.sellPrice.toString(),
           style: const TextStyle(fontSize: 20),
         ),

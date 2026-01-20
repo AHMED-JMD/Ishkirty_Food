@@ -59,16 +59,14 @@ class _StorePageState extends State<StorePage> {
   }
 
   double get totalStockValue =>
-      _items.fold(0.0, (p, e) => p + e.buyPrice * e.quantity);
+      _items.fold(0.0, (p, e) => p + e.sellPrice * e.quantity);
 
   void _showForm({StockItem? item}) {
     final nameCtrl = TextEditingController(text: item?.name ?? '');
     final sellCtrl = TextEditingController(
         text: item != null ? item.sellPrice.toString() : '');
-    final buyCtrl = TextEditingController(
-        text: item != null ? item.buyPrice.toString() : '');
     final qtyCtrl = TextEditingController(
-        text: item != null ? item.quantity.toString() : '');
+        text: item != null ? item.quantity.toString() : '0');
     bool isKilo = item != null
         ? item.isKilo
             ? true
@@ -92,10 +90,11 @@ class _StorePageState extends State<StorePage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          const SizedBox(height: 10),
                           TextFormField(
                             controller: nameCtrl,
                             decoration:
-                                const InputDecoration(labelText: 'الاسم'),
+                                const InputDecoration(labelText: 'اسم الصنف'),
                             validator: (v) => (v == null || v.trim().isEmpty)
                                 ? 'Required'
                                 : null,
@@ -103,31 +102,12 @@ class _StorePageState extends State<StorePage> {
                           TextFormField(
                             controller: sellCtrl,
                             decoration:
-                                const InputDecoration(labelText: 'سعر البيع'),
+                                const InputDecoration(labelText: 'السعر'),
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
                             validator: (v) => double.tryParse(v ?? '') == null
                                 ? 'Invalid'
                                 : null,
-                          ),
-                          TextFormField(
-                            controller: buyCtrl,
-                            decoration:
-                                const InputDecoration(labelText: 'سعر الشراء'),
-                            keyboardType: const TextInputType.numberWithOptions(
-                                decimal: true),
-                            validator: (v) => double.tryParse(v ?? '') == null
-                                ? 'Invalid'
-                                : null,
-                          ),
-                          CheckboxListTile(
-                            title: const Text('الكمية بالكيلو'),
-                            value: isKilo,
-                            onChanged: (val) {
-                              isKilo = val!;
-                              setState(() {});
-                            },
-                            controlAffinity: ListTileControlAffinity.leading,
                           ),
                           TextFormField(
                             controller: qtyCtrl,
@@ -140,6 +120,17 @@ class _StorePageState extends State<StorePage> {
                                 ? 'Invalid'
                                 : null,
                           ),
+                          const SizedBox(height: 10),
+                          CheckboxListTile(
+                            title: const Text('الكمية بالكيلو'),
+                            value: isKilo,
+                            onChanged: (val) {
+                              isKilo = val!;
+                              setState(() {});
+                            },
+                            controlAffinity: ListTileControlAffinity.leading,
+                          ),
+                          const SizedBox(height: 10),
                         ],
                       ),
                     ),
@@ -159,7 +150,6 @@ class _StorePageState extends State<StorePage> {
                         if (item?.id != null) 'id': item!.id,
                         'name': nameCtrl.text.trim(),
                         'sell_price': double.parse(sellCtrl.text.trim()),
-                        'buy_price': double.parse(buyCtrl.text.trim()),
                         'quantity': int.parse(qtyCtrl.text.trim()),
                         'isKilo': isKilo,
                       };
@@ -197,6 +187,7 @@ class _StorePageState extends State<StorePage> {
         title: const Center(child: Text('حذف العنصر')),
         content: Text(
           "سيتم حذف ${it.name} ولن يكون هناك صنف مرتبط به",
+          style: const TextStyle(fontSize: 16),
           textDirection: TextDirection.rtl,
         ),
         actions: [
@@ -214,7 +205,10 @@ class _StorePageState extends State<StorePage> {
                 _showError(res.body);
               }
             },
-            child: const Text('حذف', style: TextStyle(color: Colors.redAccent)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+            ),
+            child: const Text('حذف', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -289,6 +283,71 @@ class _StorePageState extends State<StorePage> {
                 : Column(
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          SizedBox(
+                            width: 160,
+                            child: Card(
+                              color: Colors.white,
+                              elevation: 2,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12.0, horizontal: 8.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.inventory_2,
+                                        color: Colors.teal),
+                                    const SizedBox(height: 8),
+                                    const Text('اجمالي الاصناف',
+                                        style: TextStyle(fontSize: 12)),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      '${_items.length}',
+                                      style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          SizedBox(
+                            width: 180,
+                            child: Card(
+                              color: Colors.white,
+                              elevation: 2,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12.0, horizontal: 8.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.monetization_on,
+                                        color: Colors.orange),
+                                    const SizedBox(height: 8),
+                                    const Text('قيمة المخزون',
+                                        style: TextStyle(fontSize: 12)),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      "${numberFormatter(totalStockValue)} (جنيه)",
+                                      style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
@@ -316,87 +375,32 @@ class _StorePageState extends State<StorePage> {
                                 ),
                                 tooltip: "اضافة منتج",
                               ),
-                              IconButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) =>
-                                              const PurchaseRequestPage()));
-                                },
-                                icon: const Icon(
-                                  Icons.shopping_cart,
-                                  size: 28,
+                              SizedBox(
+                                height: 40,
+                                child: ElevatedButton.icon(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                const PurchaseRequestPage()));
+                                  },
+                                  icon: const Icon(
+                                    Icons.shopping_basket,
+                                    size: 28,
+                                    color: Colors.black,
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.teal,
+                                  ),
+                                  label: const Text(
+                                    "طلبات الشراء",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                 ),
-                                tooltip: "طلبات الشراء",
                               )
                             ],
                           ),
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 160,
-                                child: Card(
-                                  color: Colors.white,
-                                  elevation: 2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12.0, horizontal: 8.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        const Icon(Icons.inventory_2,
-                                            color: Colors.teal),
-                                        const SizedBox(height: 8),
-                                        const Text('اجمالي الاصناف',
-                                            style: TextStyle(fontSize: 12)),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          '${_items.length}',
-                                          style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              SizedBox(
-                                width: 180,
-                                child: Card(
-                                  color: Colors.white,
-                                  elevation: 2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12.0, horizontal: 8.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        const Icon(Icons.monetization_on,
-                                            color: Colors.orange),
-                                        const SizedBox(height: 8),
-                                        const Text('قيمة المخزون',
-                                            style: TextStyle(fontSize: 12)),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          "${numberFormatter(totalStockValue)} (جنيه)",
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
                         ],
                       ),
                       const SizedBox(height: 60),
@@ -411,81 +415,215 @@ class _StorePageState extends State<StorePage> {
                                   children: [
                                     Expanded(
                                       child: SingleChildScrollView(
-                                        child: DataTable(
-                                          columns: const [
-                                            DataColumn(
-                                                label: Text(
-                                              'الاسم',
-                                              style: TextStyle(fontSize: 20),
-                                            )),
-                                            DataColumn(
-                                                label: Text(
-                                              'سعر البيع',
-                                              style: TextStyle(fontSize: 20),
-                                            )),
-                                            DataColumn(
-                                                label: Text(
-                                              'سعر الشراء',
-                                              style: TextStyle(fontSize: 20),
-                                            )),
-                                            DataColumn(
-                                                label: Text(
-                                              'الكمية',
-                                              style: TextStyle(fontSize: 20),
-                                            )),
-                                            DataColumn(
-                                                label: Text(
-                                              'الإجراءات',
-                                              style: TextStyle(fontSize: 20),
-                                            )),
-                                          ],
-                                          rows: _filtered.map((it) {
-                                            return DataRow(cells: [
-                                              DataCell(Text(
-                                                it.name,
-                                                style: const TextStyle(
-                                                    fontSize: 17),
-                                              )),
-                                              DataCell(Text(
-                                                "${numberFormatter(it.sellPrice)} (جنيه)",
-                                                style: const TextStyle(
-                                                    fontSize: 17),
-                                              )),
-                                              DataCell(Text(
-                                                "${numberFormatter(it.buyPrice)} (جنيه)",
-                                                style: const TextStyle(
-                                                    fontSize: 17),
-                                              )),
-                                              DataCell(Text(
-                                                it.isKilo
-                                                    ? "${numberFormatter(it.quantity, fractionDigits: 2)} / كجم"
-                                                    : "${numberFormatter(it.quantity)} / قطع",
-                                                style: const TextStyle(
-                                                    fontSize: 17),
-                                              )),
-                                              DataCell(Row(
-                                                children: [
-                                                  IconButton(
-                                                    icon: const Icon(Icons.edit,
-                                                        size: 18),
-                                                    onPressed: () =>
-                                                        _showForm(item: it),
+                                        child: SingleChildScrollView(
+                                          scrollDirection: Axis.horizontal,
+                                          child: DataTable(
+                                            columns: [
+                                              DataColumn(
+                                                  label: Container(
+                                                      width: 300,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 12,
+                                                          vertical: 8),
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color: Colors.grey
+                                                                  .shade300)),
+                                                      child: const Text(
+                                                        'الاسم',
+                                                        style: TextStyle(
+                                                            fontSize: 20),
+                                                      ))),
+                                              DataColumn(
+                                                  label: Container(
+                                                      width: 140,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 12,
+                                                          vertical: 8),
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color: Colors.grey
+                                                                  .shade300)),
+                                                      child: const Text(
+                                                        'الكمية',
+                                                        style: TextStyle(
+                                                            fontSize: 20),
+                                                      ))),
+                                              DataColumn(
+                                                  label: Container(
+                                                      width: 160,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 12,
+                                                          vertical: 8),
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color: Colors.grey
+                                                                  .shade300)),
+                                                      child: const Text(
+                                                        'سعر البيع',
+                                                        style: TextStyle(
+                                                            fontSize: 20),
+                                                      ))),
+                                              DataColumn(
+                                                  label: Container(
+                                                      width: 160,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 12,
+                                                          vertical: 8),
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color: Colors.grey
+                                                                  .shade300)),
+                                                      child: const Text(
+                                                        'سعر الوحدة',
+                                                        style: TextStyle(
+                                                            fontSize: 20),
+                                                      ))),
+                                              DataColumn(
+                                                  label: Container(
+                                                      width: 160,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 12,
+                                                          vertical: 8),
+                                                      decoration: BoxDecoration(
+                                                          border: Border.all(
+                                                              color: Colors.grey
+                                                                  .shade300)),
+                                                      child: const Text(
+                                                        'الإجراءات',
+                                                        style: TextStyle(
+                                                            fontSize: 20),
+                                                      ))),
+                                            ],
+                                            rows: _filtered.map((it) {
+                                              return DataRow(cells: [
+                                                DataCell(Container(
+                                                  width: 300,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 8),
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: Colors
+                                                              .grey.shade300)),
+                                                  child: Text(
+                                                    it.name,
+                                                    style: const TextStyle(
+                                                        fontSize: 17),
                                                   ),
-                                                  IconButton(
-                                                    icon: const Icon(
-                                                      Icons.delete,
-                                                      size: 18,
-                                                    ),
-                                                    onPressed: () =>
-                                                        _confirmDelete(it),
+                                                )),
+                                                DataCell(Container(
+                                                  width: 140,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 8),
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: Colors
+                                                              .grey.shade300)),
+                                                  child: Text(
+                                                    it.isKilo
+                                                        ? "${numberFormatter(it.quantity, fractionDigits: 2)} / كجم"
+                                                        : "${numberFormatter(it.quantity)} / قطع",
+                                                    style: const TextStyle(
+                                                        fontSize: 17),
                                                   ),
-                                                ],
-                                              )),
-                                            ]);
-                                          }).toList(),
+                                                )),
+                                                DataCell(Container(
+                                                  width: 160,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 8),
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: Colors
+                                                              .grey.shade300)),
+                                                  child: Text(
+                                                    "${numberFormatter(it.sellPrice)} (جنيه)",
+                                                    style: const TextStyle(
+                                                        fontSize: 17),
+                                                  ),
+                                                )),
+                                                DataCell(Container(
+                                                  width: 160,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 8),
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: Colors
+                                                              .grey.shade300)),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        it.isKilo
+                                                            ? "${numberFormatter(it.sellPrice / 1000, fractionDigits: 2)}  جنيه"
+                                                            : "${numberFormatter(it.sellPrice)}  جنيه",
+                                                        style: const TextStyle(
+                                                            fontSize: 17),
+                                                      ),
+                                                      const SizedBox(width: 5),
+                                                      Icon(
+                                                        it.isKilo
+                                                            ? Icons
+                                                                .money_off_csred
+                                                            : Icons
+                                                                .monetization_on,
+                                                        size: 18,
+                                                        color: Colors.teal,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )),
+                                                DataCell(Container(
+                                                  width: 160,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 8),
+                                                  decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: Colors
+                                                              .grey.shade300)),
+                                                  child: Row(
+                                                    children: [
+                                                      IconButton(
+                                                        icon: const Icon(
+                                                            Icons.edit,
+                                                            size: 18),
+                                                        onPressed: () =>
+                                                            _showForm(item: it),
+                                                      ),
+                                                      IconButton(
+                                                        icon: const Icon(
+                                                          Icons.delete,
+                                                          size: 18,
+                                                        ),
+                                                        onPressed: () =>
+                                                            _confirmDelete(it),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                )),
+                                              ]);
+                                            }).toList(),
+                                          ),
                                         ),
                                       ),
                                     ),
+                                    const Divider(
+                                      thickness: 3,
+                                    ),
+                                    const SizedBox(height: 30),
                                   ],
                                 ),
                               ),

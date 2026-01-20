@@ -91,7 +91,7 @@ class _LoginState extends State<Login> {
                                   : const Text(''),
                               const Center(
                                 child: Text(
-                                  'مطعم [--------]  ',
+                                  'مطعم عبدو كفتة  ',
                                   style: TextStyle(
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold,

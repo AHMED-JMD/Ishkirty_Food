@@ -80,7 +80,7 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
       _items.fold(0.0, (p, e) => p + e.buyPrice * e.quantity);
 
   void _showForm() {
-    final vendorCtrl = TextEditingController();
+    final vendorCtrl = TextEditingController(text: "عام");
     final qtyCtrl = TextEditingController();
     final priceCtrl = TextEditingController();
     final storeCtrl = TextEditingController();

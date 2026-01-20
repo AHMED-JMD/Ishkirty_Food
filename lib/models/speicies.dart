@@ -5,6 +5,7 @@ class Spieces {
     required this.category,
     required this.ImgLink,
     required this.price,
+    required this.spiceCost,
     required this.isFavourites,
     required this.isControll,
     required this.favBtn,
@@ -16,18 +17,20 @@ class Spieces {
   late final String category;
   late final String ImgLink;
   late final int price;
+  late final double spiceCost;
   late final bool isFavourites;
   late final bool isControll;
   late final String favBtn;
   late final String createdAt;
   late final String updatedAt;
 
-  Spieces.fromJson(Map<String, dynamic> json){
+  Spieces.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     category = json['category'];
     ImgLink = json['ImgLink'];
     price = json['price'];
+    spiceCost = json['spice_cost'];
     isFavourites = json['isFavourites'];
     isControll = json['isControll'];
     favBtn = json['favBtn'];
@@ -42,6 +45,7 @@ class Spieces {
     _data['category'] = category;
     _data['ImgLink'] = ImgLink;
     _data['price'] = price;
+    _data['spice_cost'] = spiceCost;
     _data['isFavourites'] = isFavourites;
     _data['isControll'] = isControll;
     _data['favBtn'] = favBtn;

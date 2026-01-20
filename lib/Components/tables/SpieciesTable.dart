@@ -104,20 +104,20 @@ class _SpeiciesTableState extends State<SpeiciesTable> {
                 ),
                 DataColumn(
                   label: Text(
-                    'الصورة',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                DataColumn(
-                  label: Text(
                     'النوع',
                     style: TextStyle(fontSize: 20),
                   ),
                 ),
                 DataColumn(
-                  label: Text(
-                    'المفضلة',
-                    style: TextStyle(fontSize: 20),
+                  label: Row(
+                    children: [
+                      Text(
+                        'التكلفة',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      SizedBox(width: 5),
+                      Icon(Icons.monetization_on, color: Colors.teal),
+                    ],
                   ),
                 ),
                 DataColumn(
@@ -165,25 +165,24 @@ class ExampleSource extends AdvancedDataTableSource<Spieces> {
           style: const TextStyle(fontSize: 20),
         ),
       )),
-      DataCell(Text(
-        currentRowData.ImgLink,
-        style: const TextStyle(fontSize: 20),
-      )),
       DataCell(
         Text(
           currentRowData.category,
           style: const TextStyle(fontSize: 20),
         ),
       ),
-      DataCell(currentRowData.isFavourites
-          ? const Icon(
-              Icons.check_box,
-              color: Colors.greenAccent,
-            )
-          : const Icon(
-              Icons.cancel_rounded,
-              color: Colors.red,
-            )),
+      DataCell(Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const SizedBox(width: 5),
+          Text(
+            currentRowData.spiceCost.toString(),
+            style: const TextStyle(fontSize: 20),
+          ),
+          const SizedBox(width: 5),
+          const Icon(Icons.money_off)
+        ],
+      )),
       DataCell(Text(
           currentRowData.isControll
               ? 'ctrl + ${currentRowData.favBtn}'

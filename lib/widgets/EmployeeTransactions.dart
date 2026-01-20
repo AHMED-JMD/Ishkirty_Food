@@ -11,8 +11,8 @@ import '../models/Employee.dart';
 import '../providers/Auth_provider.dart';
 
 class EmployeeTransactionsPage extends StatefulWidget {
-  final String empId;
-  const EmployeeTransactionsPage({Key? key, required this.empId})
+  final Employee emp;
+  const EmployeeTransactionsPage({Key? key, required this.emp})
       : super(key: key);
 
   @override
@@ -23,6 +23,9 @@ class EmployeeTransactionsPage extends StatefulWidget {
 class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
   List<Employee> employees = [];
   bool loading = false;
+  DateTime todayDate = DateTime.now();
+  String period =
+      '${DateTime.now().day}/${DateTime.now().month}'; //current day/month
 
   Employee? selectedEmp;
   DateTime? startDate;
@@ -33,18 +36,21 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
   @override
   void initState() {
     super.initState();
-    fetchTransactions();
+    fetchTransactions(todayDate, todayDate);
   }
 
-  Future fetchTransactions() async {
+  Future fetchTransactions(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
     setState(() => loading = true);
-
     //call server
     final dto = {
-      'emp_id': widget.empId,
-      if (startDate != null) 'start': startDate!.toIso8601String(),
-      if (endDate != null) 'end': endDate!.toIso8601String(),
+      'emp_id': widget.emp.id,
+      'startDate': startDate.toIso8601String(),
+      'endDate': endDate.toIso8601String(),
     };
+
     final res = await api.APIEmployee.getTrans(dto);
     transactions = [];
     if (res.statusCode == 200) {
@@ -54,7 +60,11 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
     } else {
       showMessage('Failed to load transactions');
     }
-    setState(() => loading = false);
+    setState(() {
+      loading = false;
+      period =
+          'من : ${startDate.year}/${startDate.month}/${startDate.day} الى : ${endDate.year}/${endDate.month}/${endDate.day}';
+    });
   }
 
   void showMessage(String msg) {
@@ -62,26 +72,34 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
         SnackBar(backgroundColor: Colors.greenAccent, content: Text(msg)));
   }
 
-  Future showAddTrans() async {
+  void showAddTrans() async {
     final amountCtrl = TextEditingController();
+    final empCtrl = TextEditingController(text: widget.emp.name);
+
     String type = 'خصم';
     DateTime date = DateTime.now();
 
     await showDialog(
         context: context,
         builder: (ctx) {
-          return Directionality(
-            textDirection: TextDirection.rtl,
-            child: AlertDialog(
-              title: Text('New Transaction for ${widget.empId}'),
-              content: SingleChildScrollView(
+          return AlertDialog(
+            title: Center(child: Text('يومية العامل ${widget.emp.name}')),
+            content: Directionality(
+              textDirection: TextDirection.rtl,
+              child: SingleChildScrollView(
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: empCtrl,
+                      decoration:
+                          const InputDecoration(labelText: 'اسم الموظف'),
+                      readOnly: true,
+                    ),
                     DropdownButtonFormField<String>(
-                      value: type,
+                      initialValue: type,
                       items: const [
-                        DropdownMenuItem(value: 'اضافة', child: Text('اضافة')),
+                        // DropdownMenuItem(value: 'اضافة', child: Text('اضافة')),
                         DropdownMenuItem(value: 'خصم', child: Text('خصم')),
                       ],
                       onChanged: (v) => type = v ?? 'خصم',
@@ -93,7 +111,7 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
                       decoration: const InputDecoration(labelText: 'المبلغ'),
                       keyboardType: TextInputType.number,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 15),
                     Row(
                       children: [
                         const Text('التاريخ: '),
@@ -109,59 +127,75 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
                             child:
                                 Text('${date.year}/${date.month}/${date.day}'))
                       ],
-                    )
+                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
-              actions: [
-                TextButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    child: const Text('Cancel')),
-                ElevatedButton(
-                    onPressed: () async {
-                      Navigator.pop(ctx);
-                      final dto = {
-                        'emp_id': widget.empId,
-                        'type': type,
-                        'amount': double.tryParse(amountCtrl.text) ?? 0,
-                        'date': date.toIso8601String()
-                      };
-                      final res = await api.APIEmployee.addTrans(dto);
-                      if (res.statusCode == 200) {
-                        await fetchTransactions();
-                      } else {
-                        showMessage(res.body);
-                      }
-                    },
-                    child: const Text('Save'))
-              ],
             ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text(
+                    'الغاء',
+                    style: TextStyle(color: Colors.red),
+                  )),
+              ElevatedButton(
+                  onPressed: () async {
+                    Navigator.pop(ctx);
+                    final dto = {
+                      'emp_id': widget.emp.id,
+                      'type': type,
+                      'amount': double.tryParse(amountCtrl.text) ?? 0,
+                      'date': date.toIso8601String()
+                    };
+                    final res = await api.APIEmployee.addTrans(dto);
+                    if (res.statusCode == 200) {
+                      await fetchTransactions(todayDate, todayDate);
+                    } else {
+                      showMessage(res.body);
+                    }
+                  },
+                  child: const Text(
+                    'حفظ',
+                    style: TextStyle(color: Colors.teal),
+                  ))
+            ],
           );
         });
   }
 
-  Future confirmDelete(EmpTransaction t) async {
+  void confirmDelete(EmpTransaction t) async {
     final ok = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
               title: const Center(child: Text('حذف المعاملة')),
               content: Text(
                 'هل انت متأكد من حذف المعاملة بتاريخ ${t.date.year}/${t.date.month}/${t.date.day} ؟',
+                style: const TextStyle(fontSize: 16),
                 textDirection: TextDirection.rtl,
               ),
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(context, false),
-                    child: const Text('الغاء')),
+                    child: const Text(
+                      'الغاء',
+                      style: TextStyle(color: Colors.black),
+                    )),
                 ElevatedButton(
                     onPressed: () => Navigator.pop(context, true),
-                    child: const Text('حذف'))
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent),
+                    child: const Text(
+                      'حذف',
+                      style: TextStyle(color: Colors.white),
+                    ))
               ],
             ));
     if (ok == true) {
       final res = await api.APIEmployee.deleteTrans({'id': t.id});
       if (res.statusCode == 200) {
-        await fetchTransactions();
+        await fetchTransactions(todayDate, todayDate);
       } else {
         showMessage(res.body);
       }
@@ -186,9 +220,9 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
                 Navigator.pushReplacementNamed(context, '/employees');
               },
             ),
-            title: const Center(
-                child:
-                    Text('معاملات الموظفين', style: TextStyle(fontSize: 25))),
+            title: Center(
+                child: Text('خصومات [${widget.emp.name}]',
+                    style: const TextStyle(fontSize: 30, color: Colors.white))),
             actions: const [LeadingDrawerBtn()],
             toolbarHeight: 45,
           ),
@@ -201,94 +235,248 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
                         style: TextStyle(fontSize: 30, color: Colors.red)))
                 : Column(
                     children: [
+                      const SizedBox(height: 20),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: DropdownButton<Employee>(
-                              value: widget.empId.isNotEmpty
-                                  ? Employee.fromJson({
-                                      'id': int.parse(widget.empId),
-                                      'name': ''
-                                    })
-                                  : selectedEmp,
-                              isExpanded: true,
-                              hint: const Text('اختر موظف'),
-                              items: employees
-                                  .map((e) => DropdownMenuItem(
-                                      value: e, child: Text(e.name)))
-                                  .toList(),
-                              onChanged: (v) {
-                                setState(() {
-                                  selectedEmp = v;
-                                });
+                          SizedBox(
+                            width: 200,
+                            height: 40,
+                            child: ElevatedButton.icon(
+                                onPressed: () async {
+                                  final d = await showDatePicker(
+                                      context: context,
+                                      initialDate: startDate ?? DateTime.now(),
+                                      firstDate: DateTime(2000),
+                                      lastDate: DateTime(2100));
+                                  if (d != null) setState(() => startDate = d);
+                                },
+                                icon: const Icon(
+                                  Icons.date_range,
+                                  color: Colors.teal,
+                                ),
+                                label: Text(
+                                  startDate == null
+                                      ? 'اختر : تاريخ البداية'
+                                      : '${startDate!.year}/${startDate!.month}/${startDate!.day}',
+                                  style: const TextStyle(color: Colors.black),
+                                )),
+                          ),
+                          const SizedBox(width: 8),
+                          SizedBox(
+                            width: 200,
+                            height: 40,
+                            child: ElevatedButton.icon(
+                                onPressed: () async {
+                                  final d = await showDatePicker(
+                                      context: context,
+                                      initialDate: endDate ?? DateTime.now(),
+                                      firstDate: DateTime(2000),
+                                      lastDate: DateTime(2100));
+                                  if (d != null) setState(() => endDate = d);
+                                },
+                                icon: const Icon(
+                                  Icons.date_range,
+                                  color: Colors.teal,
+                                ),
+                                label: Text(
+                                  endDate == null
+                                      ? 'اختر : تاريخ النهاية'
+                                      : '${endDate!.year}/${endDate!.month}/${endDate!.day}',
+                                  style: const TextStyle(color: Colors.black),
+                                )),
+                          ),
+                          const SizedBox(width: 8),
+                          SizedBox(
+                            height: 40,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (startDate == null || endDate == null) {
+                                  showMessage('الرجاء اختيار كلا التاريخين');
+                                  return;
+                                }
+                                fetchTransactions(startDate!, endDate!);
                               },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal),
+                              child: const Text(
+                                'عرض',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          ElevatedButton(
-                              onPressed: () async {
-                                final d = await showDatePicker(
-                                    context: context,
-                                    initialDate: startDate ?? DateTime.now(),
-                                    firstDate: DateTime(2000),
-                                    lastDate: DateTime(2100));
-                                if (d != null) setState(() => startDate = d);
-                              },
-                              child: Text(startDate == null
-                                  ? 'تاريخ البداية'
-                                  : '${startDate!.year}/${startDate!.month}/${startDate!.day}')),
                           const SizedBox(width: 8),
-                          ElevatedButton(
-                              onPressed: () async {
-                                final d = await showDatePicker(
-                                    context: context,
-                                    initialDate: endDate ?? DateTime.now(),
-                                    firstDate: DateTime(2000),
-                                    lastDate: DateTime(2100));
-                                if (d != null) setState(() => endDate = d);
-                              },
-                              child: Text(endDate == null
-                                  ? 'تاريخ النهاية'
-                                  : '${endDate!.year}/${endDate!.month}/${endDate!.day}')),
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                              onPressed: fetchTransactions,
-                              child: const Text('عرض')),
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                              onPressed: showAddTrans,
-                              child: const Text('اضافة معاملة')),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          ElevatedButton.icon(
+                              onPressed: showAddTrans,
+                              icon: const Icon(
+                                Icons.add,
+                                color: Colors.black,
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal),
+                              label: const Text(
+                                'اضافة معاملة',
+                                style: TextStyle(color: Colors.white),
+                              )),
+                          const SizedBox(width: 12),
+                        ],
+                      ),
+                      const SizedBox(height: 60),
                       Expanded(
                         child: loading
                             ? const Center(child: CircularProgressIndicator())
-                            : SingleChildScrollView(
-                                child: DataTable(
-                                  columns: const [
-                                    DataColumn(label: Text('التاريخ')),
-                                    DataColumn(label: Text('النوع')),
-                                    DataColumn(label: Text('المبلغ')),
-                                    DataColumn(label: Text('اجراء')),
+                            : Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(30),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Center(
+                                      child: Text(
+                                        ' ($period)',
+                                        style: const TextStyle(fontSize: 30),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 30),
+                                    DataTable(
+                                      dividerThickness: 1.0,
+                                      columns: [
+                                        DataColumn(
+                                            label: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 8),
+                                                decoration: BoxDecoration(
+                                                    border: Border(
+                                                        right: BorderSide(
+                                                            color: Colors
+                                                                .grey.shade300,
+                                                            width: 1))),
+                                                child: const Text(
+                                                  'التاريخ',
+                                                  style:
+                                                      TextStyle(fontSize: 20),
+                                                ))),
+                                        DataColumn(
+                                            label: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 8),
+                                                decoration: BoxDecoration(
+                                                    border: Border(
+                                                        right: BorderSide(
+                                                            color: Colors
+                                                                .grey.shade300,
+                                                            width: 1))),
+                                                child: const Text(
+                                                  'النوع',
+                                                  style:
+                                                      TextStyle(fontSize: 20),
+                                                ))),
+                                        DataColumn(
+                                            label: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 8),
+                                                decoration: BoxDecoration(
+                                                    border: Border(
+                                                        right: BorderSide(
+                                                            color: Colors
+                                                                .grey.shade300,
+                                                            width: 1))),
+                                                child: const Text(
+                                                  'المبلغ',
+                                                  style:
+                                                      TextStyle(fontSize: 20),
+                                                ))),
+                                        DataColumn(
+                                            label: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 8),
+                                                decoration: BoxDecoration(
+                                                    border: Border(
+                                                        right: BorderSide(
+                                                            color: Colors
+                                                                .grey.shade300,
+                                                            width: 1))),
+                                                child: const Text(
+                                                  'اجراء',
+                                                  style:
+                                                      TextStyle(fontSize: 20),
+                                                ))),
+                                      ],
+                                      rows: transactions.map((t) {
+                                        return DataRow(cells: [
+                                          DataCell(Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 8),
+                                            decoration: BoxDecoration(
+                                                border: Border(
+                                                    right: BorderSide(
+                                                        color: Colors
+                                                            .grey.shade300,
+                                                        width: 1))),
+                                            child: Text(
+                                              '${t.date.year}/${t.date.month}/${t.date.day}',
+                                              style:
+                                                  const TextStyle(fontSize: 17),
+                                            ),
+                                          )),
+                                          DataCell(Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 8),
+                                              decoration: BoxDecoration(
+                                                  border: Border(
+                                                      right: BorderSide(
+                                                          color: Colors
+                                                              .grey.shade300,
+                                                          width: 1))),
+                                              child: Text(
+                                                t.type,
+                                                style: const TextStyle(
+                                                    fontSize: 17),
+                                              ))),
+                                          DataCell(Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 8),
+                                            decoration: BoxDecoration(
+                                                border: Border(
+                                                    right: BorderSide(
+                                                        color: Colors
+                                                            .grey.shade300,
+                                                        width: 1))),
+                                            child: Text(
+                                              '${numberFormatter(t.amount)} (جنيه)',
+                                              style:
+                                                  const TextStyle(fontSize: 17),
+                                            ),
+                                          )),
+                                          DataCell(Row(children: [
+                                            IconButton(
+                                                icon: const Icon(Icons.delete),
+                                                onPressed: () =>
+                                                    confirmDelete(t))
+                                          ])),
+                                        ]);
+                                      }).toList(),
+                                    ),
                                   ],
-                                  rows: transactions.map((t) {
-                                    return DataRow(cells: [
-                                      DataCell(Text(
-                                          '${t.date.year}/${t.date.month}/${t.date.day}')),
-                                      DataCell(Text(t.type)),
-                                      DataCell(Text(
-                                          '${numberFormatter(t.amount)} (جنيه)')),
-                                      DataCell(Row(children: [
-                                        IconButton(
-                                            icon: const Icon(Icons.delete),
-                                            onPressed: () => confirmDelete(t))
-                                      ])),
-                                    ]);
-                                  }).toList(),
                                 ),
                               ),
-                      )
+                      ),
                     ],
                   ),
           ),

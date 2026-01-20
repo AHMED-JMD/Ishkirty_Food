@@ -3,7 +3,6 @@ class StockItem {
   String name;
   double quantity;
   double sellPrice;
-  double buyPrice;
   bool isKilo;
   DateTime? createdAt;
   DateTime? updatedAt;
@@ -13,7 +12,6 @@ class StockItem {
     required this.name,
     required this.quantity,
     required this.sellPrice,
-    required this.buyPrice,
     required this.isKilo,
     this.createdAt,
     this.updatedAt,
@@ -25,12 +23,9 @@ class StockItem {
       quantity: (json['quantity'] is num)
           ? (json['quantity'] as num).toDouble()
           : double.tryParse(json['quantity'].toString()) ?? 0.0,
-      sellPrice: (json['sell_price'] is num)
-          ? (json['sell_price'] as num).toDouble()
-          : double.tryParse(json['sell_price'].toString()) ?? 0.0,
-      buyPrice: (json['buy_price'] is num)
-          ? (json['buy_price'] as num).toDouble()
-          : double.tryParse(json['buy_price'].toString()) ?? 0.0,
+      sellPrice: (json['price'] is num)
+          ? (json['price'] as num).toDouble()
+          : double.tryParse(json['price'].toString()) ?? 0.0,
       isKilo: json['isKilo'] ?? false,
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'])
@@ -43,7 +38,6 @@ class StockItem {
         if (id != null) 'id': id,
         'name': name,
         'sellPrice': sellPrice,
-        'buyPrice': buyPrice,
         'quantity': quantity,
         'isKilo': isKilo,
         if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
