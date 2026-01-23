@@ -22,6 +22,15 @@ class _billTableState extends State<billTable> {
     super.initState();
   }
 
+  final TextEditingController _paymentSearchController =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    _paymentSearchController.dispose();
+    super.dispose();
+  }
+
 //-------------------------------------
 
   var rowsPerPage = 10;
@@ -127,7 +136,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
         ),
       )),
       DataCell(Text(
-        '($time $amPm) - $date',
+        '$date - ($time $amPm)',
         style: const TextStyle(fontSize: 20),
       )),
       DataCell(Padding(
@@ -203,24 +212,19 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
     notifyListeners();
   }
 
-  void filterServerSide(String filterQuery) {
-    lastSearchTerm = filterQuery.toLowerCase().trim();
-    setNextView();
-  }
-
   @override
   Future<RemoteDataSourceDetails<bill>> getNextPage(
       NextPageRequest pageRequest) async {
     await Future.delayed(const Duration(milliseconds: 400));
 
     if (data.isNotEmpty) {
-      return RemoteDataSourceDetails(
-          data.length,
-          (data)
-              .map((json) => bill.fromJson(json))
-              .skip(pageRequest.offset)
-              .take(pageRequest.pageSize)
-              .toList());
+      List<bill> bills = (data).map((json) => bill.fromJson(json)).toList();
+
+      final total = bills.length;
+      final pageItems =
+          bills.skip(pageRequest.offset).take(pageRequest.pageSize).toList();
+
+      return RemoteDataSourceDetails(total, pageItems);
     } else {
       throw Exception('Unable to query remote server');
     }

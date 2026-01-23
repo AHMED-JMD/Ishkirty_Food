@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'package:ashkerty_food/Components/tables/StoreTable.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
+import 'package:ashkerty_food/widgets/Discharges.dart';
 import 'package:ashkerty_food/widgets/PurchaseRequest.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -259,7 +261,7 @@ class _StorePageState extends State<StorePage> {
           ),
           endDrawer: const MyDrawer(),
           body: Padding(
-            padding: const EdgeInsets.all(50.0),
+            padding: const EdgeInsets.all(40.0),
             child: value.user == null || value.user!['role'] != 'admin'
                 ? const Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -346,7 +348,7 @@ class _StorePageState extends State<StorePage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 30),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -375,6 +377,10 @@ class _StorePageState extends State<StorePage> {
                                 ),
                                 tooltip: "اضافة منتج",
                               ),
+                            ],
+                          ),
+                          Row(
+                            children: [
                               SizedBox(
                                 height: 40,
                                 child: ElevatedButton.icon(
@@ -398,6 +404,36 @@ class _StorePageState extends State<StorePage> {
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              SizedBox(
+                                height: 40,
+                                child: ElevatedButton.icon(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                const DischargesPage()));
+                                  },
+                                  icon: const Icon(
+                                    Icons.money_off,
+                                    size: 28,
+                                    color: Colors.black,
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.teal,
+                                  ),
+                                  label: const Text(
+                                    "المنصرفات",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
                               )
                             ],
                           ),
@@ -415,215 +451,22 @@ class _StorePageState extends State<StorePage> {
                                   children: [
                                     Expanded(
                                       child: SingleChildScrollView(
-                                        child: SingleChildScrollView(
-                                          scrollDirection: Axis.horizontal,
-                                          child: DataTable(
-                                            columns: [
-                                              DataColumn(
-                                                  label: Container(
-                                                      width: 300,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 12,
-                                                          vertical: 8),
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
-                                                              color: Colors.grey
-                                                                  .shade300)),
-                                                      child: const Text(
-                                                        'الاسم',
-                                                        style: TextStyle(
-                                                            fontSize: 20),
-                                                      ))),
-                                              DataColumn(
-                                                  label: Container(
-                                                      width: 140,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 12,
-                                                          vertical: 8),
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
-                                                              color: Colors.grey
-                                                                  .shade300)),
-                                                      child: const Text(
-                                                        'الكمية',
-                                                        style: TextStyle(
-                                                            fontSize: 20),
-                                                      ))),
-                                              DataColumn(
-                                                  label: Container(
-                                                      width: 160,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 12,
-                                                          vertical: 8),
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
-                                                              color: Colors.grey
-                                                                  .shade300)),
-                                                      child: const Text(
-                                                        'سعر البيع',
-                                                        style: TextStyle(
-                                                            fontSize: 20),
-                                                      ))),
-                                              DataColumn(
-                                                  label: Container(
-                                                      width: 160,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 12,
-                                                          vertical: 8),
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
-                                                              color: Colors.grey
-                                                                  .shade300)),
-                                                      child: const Text(
-                                                        'سعر الوحدة',
-                                                        style: TextStyle(
-                                                            fontSize: 20),
-                                                      ))),
-                                              DataColumn(
-                                                  label: Container(
-                                                      width: 160,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 12,
-                                                          vertical: 8),
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
-                                                              color: Colors.grey
-                                                                  .shade300)),
-                                                      child: const Text(
-                                                        'الإجراءات',
-                                                        style: TextStyle(
-                                                            fontSize: 20),
-                                                      ))),
-                                            ],
-                                            rows: _filtered.map((it) {
-                                              return DataRow(cells: [
-                                                DataCell(Container(
-                                                  width: 300,
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors
-                                                              .grey.shade300)),
-                                                  child: Text(
-                                                    it.name,
-                                                    style: const TextStyle(
-                                                        fontSize: 17),
-                                                  ),
-                                                )),
-                                                DataCell(Container(
-                                                  width: 140,
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors
-                                                              .grey.shade300)),
-                                                  child: Text(
-                                                    it.isKilo
-                                                        ? "${numberFormatter(it.quantity, fractionDigits: 2)} / كجم"
-                                                        : "${numberFormatter(it.quantity)} / قطع",
-                                                    style: const TextStyle(
-                                                        fontSize: 17),
-                                                  ),
-                                                )),
-                                                DataCell(Container(
-                                                  width: 160,
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors
-                                                              .grey.shade300)),
-                                                  child: Text(
-                                                    "${numberFormatter(it.sellPrice)} (جنيه)",
-                                                    style: const TextStyle(
-                                                        fontSize: 17),
-                                                  ),
-                                                )),
-                                                DataCell(Container(
-                                                  width: 160,
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors
-                                                              .grey.shade300)),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        it.isKilo
-                                                            ? "${numberFormatter(it.sellPrice / 1000, fractionDigits: 2)}  جنيه"
-                                                            : "${numberFormatter(it.sellPrice)}  جنيه",
-                                                        style: const TextStyle(
-                                                            fontSize: 17),
-                                                      ),
-                                                      const SizedBox(width: 5),
-                                                      Icon(
-                                                        it.isKilo
-                                                            ? Icons
-                                                                .money_off_csred
-                                                            : Icons
-                                                                .monetization_on,
-                                                        size: 18,
-                                                        color: Colors.teal,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )),
-                                                DataCell(Container(
-                                                  width: 160,
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8),
-                                                  decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          color: Colors
-                                                              .grey.shade300)),
-                                                  child: Row(
-                                                    children: [
-                                                      IconButton(
-                                                        icon: const Icon(
-                                                            Icons.edit,
-                                                            size: 18),
-                                                        onPressed: () =>
-                                                            _showForm(item: it),
-                                                      ),
-                                                      IconButton(
-                                                        icon: const Icon(
-                                                          Icons.delete,
-                                                          size: 18,
-                                                        ),
-                                                        onPressed: () =>
-                                                            _confirmDelete(it),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )),
-                                              ]);
-                                            }).toList(),
-                                          ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.stretch,
+                                          children: [
+                                            StoreTable(
+                                                items: _filtered,
+                                                confirmDelete: _confirmDelete,
+                                                showForm: _showForm)
+                                          ],
                                         ),
                                       ),
                                     ),
                                     const Divider(
                                       thickness: 3,
                                     ),
-                                    const SizedBox(height: 30),
+                                    const SizedBox(height: 50),
                                   ],
                                 ),
                               ),

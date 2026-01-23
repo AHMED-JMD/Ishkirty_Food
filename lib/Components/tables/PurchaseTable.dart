@@ -1,17 +1,12 @@
-import 'package:ashkerty_food/models/StockItem.dart';
 import 'package:flutter/material.dart';
+import 'package:ashkerty_food/models/PurchaseRequest.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 
-class StoreTable extends StatelessWidget {
-  final List<StockItem> items;
-  final void Function(StockItem) confirmDelete;
-  final void Function({StockItem? item}) showForm;
+class PurchaseTable extends StatelessWidget {
+  final List<PurchaseRequest> items;
+  final void Function(PurchaseRequest) onDelete;
 
-  const StoreTable(
-      {required this.items,
-      required this.confirmDelete,
-      required this.showForm,
-      Key? key})
+  const PurchaseTable({required this.items, required this.onDelete, Key? key})
       : super(key: key);
 
   @override
@@ -22,7 +17,7 @@ class StoreTable extends StatelessWidget {
           DataColumn(
               label: Container(
                   child: const Text(
-            'الاسم',
+            'التاريخ',
             style: TextStyle(fontSize: 20, color: Colors.teal),
           ))),
           DataColumn(
@@ -33,10 +28,8 @@ class StoreTable extends StatelessWidget {
                       border: Border(
                           right: BorderSide(
                               color: Colors.grey.shade300, width: 1))),
-                  child: const Text(
-                    'الكمية',
-                    style: TextStyle(fontSize: 20, color: Colors.teal),
-                  ))),
+                  child: const Text('الصنف',
+                      style: TextStyle(fontSize: 20, color: Colors.teal)))),
           DataColumn(
               label: Container(
                   padding:
@@ -45,10 +38,8 @@ class StoreTable extends StatelessWidget {
                       border: Border(
                           right: BorderSide(
                               color: Colors.grey.shade300, width: 1))),
-                  child: const Text(
-                    'سعر البيع',
-                    style: TextStyle(fontSize: 20, color: Colors.teal),
-                  ))),
+                  child: const Text('المورد',
+                      style: TextStyle(fontSize: 20, color: Colors.teal)))),
           DataColumn(
               label: Container(
                   padding:
@@ -57,10 +48,8 @@ class StoreTable extends StatelessWidget {
                       border: Border(
                           right: BorderSide(
                               color: Colors.grey.shade300, width: 1))),
-                  child: const Text(
-                    'سعر الوحدة',
-                    style: TextStyle(fontSize: 20, color: Colors.teal),
-                  ))),
+                  child: const Text('الكمية',
+                      style: TextStyle(fontSize: 20, color: Colors.teal)))),
           DataColumn(
               label: Container(
                   padding:
@@ -69,25 +58,47 @@ class StoreTable extends StatelessWidget {
                       border: Border(
                           right: BorderSide(
                               color: Colors.grey.shade300, width: 1))),
-                  child: const Text(
-                    'الإجراءات',
-                    style: TextStyle(fontSize: 20, color: Colors.teal),
-                  ))),
+                  child: const Text('سعر الشراء',
+                      style: TextStyle(fontSize: 20, color: Colors.teal)))),
+          DataColumn(
+              label: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          right: BorderSide(
+                              color: Colors.grey.shade300, width: 1))),
+                  child: const Text('الإجراءات',
+                      style: TextStyle(fontSize: 20, color: Colors.teal)))),
         ],
         rows: items.map((it) {
           return DataRow(
               color: WidgetStateProperty.resolveWith<Color?>((states) {
-                return int.parse(it.id.toString()).isEven
-                    ? Colors.grey.shade200
-                    : null;
+                return int.parse(it.id).isEven ? Colors.grey.shade200 : null;
               }),
               cells: [
                 DataCell(Container(
-                  child: Text(
-                    it.name,
-                    style: const TextStyle(fontSize: 17),
-                  ),
+                  child: Text(it.date.toIso8601String().split('T').first,
+                      style: const TextStyle(fontSize: 17)),
                 )),
+                DataCell(Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(
+                                color: Colors.grey.shade300, width: 1))),
+                    child: Text(it.store.name,
+                        style: const TextStyle(fontSize: 17)))),
+                DataCell(Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(
+                                color: Colors.grey.shade300, width: 1))),
+                    child:
+                        Text(it.vendor, style: const TextStyle(fontSize: 17)))),
                 DataCell(Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -96,11 +107,10 @@ class StoreTable extends StatelessWidget {
                           right: BorderSide(
                               color: Colors.grey.shade300, width: 1))),
                   child: Text(
-                    it.isKilo
-                        ? "${numberFormatter(it.quantity, fractionDigits: 2)} / كجم"
-                        : "${numberFormatter(it.quantity)} / قطع",
-                    style: const TextStyle(fontSize: 17),
-                  ),
+                      it.store.isKilo
+                          ? '${it.quantity} / كجم'
+                          : '${it.quantity} / قطعة',
+                      style: const TextStyle(fontSize: 17)),
                 )),
                 DataCell(Container(
                   padding:
@@ -109,10 +119,8 @@ class StoreTable extends StatelessWidget {
                       border: Border(
                           right: BorderSide(
                               color: Colors.grey.shade300, width: 1))),
-                  child: Text(
-                    "${numberFormatter(it.sellPrice)} (جنيه)",
-                    style: const TextStyle(fontSize: 17),
-                  ),
+                  child: Text("${numberFormatter(it.buyPrice)} (جنيه)",
+                      style: const TextStyle(fontSize: 17)),
                 )),
                 DataCell(Container(
                   padding:
@@ -123,47 +131,13 @@ class StoreTable extends StatelessWidget {
                               color: Colors.grey.shade300, width: 1))),
                   child: Row(
                     children: [
-                      Text(
-                        it.isKilo
-                            ? "${numberFormatter(it.sellPrice / 1000, fractionDigits: 2)}  جنيه"
-                            : "${numberFormatter(it.sellPrice)}  جنيه",
-                        style: const TextStyle(fontSize: 17),
-                      ),
-                      const SizedBox(width: 5),
-                      Icon(
-                        it.isKilo
-                            ? Icons.money_off_csred
-                            : Icons.monetization_on,
-                        size: 18,
-                        color: Colors.teal,
-                      ),
-                    ],
-                  ),
-                )),
-                DataCell(Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                              color: Colors.grey.shade300, width: 1))),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.edit,
-                          size: 18,
-                          color: Colors.blueGrey,
-                        ),
-                        onPressed: () => showForm(item: it),
-                      ),
                       IconButton(
                         icon: const Icon(
                           Icons.delete,
                           size: 18,
                           color: Colors.redAccent,
                         ),
-                        onPressed: () => confirmDelete(it),
+                        onPressed: () => onDelete(it),
                       ),
                     ],
                   ),

@@ -4,6 +4,7 @@ import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:ashkerty_food/widgets/EmployeeTransactions.dart';
+import 'package:ashkerty_food/Components/tables/EmployeeTable.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../API/Employee.dart' as api;
@@ -17,73 +18,11 @@ class EmployeePage extends StatefulWidget {
   State<EmployeePage> createState() => _EmployeePageState();
 }
 
-class EmployeeDataSource extends DataTableSource {
-  final List<Employee> _data;
-  final void Function(Employee) onEdit;
-  final void Function(Employee) onDelete;
-  final void Function(Employee) onView;
-
-  EmployeeDataSource(this._data,
-      {required this.onEdit, required this.onDelete, required this.onView});
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= _data.length) return null;
-    final emp = _data[index];
-
-    Widget cell(String text) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Text(text, style: const TextStyle(fontSize: 17)),
-        );
-    return DataRow.byIndex(
-      index: index,
-      color: WidgetStateProperty.resolveWith<Color?>((states) {
-        return index.isEven ? Colors.grey.withOpacity(0.03) : null;
-      }),
-      cells: [
-        DataCell(cell(emp.name)),
-        DataCell(cell(emp.jobTitle)),
-        DataCell(cell(emp.shift)),
-        DataCell(cell("${numberFormatter(emp.salary)} (جنيه)")),
-        DataCell(Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            children: [
-              IconButton(
-                  icon: const Icon(Icons.edit, size: 18),
-                  color: Colors.blueGrey,
-                  onPressed: () => onEdit(emp)),
-              IconButton(
-                  icon: const Icon(Icons.delete, size: 18),
-                  color: Colors.redAccent,
-                  onPressed: () => onDelete(emp)),
-              IconButton(
-                  icon: const Icon(Icons.remove_red_eye, size: 18),
-                  color: Colors.teal,
-                  onPressed: () => onView(emp)),
-            ],
-          ),
-        )),
-      ],
-    );
-  }
-
-  @override
-  bool get isRowCountApproximate => false;
-
-  @override
-  int get rowCount => _data.length;
-
-  @override
-  int get selectedRowCount => 0;
-}
+// Employee table logic moved to Components/tables/EmployeeTable.dart
 
 class _EmployeePageState extends State<EmployeePage> {
   List<Employee> employees = [];
-  List<Employee> filtered = [];
   bool loading = false;
-  String searchCtrl = '';
-  int _rowsPerPage = 5;
 
   @override
   void initState() {
@@ -102,28 +41,8 @@ class _EmployeePageState extends State<EmployeePage> {
     } else {
       showMessage('Failed to load employees');
     }
-    _onSearch();
-    setState(() => loading = false);
-  }
 
-  void _onSearch() {
-    if (searchCtrl.trim().isEmpty) {
-      filtered = List.from(employees);
-    } else {
-      final q = searchCtrl.toLowerCase();
-      filtered =
-          employees.where((emp) => emp.name.toLowerCase().contains(q)).toList();
-    }
-    // adjust rows per page so table doesn't leave empty space
-    if (filtered.isEmpty) {
-      _rowsPerPage = 1;
-    } else if (filtered.length < _rowsPerPage) {
-      _rowsPerPage = filtered.length;
-    } else if (filtered.length >= PaginatedDataTable.defaultRowsPerPage &&
-        _rowsPerPage < PaginatedDataTable.defaultRowsPerPage) {
-      // restore default for larger lists
-      _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
-    }
+    setState(() => loading = false);
   }
 
   double get totalSalaries => employees.fold(0.0, (p, e) => p + e.salary);
@@ -513,28 +432,13 @@ class _EmployeePageState extends State<EmployeePage> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 50),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Row(
                               children: [
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.4,
-                                  child: TextField(
-                                    decoration: const InputDecoration(
-                                        prefixIcon: Icon(Icons.search),
-                                        hintText: 'ايجاد موظف بالاسم .....'),
-                                    onChanged: (v) {
-                                      setState(() {
-                                        searchCtrl = v;
-                                        _onSearch();
-                                      });
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 20),
+                                const SizedBox(width: 0),
                                 ElevatedButton.icon(
                                   onPressed: showEmployeeForm,
                                   icon: const Icon(
@@ -556,7 +460,7 @@ class _EmployeePageState extends State<EmployeePage> {
                                 const SizedBox(width: 20),
                                 ElevatedButton.icon(
                                     onPressed: () {
-                                      showAddTrans(filtered);
+                                      showAddTrans(employees);
                                     },
                                     style: ElevatedButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
@@ -577,67 +481,18 @@ class _EmployeePageState extends State<EmployeePage> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 80),
                         loading
                             ? const Center(child: CircularProgressIndicator())
-                            : SizedBox(
-                                width: double.infinity,
-                                child: PaginatedDataTable(
-                                  // header: const Divider(),
-                                  columns: const [
-                                    DataColumn(
-                                        label: Text('الاسم',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.teal))),
-                                    DataColumn(
-                                        label: Text(' الوظيفة',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.teal))),
-                                    DataColumn(
-                                        label: Text('الوردية',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.teal))),
-                                    DataColumn(
-                                        label: Text('الراتب (جنيه)',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.teal))),
-                                    DataColumn(
-                                        label: Text('الإجراءات',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.teal))),
-                                  ],
-                                  source: EmployeeDataSource(
-                                    filtered,
-                                    onEdit: (emp) => showEmployeeForm(emp),
-                                    onDelete: (emp) => _confirmDelete(emp),
-                                    onView: (emp) => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                EmployeeTransactionsPage(
-                                                    emp: emp))),
-                                  ),
-                                  rowsPerPage: _rowsPerPage,
-                                  availableRowsPerPage: const [5, 10, 25],
-                                  onRowsPerPageChanged: (r) {
-                                    setState(() {
-                                      _rowsPerPage = r ?? _rowsPerPage;
-                                    });
-                                  },
-                                  columnSpacing: 12.0,
-                                  showCheckboxColumn: false,
-                                  showEmptyRows: false,
-                                ),
+                            : EmployeeTable(
+                                employees: employees,
+                                onEdit: (emp) => showEmployeeForm(emp),
+                                onDelete: (emp) => _confirmDelete(emp),
+                                onView: (emp) => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            EmployeeTransactionsPage(
+                                                emp: emp))),
                               ),
                         const SizedBox(height: 50),
                       ],

@@ -51,6 +51,7 @@ class APIStore {
     }
   }
 
+  /// Store spices
   static Future getStoreSpice(String spiceId) async {
     try {
       Map<String, String> headers = {"Content-Type": "application/json"};

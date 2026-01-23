@@ -1,69 +1,54 @@
 import 'dart:convert';
-import 'package:ashkerty_food/models/PurchaseRequest.dart';
-import 'package:ashkerty_food/models/StockItem.dart';
+import 'package:ashkerty_food/models/Discharge.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../API/Store.dart' as api;
-import 'package:ashkerty_food/Components/tables/PurchaseTable.dart';
+import '../API/Discharges.dart' as api;
+import 'package:ashkerty_food/Components/tables/DischargeTable.dart';
 
-class PurchaseRequestPage extends StatefulWidget {
-  const PurchaseRequestPage({Key? key}) : super(key: key);
+class DischargesPage extends StatefulWidget {
+  const DischargesPage({Key? key}) : super(key: key);
 
   @override
-  State<PurchaseRequestPage> createState() => _PurchaseRequestPageState();
+  State<DischargesPage> createState() => _DischargesPageState();
 }
 
-class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
-  List<PurchaseRequest> _items = [];
-  List<PurchaseRequest> _filtered = [];
-  List<StockItem> stores = [];
+class _DischargesPageState extends State<DischargesPage> {
+  List<Discharge> _items = [];
+  List<Discharge> _filtered = [];
   bool _loading = true;
   String _search = '';
   final todayDate = DateTime.now();
-  String period = "";
+  String period = '';
 
   @override
   void initState() {
     super.initState();
-    _load(todayDate, todayDate, "اليوم");
-    _loadStores();
+    _load(todayDate, todayDate, 'اليوم');
   }
 
-  Future _load(DateTime startDate, DateTime endDate, period) async {
+  Future _load(DateTime startDate, DateTime endDate, String periodText) async {
     setState(() => _loading = true);
-
-    final res = await api.APIStore.getPurchasesByDate({
+    final res = await api.APIDischarges.getByDate({
       'startDate': startDate.toIso8601String(),
       'endDate': endDate.toIso8601String()
     });
 
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
-
       List data = List.from(body);
-      _items = data.map((e) => PurchaseRequest.fromJson(e)).toList();
+      print(data);
+      _items = data.map((e) => Discharge.fromJson(e)).toList();
     }
+
     _applyFilter();
     setState(() {
       _loading = false;
-      this.period = period;
+      period = periodText;
     });
-  }
-
-  Future _loadStores() async {
-    //call
-    final res = await api.APIStore.getItems();
-    if (res.statusCode == 200) {
-      final body = jsonDecode(res.body);
-      List data = List.from(body);
-      stores = data.map((e) => StockItem.fromJson(e)).toList();
-    } else {
-      // keep empty or show error
-    }
   }
 
   void _applyFilter() {
@@ -71,29 +56,26 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
       _filtered = List.from(_items);
     } else {
       final q = _search.toLowerCase();
-      _filtered = _items
-          .where((it) => it.store.name.toString().toLowerCase().contains(q))
-          .toList();
+      _filtered =
+          _items.where((it) => it.name.toLowerCase().contains(q)).toList();
     }
   }
 
-  double get totalStockValue =>
-      _items.fold(0.0, (p, e) => p + e.buyPrice * e.quantity);
+  double get totalAmount => _items.fold(0.0, (p, e) => p + e.price);
 
   void _showForm() {
-    final vendorCtrl = TextEditingController(text: "عام");
-    final qtyCtrl = TextEditingController();
-    // final priceCtrl = TextEditingController();
-    final storeCtrl = TextEditingController();
+    final nameCtrl = TextEditingController();
+    final amountCtrl = TextEditingController();
     DateTime pickedDate = todayDate;
+    bool isMonthly = false;
     final formKey = GlobalKey<FormState>();
 
     showDialog(
         context: context,
         builder: (_) => StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
+                builder: (BuildContext context, StateSetter setStateSB) {
               return AlertDialog(
-                title: const Center(child: Text('اضافة طلب شراء')),
+                title: const Center(child: Text('اضافة مصروف')),
                 content: Form(
                   key: formKey,
                   child: Directionality(
@@ -103,55 +85,40 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           TextFormField(
-                            controller: vendorCtrl,
+                            controller: nameCtrl,
                             decoration:
-                                const InputDecoration(labelText: 'المورد'),
+                                const InputDecoration(labelText: 'الاسم'),
                             validator: (v) => (v == null || v.trim().isEmpty)
                                 ? 'Required'
                                 : null,
                           ),
-                          DropdownButtonFormField<String>(
-                            decoration:
-                                const InputDecoration(labelText: 'اختر المخزن'),
-                            items: stores
-                                .map((s) => DropdownMenuItem(
-                                      value: s.id,
-                                      child: Text(s.name),
-                                    ))
-                                .toList(),
-                            onChanged: (val) {
-                              storeCtrl.text = val ?? '';
-                            },
-                            validator: (v) =>
-                                (v == null || v.isEmpty) ? 'Required' : null,
-                          ),
                           TextFormField(
-                            controller: qtyCtrl,
+                            controller: amountCtrl,
                             decoration:
-                                const InputDecoration(labelText: 'الكمية'),
+                                const InputDecoration(labelText: 'المبلغ'),
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
                             validator: (v) => double.tryParse(v ?? '') == null
                                 ? 'Invalid'
                                 : null,
                           ),
-                          // TextFormField(
-                          //   controller: priceCtrl,
-                          //   decoration:
-                          //       const InputDecoration(labelText: 'سعر الشراء'),
-                          //   keyboardType: const TextInputType.numberWithOptions(
-                          //       decimal: true),
-                          //   validator: (v) => double.tryParse(v ?? '') == null
-                          //       ? 'Invalid'
-                          //       : null,
-                          // ),
+                          Row(
+                            children: [
+                              const Text('شهري؟'),
+                              Checkbox(
+                                  value: isMonthly,
+                                  onChanged: (v) {
+                                    isMonthly = v ?? false;
+                                    setStateSB(() {});
+                                  }),
+                            ],
+                          ),
                           const SizedBox(height: 8),
                           Row(
                             children: [
                               Expanded(
-                                child: Text(
-                                    pickedDate.toString().split(' ').first),
-                              ),
+                                  child: Text(
+                                      pickedDate.toString().split(' ').first)),
                               ElevatedButton(
                                   onPressed: () async {
                                     final d = await showDatePicker(
@@ -161,7 +128,7 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                                         lastDate: DateTime(2100));
                                     if (d != null) {
                                       pickedDate = d;
-                                      setState(() {});
+                                      setStateSB(() {});
                                     }
                                   },
                                   child: const Text('تحديد'))
@@ -181,16 +148,15 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                     onPressed: () async {
                       if (!formKey.currentState!.validate()) return;
                       final dto = {
-                        'store_item': storeCtrl.text.trim(),
-                        'vendor': vendorCtrl.text.trim(),
-                        'quantity': double.parse(qtyCtrl.text.trim()),
-                        // 'buy_price': double.parse(priceCtrl.text.trim()),
+                        'name': nameCtrl.text.trim(),
+                        'price': double.parse(amountCtrl.text.trim()),
                         'date': pickedDate.toIso8601String(),
+                        'isMonthly': isMonthly,
                       };
                       Navigator.pop(context);
-                      final res = await api.APIStore.addPurchase(dto);
+                      final res = await api.APIDischarges.addDischarge(dto);
                       if (res.statusCode == 200) {
-                        await _load(todayDate, todayDate, "اليوم");
+                        await _load(todayDate, todayDate, 'اليوم');
                       } else {
                         _showError(res.body);
                       }
@@ -203,15 +169,13 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
             }));
   }
 
-  void _confirmDelete(PurchaseRequest it) {
+  void _confirmDelete(Discharge it) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Center(child: Text('حذف طلب الشراء')),
-        content: Text(
-          "سيتم حذف طلب الشراء للمورد ${it.vendor}",
-          textDirection: TextDirection.rtl,
-        ),
+        title: const Center(child: Text('حذف المصروف')),
+        content: Text('سيتم حذف المصروف ${it.name}',
+            textDirection: TextDirection.rtl),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
@@ -220,9 +184,10 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-              final res = await api.APIStore.deletePurchase({'id': it.id});
+              final res =
+                  await api.APIDischarges.deleteDischarge({'id': it.id});
               if (res.statusCode == 200) {
-                await _load(todayDate, todayDate, "اليوم");
+                await _load(todayDate, todayDate, 'اليوم');
               } else {
                 _showError(res.body);
               }
@@ -267,10 +232,7 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
             ),
             backgroundColor: Colors.teal,
             title: const Center(
-                child: Text(
-              "طلبات الشراء",
-              style: TextStyle(fontSize: 25),
-            )),
+                child: Text('المصروفات', style: TextStyle(fontSize: 25))),
             actions: const [LeadingDrawerBtn()],
             toolbarHeight: 45,
           ),
@@ -282,19 +244,13 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Center(
-                        child: Text(
-                          'انت غير مخول للوصول الى هذه الصفحة',
-                          style: TextStyle(fontSize: 30, color: Colors.red),
-                        ),
-                      ),
+                          child: Text('انت غير مخول للوصول الى هذه الصفحة',
+                              style:
+                                  TextStyle(fontSize: 30, color: Colors.red))),
                       SizedBox(height: 20),
                       Center(
-                        child: Icon(
-                          Icons.lock,
-                          size: 100,
-                          color: Colors.red,
-                        ),
-                      ),
+                          child:
+                              Icon(Icons.lock, size: 100, color: Colors.red)),
                     ],
                   )
                 : Column(
@@ -309,7 +265,7 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                                 child: TextField(
                                   decoration: const InputDecoration(
                                       prefixIcon: Icon(Icons.search),
-                                      hintText: 'ايجاد طلب بالصنف .....'),
+                                      hintText: 'ايجاد مصروف .....'),
                                   onChanged: (v) {
                                     setState(() {
                                       _search = v;
@@ -320,68 +276,52 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                               ),
                               const SizedBox(width: 20),
                               IconButton(
-                                onPressed: _showForm,
-                                icon: const Icon(
-                                  Icons.add_circle,
-                                  size: 30,
-                                ),
-                                tooltip: "اضافة طلب",
-                              ),
+                                  onPressed: _showForm,
+                                  icon: const Icon(Icons.add_circle, size: 30),
+                                  tooltip: 'اضافة مصروف'),
                               const SizedBox(width: 10),
-                              const Text(
-                                "تصفية بالتاريخ: ",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
+                              const Text('تصفية بالتاريخ: ',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
                               PopupMenuButton(
-                                icon: const Icon(
-                                  Icons.date_range_rounded,
-                                  size: 36,
-                                  color: Colors.teal,
-                                ),
-                                tooltip: "تصفية",
+                                icon: const Icon(Icons.date_range_rounded,
+                                    size: 36, color: Colors.teal),
+                                tooltip: 'تصفية',
                                 onSelected: (value) {},
                                 itemBuilder: (BuildContext context) {
                                   return [
                                     PopupMenuItem(
                                       value: 'week',
                                       onTap: () {
-                                        // Get the date of a week before the current date
                                         DateTime weekBeforeDate = todayDate
                                             .subtract(const Duration(days: 7));
-
-                                        //call server
                                         _load(weekBeforeDate, todayDate,
-                                            "الإسبوع");
+                                            'الإسبوع');
                                       },
-                                      child: const Text(
-                                        'طلبات الإسبوع',
-                                        style: TextStyle(color: Colors.black),
-                                      ),
+                                      child: const Text('المصروفات الإسبوع',
+                                          style:
+                                              TextStyle(color: Colors.black)),
                                     ),
                                     PopupMenuItem(
                                         value: 'month',
                                         onTap: () {
-                                          // Get the date of a week before the current date
                                           DateTime monthBeforeDate =
                                               todayDate.subtract(
                                                   const Duration(days: 30));
-                                          //call server
                                           _load(monthBeforeDate, todayDate,
-                                              "الشهر");
+                                              'الشهر');
                                         },
-                                        child: const Text(
-                                          'طلبات الشهر',
-                                          style: TextStyle(color: Colors.black),
-                                        )),
+                                        child: const Text('المصروفات الشهر',
+                                            style: TextStyle(
+                                                color: Colors.black))),
                                     PopupMenuItem(
                                         value: 'day',
                                         onTap: () => _load(
-                                            todayDate, todayDate, "اليوم"),
-                                        child: const Text(
-                                          'طلبات اليوم',
-                                          style: TextStyle(color: Colors.black),
-                                        )),
+                                            todayDate, todayDate, 'اليوم'),
+                                        child: const Text('المصروفات اليوم',
+                                            style: TextStyle(
+                                                color: Colors.black))),
                                     PopupMenuItem(
                                       value: 'search_day',
                                       child: Form(
@@ -395,16 +335,13 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                                                   firstDate: DateTime(2000),
                                                   lastDate: DateTime(2100));
                                               if (d != null) {
-                                                //call server
-                                                _load(d, d, "يوم محدد");
+                                                _load(d, d, 'يوم محدد');
                                               }
                                               Navigator.pop(context);
                                             },
-                                            child: const Text(
-                                              'تحديد يوم',
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                            ),
+                                            child: const Text('تحديد يوم',
+                                                style: TextStyle(
+                                                    color: Colors.black)),
                                           ),
                                         ],
                                       )),
@@ -429,18 +366,16 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        const Icon(Icons.shopping_bag,
+                                        const Icon(Icons.account_balance_wallet,
                                             color: Colors.teal),
                                         const SizedBox(height: 8),
-                                        const Text('اجمالي طلبات الشراء',
+                                        const Text('اجمالي المصروفات',
                                             style: TextStyle(fontSize: 12)),
                                         const SizedBox(height: 6),
-                                        Text(
-                                          '${_items.length}',
-                                          style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
-                                        ),
+                                        Text('${_items.length}',
+                                            style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold)),
                                       ],
                                     ),
                                   ),
@@ -463,15 +398,14 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                                         const Icon(Icons.monetization_on,
                                             color: Colors.orange),
                                         const SizedBox(height: 8),
-                                        const Text('قيمة المشتروات',
+                                        const Text('قيمة المصروفات',
                                             style: TextStyle(fontSize: 12)),
                                         const SizedBox(height: 6),
                                         Text(
-                                          "${numberFormatter(totalStockValue)} (جنيه)",
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                        ),
+                                            "${numberFormatter(totalAmount)} (جنيه)",
+                                            style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold)),
                                       ],
                                     ),
                                   ),
@@ -492,18 +426,15 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                                       CrossAxisAlignment.stretch,
                                   children: [
                                     Center(
-                                      child: Text(
-                                        'طلبات الشراء: ($period)',
-                                        style: const TextStyle(fontSize: 30),
-                                      ),
-                                    ),
+                                        child: Text('المصروفات: ($period)',
+                                            style:
+                                                const TextStyle(fontSize: 30))),
                                     const SizedBox(height: 30),
                                     Expanded(
-                                      child: PurchaseTable(
-                                        items: _filtered,
-                                        onDelete: (it) => _confirmDelete(it),
-                                      ),
-                                    ),
+                                        child: DischargeTable(
+                                            items: _filtered,
+                                            onDelete: (it) =>
+                                                _confirmDelete(it))),
                                   ],
                                 ),
                               ),

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:ashkerty_food/Components/tables/EmployeeTransTable.dart';
 import 'package:ashkerty_food/models/EmpTrans.dart';
 import 'package:ashkerty_food/static/drawer.dart';
-import 'package:ashkerty_food/static/formatter.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -344,135 +344,9 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
                                       ),
                                     ),
                                     const SizedBox(height: 30),
-                                    DataTable(
-                                      dividerThickness: 1.0,
-                                      columns: [
-                                        DataColumn(
-                                            label: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 8),
-                                                decoration: BoxDecoration(
-                                                    border: Border(
-                                                        right: BorderSide(
-                                                            color: Colors
-                                                                .grey.shade300,
-                                                            width: 1))),
-                                                child: const Text(
-                                                  'التاريخ',
-                                                  style:
-                                                      TextStyle(fontSize: 20),
-                                                ))),
-                                        DataColumn(
-                                            label: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 8),
-                                                decoration: BoxDecoration(
-                                                    border: Border(
-                                                        right: BorderSide(
-                                                            color: Colors
-                                                                .grey.shade300,
-                                                            width: 1))),
-                                                child: const Text(
-                                                  'النوع',
-                                                  style:
-                                                      TextStyle(fontSize: 20),
-                                                ))),
-                                        DataColumn(
-                                            label: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 8),
-                                                decoration: BoxDecoration(
-                                                    border: Border(
-                                                        right: BorderSide(
-                                                            color: Colors
-                                                                .grey.shade300,
-                                                            width: 1))),
-                                                child: const Text(
-                                                  'المبلغ',
-                                                  style:
-                                                      TextStyle(fontSize: 20),
-                                                ))),
-                                        DataColumn(
-                                            label: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 8),
-                                                decoration: BoxDecoration(
-                                                    border: Border(
-                                                        right: BorderSide(
-                                                            color: Colors
-                                                                .grey.shade300,
-                                                            width: 1))),
-                                                child: const Text(
-                                                  'اجراء',
-                                                  style:
-                                                      TextStyle(fontSize: 20),
-                                                ))),
-                                      ],
-                                      rows: transactions.map((t) {
-                                        return DataRow(cells: [
-                                          DataCell(Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 8),
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    right: BorderSide(
-                                                        color: Colors
-                                                            .grey.shade300,
-                                                        width: 1))),
-                                            child: Text(
-                                              '${t.date.year}/${t.date.month}/${t.date.day}',
-                                              style:
-                                                  const TextStyle(fontSize: 17),
-                                            ),
-                                          )),
-                                          DataCell(Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8),
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      right: BorderSide(
-                                                          color: Colors
-                                                              .grey.shade300,
-                                                          width: 1))),
-                                              child: Text(
-                                                t.type,
-                                                style: const TextStyle(
-                                                    fontSize: 17),
-                                              ))),
-                                          DataCell(Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 8),
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    right: BorderSide(
-                                                        color: Colors
-                                                            .grey.shade300,
-                                                        width: 1))),
-                                            child: Text(
-                                              '${numberFormatter(t.amount)} (جنيه)',
-                                              style:
-                                                  const TextStyle(fontSize: 17),
-                                            ),
-                                          )),
-                                          DataCell(Row(children: [
-                                            IconButton(
-                                                icon: const Icon(Icons.delete),
-                                                onPressed: () =>
-                                                    confirmDelete(t))
-                                          ])),
-                                        ]);
-                                      }).toList(),
-                                    ),
+                                    EmployeeTranTable(
+                                        transactions: transactions,
+                                        confirmDelete: confirmDelete)
                                   ],
                                 ),
                               ),

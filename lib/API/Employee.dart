@@ -87,6 +87,20 @@ class APIEmployee {
     }
   }
 
+  static Future getTransByDate(data) async {
+    try {
+      Map<String, String> configHeaders = {"Content-Type": "application/json"};
+
+      final url = Uri.parse('$apiUrl/get_emp_trans/date');
+      Response response =
+          await post(url, headers: configHeaders, body: jsonEncode(data));
+
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   static Future deleteTrans(data) async {
     try {
       Map<String, String> configHeaders = {"Content-Type": "application/json"};

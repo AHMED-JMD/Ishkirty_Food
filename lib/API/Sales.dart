@@ -19,6 +19,20 @@ class APISales {
     }
   }
 
+  static Future todayCosts(data) async {
+    try {
+      Map<String, String> configHeaders = {"Content-Type": "application/json"};
+
+      final url = Uri.parse('$apiUrl/today_costs');
+      Response response =
+          await post(url, headers: configHeaders, body: jsonEncode(data));
+
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   //get speices sales
   static Future SpeicesSales(data) async {
     try {

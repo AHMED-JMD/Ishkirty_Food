@@ -21,13 +21,30 @@ class MyDrawer extends StatelessWidget {
                 padding: const EdgeInsets.all(30),
                 child: Column(
                   children: [
-                    Container(
-                      color: Colors.grey,
-                      child: const Icon(
-                        Icons.person_pin,
-                        color: Colors.yellowAccent,
-                        size: 40,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(context, '/');
+                            final auth_provider = context.read<AuthProvider>();
+                            auth_provider.Logout();
+                          },
+                          icon: const Icon(
+                            Icons.power_settings_new,
+                            size: 30,
+                            color: Color(0xffdc0a19),
+                          ),
+                        ),
+                        Container(
+                          color: Colors.grey,
+                          child: const Icon(
+                            Icons.person_pin,
+                            color: Colors.yellowAccent,
+                            size: 40,
+                          ),
+                        ),
+                      ],
                     ),
                     Column(
                       children: [
@@ -68,6 +85,73 @@ class MyDrawer extends StatelessWidget {
             Column(
               children: [
                 const SizedBox(height: 20),
+                value.user != null && value.user['role'] == 'admin'
+                    ? Column(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushReplacementNamed(context, '/safe');
+                            },
+                            child: const ListTile(
+                              leading: Icon(
+                                Icons.safety_check,
+                                color: Colors.teal,
+                              ),
+                              title: Text(
+                                'الخزنة',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushReplacementNamed(context, '/daily');
+                            },
+                            child: const ListTile(
+                              leading: Icon(
+                                Icons.badge,
+                                color: Colors.teal,
+                              ),
+                              title: Text(
+                                'اليوميات',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushReplacementNamed(
+                                  context, '/newDaily');
+                            },
+                            child: const ListTile(
+                              leading: Icon(
+                                Icons.badge,
+                                color: Colors.teal,
+                              ),
+                              title: Text(
+                                'يومية جديدة',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushReplacementNamed(context, '/store');
+                            },
+                            child: const ListTile(
+                              leading: Icon(
+                                Icons.store,
+                                color: Colors.teal,
+                              ),
+                              title: Text(
+                                'المخزن',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          )
+                        ],
+                      )
+                    : const SizedBox(),
                 InkWell(
                   onTap: () {
                     Navigator.pushReplacementNamed(context, '/sales');
@@ -83,23 +167,6 @@ class MyDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
-                value.user != null && value.user['role'] == 'admin'
-                    ? InkWell(
-                        onTap: () {
-                          Navigator.pushReplacementNamed(context, '/store');
-                        },
-                        child: const ListTile(
-                          leading: Icon(
-                            Icons.store,
-                            color: Colors.teal,
-                          ),
-                          title: Text(
-                            'المخزن',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
-                      )
-                    : const SizedBox(),
                 InkWell(
                   onTap: () {
                     Navigator.pushReplacementNamed(context, '/bills');
@@ -130,21 +197,6 @@ class MyDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/clients');
-                  },
-                  child: const ListTile(
-                    leading: Icon(
-                      Icons.person,
-                      color: Colors.teal,
-                    ),
-                    title: Text(
-                      'العملاء',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ),
                 value.user != null && value.user['role'] == 'admin'
                     ? InkWell(
                         onTap: () {
@@ -164,17 +216,15 @@ class MyDrawer extends StatelessWidget {
                     : const SizedBox(),
                 InkWell(
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, '/');
-                    final auth_provider = context.read<AuthProvider>();
-                    auth_provider.Logout();
+                    Navigator.pushReplacementNamed(context, '/clients');
                   },
                   child: const ListTile(
                     leading: Icon(
-                      Icons.power_settings_new_outlined,
-                      color: Color(0xffdc0a19),
+                      Icons.person,
+                      color: Colors.teal,
                     ),
                     title: Text(
-                      'تسجيل الخروج',
+                      'العملاء',
                       style: TextStyle(fontSize: 18),
                     ),
                   ),

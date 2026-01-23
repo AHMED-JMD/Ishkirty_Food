@@ -1,5 +1,5 @@
 class StockItem {
-  String? id;
+  String id;
   String name;
   double quantity;
   double sellPrice;
@@ -8,7 +8,7 @@ class StockItem {
   DateTime? updatedAt;
 
   StockItem({
-    this.id,
+    required this.id,
     required this.name,
     required this.quantity,
     required this.sellPrice,
@@ -35,7 +35,7 @@ class StockItem {
           : null);
 
   Map<String, dynamic> toJson() => {
-        if (id != null) 'id': id,
+        'id': id,
         'name': name,
         'sellPrice': sellPrice,
         'quantity': quantity,

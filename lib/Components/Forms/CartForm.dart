@@ -21,10 +21,13 @@ class _CartFormState extends State<CartForm> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
   bool isLoading = false;
   bool isSecondPrinter = false;
+  bool isDelivery = false;
   List clients = [];
   String? clientID;
   String? payment_method;
   DateTime date = DateTime.now();
+  String deliveryAddress = "";
+  num deliveryCost = 0;
 
   @override
   void initState() {
@@ -266,20 +269,73 @@ class _CartFormState extends State<CartForm> {
                         const SizedBox(
                           height: 15,
                         ),
+                        // FormBuilderCheckbox(
+                        //     name: 'secPrinter',
+                        //     ...existing code...
+                        //     )),
+
                         FormBuilderCheckbox(
-                            name: 'secPrinter',
-                            onChanged: (val) {
-                              setState(() {
-                                isSecondPrinter = val!;
-                              });
-                            },
-                            initialValue: isSecondPrinter,
-                            title: Text(
-                              'طباعة في المطبخ؟',
-                              style: TextStyle(
-                                  fontSize:
-                                      MediaQuery.of(context).size.width / 90),
-                            )),
+                          name: 'isDelivery',
+                          initialValue: isDelivery,
+                          title: Text(
+                            'توصيل؟',
+                            style: TextStyle(
+                                fontSize:
+                                    MediaQuery.of(context).size.width / 90),
+                          ),
+                          onChanged: (val) {
+                            setState(() {
+                              isDelivery = val ?? false;
+                              if (!isDelivery) {
+                                deliveryCost = 0;
+                                deliveryAddress = "";
+                              }
+                            });
+                          },
+                        ),
+                        if (isDelivery)
+                          Column(
+                            children: [
+                              const SizedBox(height: 10),
+                              FormBuilderTextField(
+                                name: 'delivery_cost',
+                                initialValue: deliveryCost != 0
+                                    ? deliveryCost.toString()
+                                    : '',
+                                decoration: const InputDecoration(
+                                  labelText: 'تكلفة التوصيل',
+                                ),
+                                keyboardType: TextInputType.number,
+                                validator: FormBuilderValidators.compose([
+                                  FormBuilderValidators.required(
+                                      errorText: 'ادخل تكلفة التوصيل'),
+                                  FormBuilderValidators.numeric(
+                                      errorText: 'ادخل رقم صحيح'),
+                                ]),
+                                onChanged: (val) {
+                                  setState(() {
+                                    deliveryCost =
+                                        num.tryParse(val ?? '0') ?? 0;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              FormBuilderTextField(
+                                name: 'delivery_address',
+                                initialValue: deliveryAddress,
+                                decoration: const InputDecoration(
+                                  labelText: 'عنوان التوصيل',
+                                ),
+                                validator: FormBuilderValidators.required(
+                                    errorText: 'ادخل عنوان التوصيل'),
+                                onChanged: (val) {
+                                  setState(() {
+                                    deliveryAddress = val ?? '';
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
                         const SizedBox(
                           height: 20,
                         ),
@@ -309,6 +365,12 @@ class _CartFormState extends State<CartForm> {
                                         _formKey.currentState!.value['shift'];
                                     data['clientId'] = clientID;
                                     data['admin_id'] = userVal.user['id'];
+                                    // Delivery fields
+                                    data['isDelivery'] = isDelivery;
+                                    data['delivery_cost'] =
+                                        isDelivery ? (deliveryCost) : 0;
+                                    data['delivery_address'] =
+                                        isDelivery ? (deliveryAddress) : "";
 
                                     addBill(data);
                                     //call printing func

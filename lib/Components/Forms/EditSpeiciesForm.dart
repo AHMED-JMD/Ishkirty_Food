@@ -136,7 +136,7 @@ class _EditSpiecesState extends State<EditSpieces> {
                                 labelText: assoc?.storeName ?? 'اختر المخزن'),
                             items: stores
                                 .map((s) => DropdownMenuItem(
-                                      value: s.id ?? '',
+                                      value: s.id,
                                       child: Text(s.name),
                                     ))
                                 .toList(),

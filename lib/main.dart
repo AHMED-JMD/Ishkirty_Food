@@ -5,11 +5,14 @@ import 'package:ashkerty_food/widgets/DeletedBills.dart';
 import 'package:ashkerty_food/widgets/Home.dart';
 import 'package:ashkerty_food/widgets/Login.dart';
 import 'package:ashkerty_food/widgets/Profile.dart';
+import 'package:ashkerty_food/widgets/Safe.dart';
 import 'package:ashkerty_food/widgets/Store.dart';
 import 'package:ashkerty_food/widgets/clients.dart';
 import 'package:ashkerty_food/widgets/Employee.dart';
 import 'package:ashkerty_food/widgets/Sales.dart';
 import 'package:ashkerty_food/widgets/Bills.dart';
+import 'package:ashkerty_food/widgets/daily.dart';
+import 'package:ashkerty_food/widgets/newDaily.dart';
 import 'package:ashkerty_food/widgets/speices.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,8 +39,11 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Cairo',
         ),
         routes: {
+          '/safe': (context) => const SafePage(),
           '/': (context) => _defaultHome,
           '/home': (context) => const MyHomePage(),
+          '/daily': (context) => const DailyPage(),
+          '/newDaily': (context) => const NewDailyPage(),
           '/profile': (context) => const UserProfile(),
           '/cart': (context) => const MyCart(),
           '/sales': (context) => const Sales(),
