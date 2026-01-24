@@ -83,11 +83,14 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
   void _showForm() {
     final vendorCtrl = TextEditingController(text: "عام");
     final qtyCtrl = TextEditingController();
+
+    final netQtyCtrl = TextEditingController();
     // final priceCtrl = TextEditingController();
     final storeCtrl = TextEditingController();
     DateTime pickedDate = todayDate;
     final formKey = GlobalKey<FormState>();
 
+    String paymentMethod = 'كاش';
     showDialog(
         context: context,
         builder: (_) => StatefulBuilder(
@@ -111,6 +114,19 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                                 : null,
                           ),
                           DropdownButtonFormField<String>(
+                            initialValue: paymentMethod,
+                            items: const [
+                              DropdownMenuItem(
+                                  value: 'كاش', child: Text('كاش')),
+                              DropdownMenuItem(
+                                  value: 'بنكك', child: Text('بنكك')),
+                            ],
+                            onChanged: (v) =>
+                                setState(() => paymentMethod = v ?? 'كاش'),
+                            decoration:
+                                const InputDecoration(labelText: 'طريقة الدفع'),
+                          ),
+                          DropdownButtonFormField<String>(
                             decoration:
                                 const InputDecoration(labelText: 'اختر المخزن'),
                             items: stores
@@ -129,6 +145,16 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                             controller: qtyCtrl,
                             decoration:
                                 const InputDecoration(labelText: 'الكمية'),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            validator: (v) => double.tryParse(v ?? '') == null
+                                ? 'Invalid'
+                                : null,
+                          ),
+                          TextFormField(
+                            controller: netQtyCtrl,
+                            decoration:
+                                const InputDecoration(labelText: 'صافي الكمية'),
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
                             validator: (v) => double.tryParse(v ?? '') == null
@@ -184,7 +210,8 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                         'store_item': storeCtrl.text.trim(),
                         'vendor': vendorCtrl.text.trim(),
                         'quantity': double.parse(qtyCtrl.text.trim()),
-                        // 'buy_price': double.parse(priceCtrl.text.trim()),
+                        'net_quantity': double.parse(netQtyCtrl.text.trim()),
+                        'payment_method': paymentMethod,
                         'date': pickedDate.toIso8601String(),
                       };
                       Navigator.pop(context);

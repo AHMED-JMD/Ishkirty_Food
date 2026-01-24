@@ -23,13 +23,10 @@ pw.Table createTable(data) {
       pw.TableRow(
         children: [
           createTableCell(
-            'المبلغ',
+            'الجملة',
           ),
           createTableCell(
             'السعر',
-          ),
-          createTableCell(
-            'اضافة',
           ),
           createTableCell(
             'الصنف',
@@ -50,10 +47,7 @@ pw.Table createTable(data) {
                 name.unit_price.toString(),
               ),
               createTableCell(
-                name.addons.toString(),
-              ),
-              createTableCell(
-                name.spices,
+                "${name.spices} ${name.addons.join(', ')}",
               ),
               createTableCell(
                 name.counter.toString(),
@@ -66,7 +60,8 @@ pw.Table createTable(data) {
 }
 
 //print future function
-PrintingFunc(String Pname, counter, user, data) async {
+PrintingFunc(String Pname, counter, user, data,
+    {bool includeLabel = true, String? labelText}) async {
   // Set the font for Arabic text
   var arabicFont =
       pw.Font.ttf(await rootBundle.load("assets/fonts/HacenTunisia.ttf"));
@@ -77,7 +72,7 @@ PrintingFunc(String Pname, counter, user, data) async {
   final doc = pw.Document();
 
   // load and prepare image
-  const imageProvider = AssetImage('assets/images/ef2.jpg');
+  const imageProvider = AssetImage('assets/images/abdLogo.png');
   final ByteData byteData = await rootBundle.load(imageProvider.assetName);
   final Uint8List bytes = byteData.buffer.asUint8List();
 
@@ -104,44 +99,53 @@ PrintingFunc(String Pname, counter, user, data) async {
                     pw.Row(
                         mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
                         children: [
-                          pw.Text('Eshkarti',
-                              style: const pw.TextStyle(
-                                fontSize: 16,
-                              )),
-                          pw.Container(width: 20, height: 20, child: image),
-                          pw.Text('اشكرتي',
-                              style: const pw.TextStyle(
-                                fontSize: 16,
-                              )),
+                          pw.Container(width: 60, height: 60, child: image),
+                          pw.Column(
+                            children: [
+                              if (includeLabel)
+                                pw.Container(
+                                  padding: const pw.EdgeInsets.all(2),
+                                  color: PdfColors.black,
+                                  child: pw.Text(labelText ?? '',
+                                      style: pw.TextStyle(
+                                        font: arabicFont,
+                                        fontSize: 15,
+                                        color: PdfColors.white,
+                                      )),
+                                ),
+                              pw.Text('سفري',
+                                  style: const pw.TextStyle(
+                                    fontSize: 12,
+                                  )),
+                              pw.Text('A $counter',
+                                  style: pw.TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: pw.FontWeight.bold)),
+                            ],
+                          )
                         ]),
                     pw.Divider(thickness: 2),
                     pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                         children: [
-                          pw.Row(children: [
-                            pw.Text('${date} - '),
-                            pw.Text('${time} $amPm'),
+                          pw.Column(children: [
+                            pw.Text(
+                              "الدفع : ${data['paymentMethod']}",
+                            ),
+                            pw.Text(
+                              "التوصيل : ${data['delivery_cost']}",
+                            ),
+                            pw.Text(
+                              "العنوان  : ${data['delivery_address']}",
+                            ),
                           ]),
-                          pw.Row(children: [
-                            pw.Text('($counter)',
-                                style: const pw.TextStyle(
-                                  fontSize: 18,
-                                )),
-                            pw.Text('فاتورة رقم ',
-                                style: const pw.TextStyle(
-                                  fontSize: 14,
-                                )),
+                          pw.Column(children: [
+                            pw.Text('التاريخ : ${date}'),
+                            pw.Text('الوقت : ${time} $amPm'),
+                            pw.Text(
+                              "الويتر : ${user['username']}",
+                            ),
                           ]),
-                        ]),
-                    pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
-                        children: [
-                          pw.Text(
-                            "طريقة الدفع = ${data['paymentMethod']}",
-                          ),
-                          pw.Text(
-                            "المستخدم = ${user['username']}",
-                          ),
                         ]),
                     pw.Divider(),
                     createTable(data),
@@ -149,13 +153,13 @@ PrintingFunc(String Pname, counter, user, data) async {
                     pw.Padding(
                       padding: const pw.EdgeInsets.only(left: 10),
                       child: pw.Row(
-                          mainAxisAlignment: pw.MainAxisAlignment.start,
+                          mainAxisAlignment: pw.MainAxisAlignment.end,
                           children: [
                             pw.Text(
-                              '${data['amount']}',
+                              "الجملة  =  ",
                             ),
                             pw.Text(
-                              "الجملة  =  ",
+                              '${data['amount']}',
                             ),
                           ]),
                     ),
@@ -170,3 +174,15 @@ PrintingFunc(String Pname, counter, user, data) async {
       onLayout: (PdfPageFormat format) async => doc.save());
 }
 //EPSON TM-T20II Receipt
+
+// Print two copies: first for cashier (includes label), second for client (no label)
+printTwoCopies(String Pname, counter, user, data,
+    {String? cashierLabel}) async {
+  // cashier copy with label
+  await PrintingFunc(Pname, counter, user, data,
+      includeLabel: true, labelText: cashierLabel);
+  // small delay can help the printer process first job before sending second
+  await Future.delayed(const Duration(milliseconds: 200));
+  // client copy without label
+  await PrintingFunc(Pname, counter, user, data, includeLabel: false);
+}

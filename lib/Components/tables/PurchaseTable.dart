@@ -38,7 +38,7 @@ class PurchaseTable extends StatelessWidget {
                       border: Border(
                           right: BorderSide(
                               color: Colors.grey.shade300, width: 1))),
-                  child: const Text('المورد',
+                  child: const Text('طريقة الدفع',
                       style: TextStyle(fontSize: 20, color: Colors.teal)))),
           DataColumn(
               label: Container(
@@ -49,6 +49,16 @@ class PurchaseTable extends StatelessWidget {
                           right: BorderSide(
                               color: Colors.grey.shade300, width: 1))),
                   child: const Text('الكمية',
+                      style: TextStyle(fontSize: 20, color: Colors.teal)))),
+          DataColumn(
+              label: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          right: BorderSide(
+                              color: Colors.grey.shade300, width: 1))),
+                  child: const Text('صافي الكمية',
                       style: TextStyle(fontSize: 20, color: Colors.teal)))),
           DataColumn(
               label: Container(
@@ -97,8 +107,8 @@ class PurchaseTable extends StatelessWidget {
                         border: Border(
                             right: BorderSide(
                                 color: Colors.grey.shade300, width: 1))),
-                    child:
-                        Text(it.vendor, style: const TextStyle(fontSize: 17)))),
+                    child: Text(it.paymentMethod,
+                        style: const TextStyle(fontSize: 17)))),
                 DataCell(Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -110,6 +120,19 @@ class PurchaseTable extends StatelessWidget {
                       it.store.isKilo
                           ? '${it.quantity} / كجم'
                           : '${it.quantity} / قطعة',
+                      style: const TextStyle(fontSize: 17)),
+                )),
+                DataCell(Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          right: BorderSide(
+                              color: Colors.grey.shade300, width: 1))),
+                  child: Text(
+                      it.store.isKilo
+                          ? '${it.netQuantity} / كجم'
+                          : '${it.netQuantity} / قطعة',
                       style: const TextStyle(fontSize: 17)),
                 )),
                 DataCell(Container(

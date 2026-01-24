@@ -46,6 +46,18 @@ class StoreTable extends StatelessWidget {
                           right: BorderSide(
                               color: Colors.grey.shade300, width: 1))),
                   child: const Text(
+                    'انذار الكمية',
+                    style: TextStyle(fontSize: 20, color: Colors.teal),
+                  ))),
+          DataColumn(
+              label: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          right: BorderSide(
+                              color: Colors.grey.shade300, width: 1))),
+                  child: const Text(
                     'سعر البيع',
                     style: TextStyle(fontSize: 20, color: Colors.teal),
                   ))),
@@ -99,6 +111,20 @@ class StoreTable extends StatelessWidget {
                     it.isKilo
                         ? "${numberFormatter(it.quantity, fractionDigits: 2)} / كجم"
                         : "${numberFormatter(it.quantity)} / قطع",
+                    style: const TextStyle(fontSize: 17),
+                  ),
+                )),
+                DataCell(Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          right: BorderSide(
+                              color: Colors.grey.shade300, width: 1))),
+                  child: Text(
+                    it.isKilo
+                        ? "${numberFormatter(it.warnValue, fractionDigits: 2)} / كجم"
+                        : "${numberFormatter(it.warnValue)} / قطع",
                     style: const TextStyle(fontSize: 17),
                   ),
                 )),

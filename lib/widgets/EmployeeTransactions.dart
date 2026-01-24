@@ -82,6 +82,7 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
     await showDialog(
         context: context,
         builder: (ctx) {
+          String paymentMethod = 'كاش';
           return AlertDialog(
             title: Center(child: Text('يومية العامل ${widget.emp.name}')),
             content: Directionality(
@@ -99,12 +100,21 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
                     DropdownButtonFormField<String>(
                       initialValue: type,
                       items: const [
-                        // DropdownMenuItem(value: 'اضافة', child: Text('اضافة')),
                         DropdownMenuItem(value: 'خصم', child: Text('خصم')),
                       ],
                       onChanged: (v) => type = v ?? 'خصم',
                       decoration:
                           const InputDecoration(labelText: 'نوع المعاملة'),
+                    ),
+                    DropdownButtonFormField<String>(
+                      initialValue: paymentMethod,
+                      items: const [
+                        DropdownMenuItem(value: 'كاش', child: Text('كاش')),
+                        DropdownMenuItem(value: 'بنكك', child: Text('بنكك')),
+                      ],
+                      onChanged: (v) => paymentMethod = v ?? 'كاش',
+                      decoration:
+                          const InputDecoration(labelText: 'طريقة الدفع'),
                     ),
                     TextFormField(
                       controller: amountCtrl,
@@ -147,7 +157,8 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
                       'emp_id': widget.emp.id,
                       'type': type,
                       'amount': double.tryParse(amountCtrl.text) ?? 0,
-                      'date': date.toIso8601String()
+                      'date': date.toIso8601String(),
+                      'paymentMethod': paymentMethod,
                     };
                     final res = await api.APIEmployee.addTrans(dto);
                     if (res.statusCode == 200) {

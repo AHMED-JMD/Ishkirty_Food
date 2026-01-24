@@ -45,6 +45,19 @@ class _EmployeePageState extends State<EmployeePage> {
     setState(() => loading = false);
   }
 
+  Future _runNewMonth() async {
+    setState(() => loading = true);
+
+    final res = await api.APIEmployee.runNewMonth();
+    if (res.statusCode == 200) {
+      fetchEmployees();
+    } else {
+      showMessage('Failed to load new month data');
+    }
+
+    setState(() => loading = false);
+  }
+
   double get totalSalaries => employees.fold(0.0, (p, e) => p + e.salary);
 
   void showMessage(String msg) {
@@ -185,6 +198,8 @@ class _EmployeePageState extends State<EmployeePage> {
     await showDialog(
         context: context,
         builder: (ctx) {
+          String paymentMethod = 'كاش';
+
           return AlertDialog(
             title: Center(child: Text('يومية العامل ${emp.name}')),
             content: Directionality(
@@ -214,6 +229,16 @@ class _EmployeePageState extends State<EmployeePage> {
                       onChanged: (v) => type = v ?? 'خصم',
                       decoration:
                           const InputDecoration(labelText: 'نوع المعاملة'),
+                    ),
+                    DropdownButtonFormField<String>(
+                      initialValue: paymentMethod,
+                      items: const [
+                        DropdownMenuItem(value: 'كاش', child: Text('كاش')),
+                        DropdownMenuItem(value: 'بنكك', child: Text('بنكك')),
+                      ],
+                      onChanged: (v) => paymentMethod = v ?? 'كاش',
+                      decoration:
+                          const InputDecoration(labelText: 'طريقة الدفع'),
                     ),
                     TextFormField(
                       controller: amountCtrl,
@@ -261,7 +286,8 @@ class _EmployeePageState extends State<EmployeePage> {
                       'emp_id': emp.id,
                       'type': type,
                       'amount': double.tryParse(amountCtrl.text) ?? 0,
-                      'date': date.toIso8601String()
+                      'date': date.toIso8601String(),
+                      'paymentMethod': paymentMethod,
                     };
                     //call server
                     final res = await api.APIEmployee.addTrans(dto);
@@ -366,6 +392,18 @@ class _EmployeePageState extends State<EmployeePage> {
                     )
                   : Column(
                       children: [
+                        ElevatedButton.icon(
+                            onPressed: _runNewMonth,
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange),
+                            icon: const Icon(Icons.calendar_month,
+                                color: Colors.white, size: 25),
+                            label: const Text(
+                              'بداية شهر جديد',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
+                            )),
+                        const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [

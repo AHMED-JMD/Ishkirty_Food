@@ -83,11 +83,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                   toolbarHeight: MediaQuery.of(context).size.height / 9.5,
-                  title: const Text("YOUR LOGO"),
-                  // title: Image.asset(
-                  //   "assets/images/ef2.jpg",
-                  //   height: MediaQuery.of(context).size.height / 9.5,
-                  // ),
+                  // title: const Text("YOUR LOGO"),
+                  title: Image.asset(
+                    "assets/images/abdLogo.png",
+                    height: MediaQuery.of(context).size.height / 9.5,
+                  ),
                   centerTitle: true,
                   elevation: 0,
                   backgroundColor: Colors.transparent,

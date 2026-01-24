@@ -69,6 +69,8 @@ class _StorePageState extends State<StorePage> {
         text: item != null ? item.sellPrice.toString() : '');
     final qtyCtrl = TextEditingController(
         text: item != null ? item.quantity.toString() : '0');
+    final warnCtrl = TextEditingController(
+        text: item != null ? item.warnValue.toString() : '0');
     bool isKilo = item != null
         ? item.isKilo
             ? true
@@ -118,7 +120,17 @@ class _StorePageState extends State<StorePage> {
                                 const InputDecoration(labelText: 'الكمية'),
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
-                            validator: (v) => int.tryParse(v ?? '') == null
+                            validator: (v) => double.tryParse(v ?? '') == null
+                                ? 'Invalid'
+                                : null,
+                          ),
+                          TextFormField(
+                            controller: warnCtrl,
+                            decoration: const InputDecoration(
+                                labelText: 'انذار الكمية'),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            validator: (v) => double.tryParse(v ?? '') == null
                                 ? 'Invalid'
                                 : null,
                           ),
@@ -152,7 +164,7 @@ class _StorePageState extends State<StorePage> {
                         if (item?.id != null) 'id': item!.id,
                         'name': nameCtrl.text.trim(),
                         'sell_price': double.parse(sellCtrl.text.trim()),
-                        'quantity': int.parse(qtyCtrl.text.trim()),
+                        'warn_value': int.parse(warnCtrl.text.trim()),
                         'isKilo': isKilo,
                       };
 

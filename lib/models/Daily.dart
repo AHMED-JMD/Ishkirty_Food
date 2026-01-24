@@ -4,8 +4,12 @@ class Daily {
   final double cashSales;
   final double bankSales;
   final double accountSales;
-  final double totalCosts;
+  final double spiceCosts;
+  final double cashCosts;
+  final double bankCosts;
+  final double accountCosts;
   final String businessLocation;
+  final bool isAddedtoSafe;
 
   Daily({
     required this.id,
@@ -13,8 +17,12 @@ class Daily {
     required this.cashSales,
     required this.bankSales,
     required this.accountSales,
-    required this.totalCosts,
+    required this.spiceCosts,
+    required this.cashCosts,
+    required this.bankCosts,
+    required this.accountCosts,
     required this.businessLocation,
+    required this.isAddedtoSafe,
   });
 
   factory Daily.fromJson(Map<String, dynamic> json) {
@@ -23,9 +31,13 @@ class Daily {
       cashSales: (json['cash_sales'] ?? 0).toDouble(),
       bankSales: (json['bank_sales'] ?? 0).toDouble(),
       accountSales: (json['account_sales'] ?? 0).toDouble(),
-      totalCosts: (json['total_costs'] ?? 0).toDouble(),
+      spiceCosts: (json['spices_costs'] ?? 0).toDouble(),
+      cashCosts: (json['cash_costs'] ?? 0).toDouble(),
+      bankCosts: (json['bank_costs'] ?? 0).toDouble(),
+      accountCosts: (json['account_costs'] ?? 0).toDouble(),
       date: DateTime.tryParse(json['date']?.toString() ?? '') ?? DateTime.now(),
       businessLocation: json['business_location']?.toString() ?? '',
+      isAddedtoSafe: json['isAddedtoSafe'] ?? false,
     );
   }
 
@@ -35,9 +47,13 @@ class Daily {
       'cash_sales': cashSales,
       'bank_sales': bankSales,
       'account_sales': accountSales,
-      'total_costs': totalCosts,
+      'spices_costs': spiceCosts,
+      'cash_costs': cashCosts,
+      'bank_costs': bankCosts,
+      'account_costs': accountCosts,
       'date': date.toIso8601String(),
       'business_location': businessLocation,
+      'isAddedtoSafe': isAddedtoSafe,
     };
   }
 }

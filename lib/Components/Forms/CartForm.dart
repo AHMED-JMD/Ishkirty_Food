@@ -346,7 +346,7 @@ class _CartFormState extends State<CartForm> {
                               width: MediaQuery.of(context).size.width / 7.1,
                               height: 50,
                               child: ElevatedButton.icon(
-                                onPressed: () {
+                                onPressed: () async {
                                   if (_formKey.currentState!
                                           .saveAndValidate() &&
                                       value.cart.length != 0) {
@@ -373,14 +373,26 @@ class _CartFormState extends State<CartForm> {
                                         isDelivery ? (deliveryAddress) : "";
 
                                     addBill(data);
-                                    //call printing func
+                                    // print cashier + client copies
                                     PrintingFunc('Save to PDF', value.counter,
-                                        userVal.user, data);
-                                    //second printer
-                                    isSecondPrinter
-                                        ? PrintingFunc('Save to PDF',
-                                            value.counter, userVal.user, data)
-                                        : null;
+                                        userVal.user, data,
+                                        includeLabel: true,
+                                        labelText: 'كوبون استلام');
+                                    // small delay can help the printer process first job before sending second
+                                    await Future.delayed(
+                                        const Duration(milliseconds: 200));
+                                    // client copy without label
+                                    // PrintingFunc('Save to PDF', value.counter,
+                                    //     userVal.user, data,
+                                    //     includeLabel: false);
+
+                                    // await printTwoCopies('Save to PDF', value.counter, userVal.user, data, cashierLabel: 'كوبون استلام');
+                                    // if configured, send same pair to second printer as well
+                                    if (isSecondPrinter) {
+                                      await printTwoCopies('Save to PDF',
+                                          value.counter, userVal.user, data,
+                                          cashierLabel: 'كوبون استلام');
+                                    }
                                     //reset cart
                                     cartProvider.resetCart();
                                   }

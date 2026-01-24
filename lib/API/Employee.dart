@@ -114,4 +114,17 @@ class APIEmployee {
       rethrow;
     }
   }
+
+  static Future runNewMonth() async {
+    try {
+      Map<String, String> configHeaders = {"Content-Type": "application/json"};
+
+      final url = Uri.parse('$apiUrl/new_month');
+      Response response = await get(url, headers: configHeaders);
+
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

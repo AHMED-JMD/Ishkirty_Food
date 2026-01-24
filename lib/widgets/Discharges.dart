@@ -70,6 +70,7 @@ class _DischargesPageState extends State<DischargesPage> {
     bool isMonthly = false;
     final formKey = GlobalKey<FormState>();
 
+    String paymentMethod = 'كاش';
     showDialog(
         context: context,
         builder: (_) => StatefulBuilder(
@@ -91,6 +92,19 @@ class _DischargesPageState extends State<DischargesPage> {
                             validator: (v) => (v == null || v.trim().isEmpty)
                                 ? 'Required'
                                 : null,
+                          ),
+                          DropdownButtonFormField<String>(
+                            initialValue: paymentMethod,
+                            items: const [
+                              DropdownMenuItem(
+                                  value: 'كاش', child: Text('كاش')),
+                              DropdownMenuItem(
+                                  value: 'بنكك', child: Text('بنكك')),
+                            ],
+                            onChanged: (v) =>
+                                setStateSB(() => paymentMethod = v ?? 'كاش'),
+                            decoration:
+                                const InputDecoration(labelText: 'طريقة الدفع'),
                           ),
                           TextFormField(
                             controller: amountCtrl,
@@ -152,6 +166,7 @@ class _DischargesPageState extends State<DischargesPage> {
                         'price': double.parse(amountCtrl.text.trim()),
                         'date': pickedDate.toIso8601String(),
                         'isMonthly': isMonthly,
+                        'paymentMethod': paymentMethod,
                       };
                       Navigator.pop(context);
                       final res = await api.APIDischarges.addDischarge(dto);
