@@ -1,5 +1,6 @@
 import 'package:ashkerty_food/API/Spieces.dart';
 import 'package:ashkerty_food/models/speicies.dart';
+import 'package:ashkerty_food/static/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
@@ -161,7 +162,7 @@ class ExampleSource extends AdvancedDataTableSource<Spieces> {
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
         child: Text(
-          currentRowData.price.toString(),
+          numberFormatter(currentRowData.price),
           style: const TextStyle(fontSize: 20),
         ),
       )),
@@ -176,7 +177,7 @@ class ExampleSource extends AdvancedDataTableSource<Spieces> {
         children: [
           const SizedBox(width: 5),
           Text(
-            currentRowData.spiceCost.toString(),
+            numberFormatter(currentRowData.spiceCost),
             style: const TextStyle(fontSize: 20),
           ),
           const SizedBox(width: 5),

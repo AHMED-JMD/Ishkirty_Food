@@ -41,16 +41,16 @@ class _MenuNavState extends State<MenuNav> {
       selectedPage = const Column(
         children: [
           MenuCategory(
-            category: 'تقليدي',
-          ),
-          MenuCategory(
             category: 'لحوم',
+            isAll: false,
           ),
           MenuCategory(
             category: 'اضافات',
+            isAll: false,
           ),
           MenuCategory(
             category: 'عصائر',
+            isAll: false,
           ),
         ],
       );

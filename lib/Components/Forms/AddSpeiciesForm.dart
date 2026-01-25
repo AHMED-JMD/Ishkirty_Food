@@ -120,7 +120,7 @@ class _AddSpiecesState extends State<AddSpieces> {
                         name: 'category',
                         decoration:
                             const InputDecoration(labelText: 'اختر النوع'),
-                        items: ['تقليدي', 'لحوم', 'اضافات', 'عصائر']
+                        items: ['لحوم', 'اضافات', 'عصائر']
                             .map((type) => DropdownMenuItem(
                                 value: type, child: Text(type)))
                             .toList(),

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:ashkerty_food/Components/GridBuilder.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 import 'package:ashkerty_food/widgets/SpeciesStats.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -12,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../static/SalesCard.dart';
 import 'Sales_Graphs.dart';
+import 'package:ashkerty_food/Components/tables/SpiecesSalesTable.dart';
 // import 'package:money_formatter/money_formatter.dart';
 
 class Sales extends StatefulWidget {
@@ -274,11 +274,12 @@ class _SalesState extends State<Sales> {
                 height: 20,
               ),
               spieces.isNotEmpty
-                  ? Center(
-                      child: GridViewBuilder(
-                      data: spieces,
-                      flag: "sales",
-                    ))
+                  ? Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: SpiecesTable(
+                        data: spieces,
+                      ),
+                    )
                   : const Padding(
                       padding: EdgeInsets.only(top: 20.0),
                       child: SpinKitCubeGrid(

@@ -5,8 +5,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class MenuCategory extends StatefulWidget {
   final String category;
+  final bool isAll;
 
-  const MenuCategory({super.key, required this.category});
+  const MenuCategory({super.key, required this.category, required this.isAll});
 
   @override
   State<MenuCategory> createState() => _MenuCategoryState();
@@ -18,7 +19,8 @@ class _MenuCategoryState extends State<MenuCategory> {
 
   @override
   void initState() {
-    getData(widget.category);
+    print(widget.isAll);
+    widget.isAll ? getAll() : getData(widget.category);
     super.initState();
   }
 
@@ -40,23 +42,41 @@ class _MenuCategoryState extends State<MenuCategory> {
     });
   }
 
+  Future getAll() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final response = await APISpieces.Get();
+
+    if (response != false) {
+      setState(() {
+        isLoading = false;
+        data = response;
+      });
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 10, right: 28.0),
+            const Padding(
+              padding: EdgeInsets.only(top: 10, right: 28.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    widget.category,
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(
-                        fontSize: 28, fontWeight: FontWeight.bold),
-                  ),
+                  // Text(
+                  //   widget.category,
+                  //   textAlign: TextAlign.right,
+                  //   style: const TextStyle(
+                  //       fontSize: 28, fontWeight: FontWeight.bold),
+                  // ),
                 ],
               ),
             ),

@@ -319,7 +319,7 @@ class _EditSpiecesState extends State<EditSpieces> {
                             decoration:
                                 const InputDecoration(labelText: 'النوع'),
                             initialValue: widget.data.category.toString(),
-                            items: ['تقليدي', 'لحوم', 'اضافات', 'عصائر']
+                            items: ['لحوم', 'اضافات', 'عصائر']
                                 .map((type) => DropdownMenuItem(
                                     value: type, child: Text(type)))
                                 .toList(),

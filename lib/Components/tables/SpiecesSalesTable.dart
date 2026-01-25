@@ -1,0 +1,166 @@
+import 'package:flutter/material.dart';
+import 'package:ashkerty_food/static/formatter.dart';
+import 'package:ashkerty_food/models/SpiecesTableModel.dart';
+
+class SpiecesTable extends StatefulWidget {
+  final List data;
+  const SpiecesTable({super.key, required this.data});
+
+  @override
+  State<SpiecesTable> createState() => _SpiecesTableState();
+}
+
+class _SpiecesTableState extends State<SpiecesTable> {
+    String _search = '';
+
+  List<SpiecesTableModel> _toModelList(List raw) {
+    return raw.map<SpiecesTableModel>((e) {
+      if (e is SpiecesTableModel) return e;
+      return SpiecesTableModel.fromJson(Map<String, dynamic>.from(e));
+    }).toList();
+  }
+
+    @override
+    void initState() {
+        super.initState();
+    }
+
+  @override
+  Widget build(BuildContext context) {
+    final List<SpiecesTableModel> rows = _toModelList(widget.data);
+    rows.sort((a, b) => b.totSales.compareTo(a.totSales));
+    final String q = _search.trim().toLowerCase();
+    final List<SpiecesTableModel> filtered = q.isEmpty
+        ? rows
+        : rows.where((it) => it.name.toLowerCase().contains(q) || it.category.toLowerCase().contains(q)).toList();
+
+    return Column(
+      children: [
+                SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    child: TextField(
+                        decoration: const InputDecoration(
+                                prefixIcon: Icon(Icons.search),
+                                hintText: 'ايجاد منتج بالاسم .....'),
+                        onChanged: (v) {
+                            setState(() {
+                                _search = v;
+                            });
+                        },
+                    ),
+                ),
+        const SizedBox(height: 16),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            columns: [
+              DataColumn(
+                  label: Container(
+                      child: Text('الاسم',
+                          style: const TextStyle(
+                              fontSize: 20, color: Colors.teal)))),
+              DataColumn(
+                  label: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              right: BorderSide(
+                                  color: Colors.grey.shade300, width: 1))),
+                      child: const Text('التصنيف',
+                          style: TextStyle(fontSize: 20, color: Colors.teal)))),
+              DataColumn(
+                  label: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              right: BorderSide(
+                                  color: Colors.grey.shade300, width: 1))),
+                      child: const Text('إجمالي المبيعات',
+                          style: TextStyle(fontSize: 20, color: Colors.teal)))),
+              DataColumn(
+                  label: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              right: BorderSide(
+                                  color: Colors.grey.shade300, width: 1))),
+                      child: const Text('إجمالي التكاليف',
+                          style: TextStyle(fontSize: 20, color: Colors.teal)))),
+              DataColumn(
+                  label: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              right: BorderSide(
+                                  color: Colors.grey.shade300, width: 1))),
+                      child: const Text(' الربح',
+                          style: TextStyle(fontSize: 20, color: Colors.teal)))),
+            ],
+            rows: filtered
+                .map((r) => DataRow(
+                        color:
+                            MaterialStateProperty.resolveWith<Color?>((states) {
+                          return int.parse(r.id).isEven
+                              ? Colors.grey.shade200
+                              : null;
+                        }),
+                        cells: [
+                          DataCell(Container(child: Text(r.name))),
+                          DataCell(Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      right: BorderSide(
+                                          color: Colors.grey.shade300,
+                                          width: 1))),
+                              child: Text(r.category,
+                                  style: const TextStyle(fontSize: 17)))),
+                          DataCell(Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      right: BorderSide(
+                                          color: Colors.grey.shade300,
+                                          width: 1))),
+                              child: Text(numberFormatter(r.totSales.toInt()),
+                                  style: const TextStyle(fontSize: 17)))),
+                          DataCell(Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      right: BorderSide(
+                                          color: Colors.grey.shade300,
+                                          width: 1))),
+                              child: Text(numberFormatter(r.totCosts.toInt()),
+                                  style: const TextStyle(fontSize: 17)))),
+                          DataCell(Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      right: BorderSide(
+                                          color: Colors.grey.shade300,
+                                          width: 1))),
+                              child: Text(
+                                  numberFormatter(
+                                      (r.totSales - r.totCosts).toInt()),
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      color: (r.totSales - r.totCosts) >= 0
+                                          ? Colors.green
+                                          : Colors.red)))),
+                        ]))
+                .toList(),
+          ),
+        ),
+      ],
+    );
+  }
+}

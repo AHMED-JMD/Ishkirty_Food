@@ -8,16 +8,8 @@ List menuPages = [
     'widget': const Column(
       children: [
         MenuCategory(
-          category: 'تقليدي',
-        ),
-        MenuCategory(
-          category: 'لحوم',
-        ),
-        MenuCategory(
-          category: 'اضافات',
-        ),
-        MenuCategory(
-          category: 'عصائر',
+          category: 'الكل',
+          isAll: true,
         ),
       ],
     ),
@@ -25,21 +17,12 @@ List menuPages = [
     'icon': Icons.restaurant_menu,
   },
   //---------------Menu Items------------------------------------------
-  {
-    'widget': const Column(
-      children: [
-        MenuCategory(
-          category: 'تقليدي',
-        ),
-      ],
-    ),
-    'name': 'تقليدي',
-    'icon': Icons.fastfood,
-  },
+
   {
     'widget': Container(
       child: const MenuCategory(
         category: 'لحوم',
+        isAll: false,
       ),
     ),
     'name': 'اللحوم',
@@ -48,6 +31,7 @@ List menuPages = [
   {
     'widget': const MenuCategory(
       category: 'عصائر',
+      isAll: false,
     ),
     'name': 'العصائر',
     'icon': Icons.local_drink,
@@ -56,6 +40,7 @@ List menuPages = [
     'widget': const SizedBox(
       child: MenuCategory(
         category: 'اضافات',
+        isAll: false,
       ),
     ),
     'name': 'إضافات',

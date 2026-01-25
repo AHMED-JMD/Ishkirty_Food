@@ -374,7 +374,7 @@ class _CartFormState extends State<CartForm> {
 
                                     addBill(data);
                                     // print cashier + client copies
-                                    PrintingFunc('Save to PDF', value.counter,
+                                    PrintingFunc('XP-80C', value.counter,
                                         userVal.user, data,
                                         includeLabel: true,
                                         labelText: 'كوبون استلام');
@@ -382,14 +382,14 @@ class _CartFormState extends State<CartForm> {
                                     await Future.delayed(
                                         const Duration(milliseconds: 200));
                                     // client copy without label
-                                    // PrintingFunc('Save to PDF', value.counter,
-                                    //     userVal.user, data,
-                                    //     includeLabel: false);
+                                    PrintingFunc('XP-80C', value.counter,
+                                        userVal.user, data,
+                                        includeLabel: false);
 
                                     // await printTwoCopies('Save to PDF', value.counter, userVal.user, data, cashierLabel: 'كوبون استلام');
                                     // if configured, send same pair to second printer as well
                                     if (isSecondPrinter) {
-                                      await printTwoCopies('Save to PDF',
+                                      await printTwoCopies('XP-80C',
                                           value.counter, userVal.user, data,
                                           cashierLabel: 'كوبون استلام');
                                     }
