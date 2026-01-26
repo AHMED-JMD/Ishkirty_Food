@@ -3,7 +3,7 @@ import 'package:http/http.dart';
 
 String apiUrl = 'http://localhost:3000/api/spieces';
 
-class APISpieces {
+class APIPlatformSpieces {
   static Future add(name, price, category, file) async {
     try {
       final url = Uri.parse('$apiUrl/');
@@ -14,11 +14,9 @@ class APISpieces {
       request.files.add(await MultipartFile.fromPath(
         'file',
         file.path,
-        // Set the appropriate content type
       ));
 
       var response = await request.send();
-
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -29,7 +27,6 @@ class APISpieces {
     }
   }
 
-  //get data
   static Future Get() async {
     try {
       Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
@@ -48,7 +45,6 @@ class APISpieces {
     }
   }
 
-  //get data
   static Future GetFavs() async {
     try {
       Map<String, String> configHeaders = {"Content-Type": "application/json"};
@@ -67,7 +63,6 @@ class APISpieces {
     }
   }
 
-  //get by type data
   static Future getByType(data) async {
     try {
       Map<String, String> configHeaders = {"Content-Type": "application/json"};
@@ -87,7 +82,6 @@ class APISpieces {
     }
   }
 
-  //get by type data
   static Future findOne(data) async {
     try {
       Map<String, String> configHeaders = {"Content-Type": "application/json"};
@@ -107,7 +101,6 @@ class APISpieces {
     }
   }
 
-  //modify data
   static Future update(data) async {
     try {
       Map<String, String> configHeaders = {"Content-Type": "application/json"};
@@ -126,7 +119,6 @@ class APISpieces {
     }
   }
 
-  //delete data
   static Future Delete(data) async {
     try {
       Map<String, String> configHeaders = {"Content-Type": "application/json"};

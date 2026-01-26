@@ -1,25 +1,41 @@
 import 'dart:convert';
+import 'dart:html' as html;
 import 'package:http/http.dart';
 
 String apiUrl = 'http://localhost:3000/api/spieces';
 
-class APISpieces {
+class APIWebSpieces {
   static Future add(name, price, category, file) async {
     try {
-      final url = Uri.parse('$apiUrl/');
-      var request = MultipartRequest('POST', url);
-      request.fields['name'] = name;
-      request.fields['price'] = price;
-      request.fields['category'] = category;
-      request.files.add(await MultipartFile.fromPath(
-        'file',
-        file.path,
-        // Set the appropriate content type
-      ));
+      final url = '$apiUrl/';
+      final formData = html.FormData();
+      formData.append('name', name);
+      formData.append('price', price);
+      formData.append('category', category);
 
-      var response = await request.send();
+      // Support multiple possible file shapes returned by file pickers on web.
+      try {
+        if (file is html.File) {
+          formData.appendBlob('file', file, file.name);
+        } else if (file != null && (file.bytes != null)) {
+          final blob = html.Blob([file.bytes]);
+          formData.appendBlob('file', blob, file.name ?? 'file');
+        } else if (file is Map && file['bytes'] != null) {
+          final blob = html.Blob([file['bytes']]);
+          formData.appendBlob('file', blob, file['name'] ?? 'file');
+        } else {
+          // Fallback: attempt to append as-is
+          formData.append('file', file);
+        }
+      } catch (e) {
+        // ignore and attempt to append generically
+        formData.append('file', file);
+      }
 
-      if (response.statusCode == 200) {
+      final request = await html.HttpRequest.request(url,
+          method: 'POST', sendData: formData, requestHeaders: {});
+
+      if (request.status == 200) {
         return true;
       } else {
         return false;
@@ -29,7 +45,6 @@ class APISpieces {
     }
   }
 
-  //get data
   static Future Get() async {
     try {
       Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
@@ -48,7 +63,6 @@ class APISpieces {
     }
   }
 
-  //get data
   static Future GetFavs() async {
     try {
       Map<String, String> configHeaders = {"Content-Type": "application/json"};
@@ -67,7 +81,6 @@ class APISpieces {
     }
   }
 
-  //get by type data
   static Future getByType(data) async {
     try {
       Map<String, String> configHeaders = {"Content-Type": "application/json"};
@@ -87,7 +100,6 @@ class APISpieces {
     }
   }
 
-  //get by type data
   static Future findOne(data) async {
     try {
       Map<String, String> configHeaders = {"Content-Type": "application/json"};
@@ -107,7 +119,6 @@ class APISpieces {
     }
   }
 
-  //modify data
   static Future update(data) async {
     try {
       Map<String, String> configHeaders = {"Content-Type": "application/json"};
@@ -126,7 +137,6 @@ class APISpieces {
     }
   }
 
-  //delete data
   static Future Delete(data) async {
     try {
       Map<String, String> configHeaders = {"Content-Type": "application/json"};

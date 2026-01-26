@@ -1,5 +1,6 @@
-import 'dart:io';
-import 'package:ashkerty_food/API/Spieces.dart';
+// Platform-independent file handling: avoid importing dart:io
+// import 'package:ashkerty_food/API/Spieces.dart';
+import 'package:ashkerty_food/API/Spieces_web.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class AddSpieces extends StatefulWidget {
 
 class _AddSpiecesState extends State<AddSpieces> {
   bool isLoading = false;
-  File? file;
+  dynamic file;
 
   //--add client
   Future addSpieces(name, price, category, file) async {
@@ -29,7 +30,8 @@ class _AddSpiecesState extends State<AddSpieces> {
       isLoading = true;
     });
     //call the api
-    final response = await APISpieces.add(name, price, category, file);
+    final response = await APIWebSpieces.add(name, price, category, file);
+
     setState(() {
       isLoading = false;
     });
