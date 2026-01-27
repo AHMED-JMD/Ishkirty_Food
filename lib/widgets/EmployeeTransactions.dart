@@ -72,7 +72,7 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
         SnackBar(backgroundColor: Colors.greenAccent, content: Text(msg)));
   }
 
-  void showAddTrans() async {
+  void showAddTrans(String adminId) async {
     final amountCtrl = TextEditingController();
     final empCtrl = TextEditingController(text: widget.emp.name);
 
@@ -155,6 +155,7 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
                     Navigator.pop(ctx);
                     final dto = {
                       'emp_id': widget.emp.id,
+                      'admin_id': adminId,
                       'type': type,
                       'amount': double.tryParse(amountCtrl.text) ?? 0,
                       'date': date.toIso8601String(),
@@ -323,7 +324,9 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           ElevatedButton.icon(
-                              onPressed: showAddTrans,
+                              onPressed: () {
+                                showAddTrans(value.user!['id'].toString());
+                              },
                               icon: const Icon(
                                 Icons.add,
                                 color: Colors.black,

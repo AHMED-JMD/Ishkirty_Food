@@ -34,6 +34,25 @@ class APIAuth {
     }
   }
 
+  static Future getByToken(String token) async {
+    try {
+      Map<String, String> configHeaders = {
+        "Content-Type": "application/json",
+        "Authorization": token
+      };
+
+      final url = Uri.parse('$apiUrl/get-user');
+      Response response = await get(
+        url,
+        headers: configHeaders,
+      );
+
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   static Future Register(data) async {
     try {
       Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};

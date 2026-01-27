@@ -43,6 +43,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final isPhone = width < 600;
+
     return KeyboardWidget(
       bindings: favSpieces.map((theKey) {
         LogicalKeyboardKey key =
@@ -109,28 +112,70 @@ class _MyHomePageState extends State<MyHomePage> {
                         height: 20,
                       ),
                       //custom nav in component folder
-                      Row(
-                        children: [
-                          Expanded(
-                              child: SizedBox(
-                            height: MediaQuery.of(context).size.height,
-                            child: ListView(children: const [MenuNav()]),
-                          )),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width / 5,
-                            height: MediaQuery.of(context).size.height / 1.1,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 5.0),
-                              child: CartForm(),
-                            ),
-                          )
-                        ],
-                      )
+                      Builder(builder: (context) {
+                        final width = MediaQuery.of(context).size.width;
+                        final height = MediaQuery.of(context).size.height;
+                        final isPhone = width < 600; // threshold for phone
+
+                        return Row(
+                          children: [
+                            Expanded(
+                                child: SizedBox(
+                              height: height,
+                              child: ListView(children: const [MenuNav()]),
+                            )),
+
+                            // show inline form only on larger screens
+                            if (!isPhone)
+                              SizedBox(
+                                width: width / 5,
+                                height: height / 1.1,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 5.0),
+                                  child: CartForm(),
+                                ),
+                              ),
+                          ],
+                        );
+                      }),
+                      const SizedBox(
+                        height: 40,
+                      ),
                     ],
                   ),
                 ),
               ),
-              floatingActionButton: const CartButton()),
+              floatingActionButton: isPhone
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // const CartButton(),
+                        const SizedBox(height: 8),
+                        FloatingActionButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (ctx) {
+                                  return Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: MediaQuery.of(ctx)
+                                            .viewInsets
+                                            .bottom),
+                                    child: FractionallySizedBox(
+                                      heightFactor: 0.9,
+                                      child: CartForm(),
+                                    ),
+                                  );
+                                });
+                          },
+                          backgroundColor: Colors.teal,
+                          tooltip: 'طباعة الفاتورة',
+                          child: const Icon(Icons.note_add),
+                        ),
+                      ],
+                    )
+                  : const CartButton()),
         ),
       ),
     );

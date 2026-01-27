@@ -12,6 +12,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../static/SalesCard.dart';
 import 'Sales_Graphs.dart';
 import 'package:ashkerty_food/Components/tables/SpiecesSalesTable.dart';
+import 'package:ashkerty_food/static/Printing.dart';
 // import 'package:money_formatter/money_formatter.dart';
 
 class Sales extends StatefulWidget {
@@ -266,9 +267,39 @@ class _SalesState extends State<Sales> {
               const SizedBox(
                 height: 90,
               ),
-              const Text(
-                'الإيرادات بالصنف',
-                style: TextStyle(fontSize: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('الإيرادات بالصنف',
+                      style: TextStyle(fontSize: 30)),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: (spieces.isNotEmpty && !isLoading)
+                        ? () async {
+                            final int cashTotal = cashMor + cashEv;
+                            final int bankTotal = bankMor + bankEv;
+                            final int accountTotal = accountMor + accountEv;
+                            await printSalesReport(
+                                spieces: spieces,
+                                cashTotal: cashTotal,
+                                bankTotal: bankTotal,
+                                accountTotal: accountTotal,
+                                period: period);
+                          }
+                        : null,
+                    icon: const Icon(
+                      Icons.print,
+                      size: 40,
+                      color: Colors.black,
+                    ),
+                    label: const Text('تقرير الوردية',
+                        style: TextStyle(fontSize: 20, color: Colors.white)),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+                  ),
+                ],
               ),
               const SizedBox(
                 height: 20,

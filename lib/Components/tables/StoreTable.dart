@@ -111,7 +111,9 @@ class StoreTable extends StatelessWidget {
                     it.isKilo
                         ? "${numberFormatter(it.quantity, fractionDigits: 2)} / كجم"
                         : "${numberFormatter(it.quantity)} / قطع",
-                    style: const TextStyle(fontSize: 17),
+                    style: TextStyle(
+                        fontSize: 17,
+                        color: it.quantity <= it.warnValue ? Colors.red : null),
                   ),
                 )),
                 DataCell(Container(

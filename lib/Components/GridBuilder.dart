@@ -84,7 +84,7 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       //amount of data you want on a row
-                      crossAxisCount: 8,
+                      crossAxisCount: 7,
                     ),
                     itemBuilder: (context, index) =>
                         //call the card widget and set custom width and height !!default height best 200!!!
@@ -125,48 +125,49 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                             height: 120,
                             flag: widget.flag));
                   } else {
-                    if (constraints.maxWidth > 580) {
+                    if (constraints.maxWidth > 650) {
                       return GridView.builder(
                           shrinkWrap: true,
                           physics: const ScrollPhysics(),
                           itemCount: speices.length,
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 5, childAspectRatio: 0.7),
+                            crossAxisCount: 5,
+                          ),
                           itemBuilder: (context, index) => GridCart(
                               speices: speices[index],
-                              widths: 140,
-                              height: 100,
+                              widths: 120,
+                              height: 50,
                               flag: widget.flag));
                     } else {
-                      if (constraints.maxWidth > 200) {
+                      if (constraints.maxWidth > 550) {
                         return GridView.builder(
                             shrinkWrap: true,
                             physics: const ScrollPhysics(),
                             itemCount: speices.length,
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
+                              crossAxisCount: 4,
                             ),
                             itemBuilder: (context, index) => GridCart(
                                 speices: speices[index],
-                                widths: 250,
-                                height: 200,
+                                widths: 120,
+                                height: 50,
                                 flag: widget.flag));
                       } else {
-                        if (constraints.maxWidth > 400) {
+                        if (constraints.maxWidth > 470) {
                           return GridView.builder(
                               shrinkWrap: true,
                               physics: const ScrollPhysics(),
                               itemCount: speices.length,
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
+                                crossAxisCount: 3,
                               ),
                               itemBuilder: (context, index) => GridCart(
                                   speices: speices[index],
-                                  widths: 200,
-                                  height: 200,
+                                  widths: 120,
+                                  height: 60,
                                   flag: widget.flag));
                         } else {
                           return GridView.builder(
@@ -175,12 +176,12 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                               itemCount: speices.length,
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
+                                crossAxisCount: 3,
                               ),
                               itemBuilder: (context, index) => GridCart(
                                   speices: speices[index],
-                                  widths: 180,
-                                  height: 300,
+                                  widths: 100,
+                                  height: 50,
                                   flag: widget.flag));
                         }
                       }

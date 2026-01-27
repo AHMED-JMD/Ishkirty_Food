@@ -38,6 +38,13 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setAmount(Cart model, int amount) {
+    if (amount < 1) amount = 1;
+    model.counter = amount;
+    model.total_price = model.unit_price * model.counter;
+    notifyListeners();
+  }
+
   void addonsUpdate(Cart model, addon, int amount) {
     model.total_price = model.total_price + addon['price'] * amount;
 

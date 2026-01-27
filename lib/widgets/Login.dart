@@ -29,10 +29,10 @@ class _LoginState extends State<Login> {
       isLoading = false;
     });
 
-    if (response.statusCode == 200) {
+      if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
 
-      //global state Provider
+      //global state Provider (this also persists token)
       provider.Login(data['user'], data['token']);
 
       Navigator.pushReplacementNamed(context, '/home');

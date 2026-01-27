@@ -512,7 +512,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
             }));
   }
 
-  void _showAddEmpTrans() async {
+  void _showAddEmpTrans(String adminId) async {
     final amountCtrl = TextEditingController();
     Employee? selected = _employees.isNotEmpty ? _employees.first : null;
     String type = 'خصم';
@@ -772,7 +772,10 @@ class _NewDailyPageState extends State<NewDailyPage> {
                                         fontWeight: FontWeight.bold)),
                                 const SizedBox(width: 10),
                                 ElevatedButton.icon(
-                                  onPressed: _showAddEmpTrans,
+                                  onPressed: () {
+                                    _showAddEmpTrans(
+                                        value.user!['id'].toString());
+                                  },
                                   icon: const Icon(
                                     Icons.add_circle,
                                     color: Colors.black,

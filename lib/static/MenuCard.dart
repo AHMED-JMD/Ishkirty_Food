@@ -129,216 +129,365 @@ class _MenucardState extends State<Menucard> {
     return Consumer<CartProvider>(builder: (context, value, child) {
       var cartProvider = context.read<CartProvider>();
 
+      final width = MediaQuery.of(context).size.width;
+      final height = MediaQuery.of(context).size.height;
+      final isPhone = width < 600;
+
+      double fontSize({required double desktopCalc, required double mobile}) {
+        return isPhone ? mobile : desktopCalc;
+      }
+
       return Padding(
         padding: const EdgeInsets.all(3.0),
         child: SizedBox(
-          child: SizedBox(
-            width: widget.widths,
-            height: widget.height,
-            child: InkWell(
-              onTap: () {
-                //check if it is addons
-                if (widget.speices['category'] == 'اضافات') {
-                  addonsModal(context, value.cart, cartProvider);
-                } else {
-                  //new model ready for cart
-                  model = Cart(
-                      spices: widget.speices['name'],
-                      counter: 1,
-                      category: widget.speices['category'],
-                      addons: [],
-                      unit_price: widget.speices['price'],
-                      total_price: widget.speices['price']);
-                  //getting cart provider function
-                  cartProvider.addToCart(model);
-                  //setting the state
-                  setState(() {
-                    isAdded = true;
-                  });
-                }
-              },
-              child: Card(
-                clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.network(
-                        'http://localhost:3000/${widget.speices['ImgLink']}',
-                        fit: BoxFit.cover),
-                    Container(color: Colors.black.withOpacity(0.35)),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Center(
-                                child: Text(
-                                  '${widget.speices['name']} ',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 100,
-                                  ),
-                                  textAlign: TextAlign.center,
+          width: widget.widths,
+          height: widget.height,
+          child: InkWell(
+            onTap: () {},
+            child: Card(
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Container(color: Colors.black.withOpacity(0.35)),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: Text(
+                                '${widget.speices['name']} ',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: fontSize(
+                                      desktopCalc: width / 90, mobile: 13),
                                 ),
+                                textAlign: TextAlign.center,
                               ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              if (isAdded)
-                                SizedBox(
-                                  width: 20,
+                            ),
+                            const SizedBox(
+                              width: 1,
+                            ),
+                            if (isAdded)
+                              Container(
+                                color: Colors.white.withOpacity(0.7),
+                                child: SizedBox(
                                   child: IconButton(
                                     onPressed: () {
-                                      //delete from cart provider
                                       cartProvider.deletefromCart(model);
-                                      //setting the state
                                       setState(() {
                                         isAdded = false;
                                       });
                                     },
                                     tooltip: 'حذف',
                                     icon: const Icon(
-                                      size: 25,
+                                      size: 17,
                                       Icons.delete,
                                       color: Colors.redAccent,
                                     ),
                                   ),
                                 ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height / 100,
-                          ),
-                          Text(
-                              "جنيه ${numberFormatter(widget.speices['price'])}",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize:
-                                    MediaQuery.of(context).size.width / 100,
-                              )),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 1.0),
-                            child: isAdded == false
-                                ? Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      TextButton(
-                                        onPressed: () {
-                                          //check if it is addons
-                                          if (widget.speices['category'] ==
-                                              'اضافات') {
-                                            addonsModal(context, value.cart,
-                                                cartProvider);
-                                          } else {
-                                            //new model ready for cart
-                                            model = Cart(
-                                                spices: widget.speices['name'],
-                                                counter: 1,
-                                                category:
-                                                    widget.speices['category'],
-                                                addons: [],
-                                                unit_price:
-                                                    widget.speices['price'],
-                                                total_price:
-                                                    widget.speices['price']);
-                                            //getting cart provider function
-                                            cartProvider.addToCart(model);
-                                            //setting the state
-                                            setState(() {
-                                              isAdded = true;
-                                            });
-                                          }
-                                        },
-                                        style: TextButton.styleFrom(
-                                          backgroundColor: Colors.teal,
-                                          minimumSize: const Size(100, 35),
-                                        ),
-                                        child: const Text(
-                                          'اضف للسلة',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
+                              ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: height / 100,
+                        ),
+                        Text("جنيه ${numberFormatter(widget.speices['price'])}",
+                            style: TextStyle(
+                              color: Colors.black45,
+                              fontSize:
+                                  fontSize(desktopCalc: width / 90, mobile: 14),
+                            )),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 1.0),
+                          child: isAdded == false
+                              ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        if (widget.speices['category'] ==
+                                            'اضافات') {
+                                          addonsModal(context, value.cart,
+                                              cartProvider);
+                                        } else {
+                                          model = Cart(
+                                              spices: widget.speices['name'],
+                                              counter: 1,
+                                              category:
+                                                  widget.speices['category'],
+                                              addons: [],
+                                              unit_price:
+                                                  widget.speices['price'],
+                                              total_price:
+                                                  widget.speices['price']);
+                                          cartProvider.addToCart(model);
+                                          setState(() {
+                                            isAdded = true;
+                                          });
+                                        }
+                                      },
+                                      style: TextButton.styleFrom(
+                                        backgroundColor: Colors.teal,
+                                        minimumSize: const Size(100, 50),
                                       ),
-                                    ],
-                                  )
-                                : Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Expanded(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            IconButton(
-                                              onPressed: () {
-                                                //add amount
+                                      child: const Text(
+                                        'اضف للسلة',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          isPhone
+                                              ? IconButton(
+                                                  onPressed: () {
+                                                    for (int i = 0;
+                                                        i < value.cart.length;
+                                                        i++) {
+                                                      if (widget.speices[
+                                                              'name'] ==
+                                                          value
+                                                              .cart[i].spices) {
+                                                        cartProvider.addAmount(
+                                                            value.cart[i]);
+                                                        setState(() {
+                                                          amount = value
+                                                              .cart[i].counter;
+                                                        });
+                                                      }
+                                                    }
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.add_box,
+                                                    color: Colors.black,
+                                                    size: fontSize(
+                                                        desktopCalc: 27,
+                                                        mobile: 15),
+                                                  ),
+                                                  tooltip: 'إضافة',
+                                                )
+                                              : Container(
+                                                  color: Colors.white,
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      for (int i = 0;
+                                                          i < value.cart.length;
+                                                          i++) {
+                                                        if (widget.speices[
+                                                                'name'] ==
+                                                            value.cart[i]
+                                                                .spices) {
+                                                          cartProvider
+                                                              .addAmount(value
+                                                                  .cart[i]);
+                                                          setState(() {
+                                                            amount = value
+                                                                .cart[i]
+                                                                .counter;
+                                                          });
+                                                        }
+                                                      }
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.add_box,
+                                                      color: Colors.black,
+                                                      size: fontSize(
+                                                          desktopCalc: 27,
+                                                          mobile: 15),
+                                                    ),
+                                                    tooltip: 'إضافة',
+                                                  ),
+                                                ),
+                                          // Tappable amount: opens number-grid (1..10)
+                                          InkWell(
+                                            onTap: () async {
+                                              final selected = await showDialog<
+                                                      int>(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext dialogCtx) {
+                                                    return Directionality(
+                                                      textDirection:
+                                                          TextDirection.ltr,
+                                                      child: AlertDialog(
+                                                        title: const Center(
+                                                          child: Text(
+                                                              'اختر الكمية'),
+                                                        ),
+                                                        content: SizedBox(
+                                                          width: double
+                                                              .minPositive,
+                                                          child: GridView.count(
+                                                            shrinkWrap: true,
+                                                            crossAxisCount: 3,
+                                                            mainAxisSpacing: 8,
+                                                            crossAxisSpacing: 8,
+                                                            children:
+                                                                List.generate(
+                                                                    10, (i) {
+                                                              int val = i + 1;
+                                                              return ElevatedButton(
+                                                                style: ElevatedButton
+                                                                    .styleFrom(
+                                                                  backgroundColor:
+                                                                      Colors
+                                                                          .grey
+                                                                          .shade300,
+                                                                ),
+                                                                onPressed: () {
+                                                                  Navigator.of(
+                                                                          dialogCtx)
+                                                                      .pop(val);
+                                                                },
+                                                                child: Text(
+                                                                  '$val',
+                                                                  style: TextStyle(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize: fontSize(
+                                                                          desktopCalc:
+                                                                              17,
+                                                                          mobile:
+                                                                              16),
+                                                                      color: Colors
+                                                                          .black),
+                                                                ),
+                                                              );
+                                                            }),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  });
+
+                                              if (selected != null) {
                                                 for (int i = 0;
                                                     i < value.cart.length;
                                                     i++) {
                                                   if (widget.speices['name'] ==
                                                       value.cart[i].spices) {
-                                                    cartProvider.addAmount(
-                                                        value.cart[i]);
+                                                    cartProvider.setAmount(
+                                                        value.cart[i],
+                                                        selected);
                                                     setState(() {
                                                       amount =
                                                           value.cart[i].counter;
                                                     });
+                                                    break;
                                                   }
                                                 }
-                                              },
-                                              icon: const Icon(
-                                                Icons.add_box,
-                                                color: Colors.white,
-                                                size: 27,
-                                              ),
-                                              tooltip: 'إضافة',
-                                            ),
-                                            Text('$amount',
-                                                style: const TextStyle(
+                                              }
+                                            },
+                                            child: isPhone
+                                                ? Text('$amount',
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: fontSize(
+                                                            desktopCalc: 16,
+                                                            mobile: 12)))
+                                                : Container(
                                                     color: Colors.white,
-                                                    fontSize: 16)),
-                                            IconButton(
-                                              onPressed: () {
-                                                //decrease amount
-                                                for (int i = 0;
-                                                    i < value.cart.length;
-                                                    i++) {
-                                                  if (widget.speices['name'] ==
-                                                      value.cart[i].spices) {
-                                                    cartProvider.minusAmount(
-                                                        value.cart[i]);
-                                                    setState(() {
-                                                      amount =
-                                                          value.cart[i].counter;
-                                                    });
-                                                  }
-                                                }
-                                              },
-                                              icon: const Icon(
-                                                Icons.remove_circle,
-                                                color: Colors.white,
-                                                size: 27,
-                                              ),
-                                              tooltip: 'نقصان',
-                                            ),
-                                          ],
-                                        ),
+                                                    padding: EdgeInsets.all(
+                                                        value.cart.length > 2
+                                                            ? 5.0
+                                                            : 10.0),
+                                                    child: Text('$amount',
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: fontSize(
+                                                                desktopCalc: 16,
+                                                                mobile: 12))),
+                                                  ),
+                                          ),
+                                          isPhone
+                                              ? IconButton(
+                                                  onPressed: () {
+                                                    for (int i = 0;
+                                                        i < value.cart.length;
+                                                        i++) {
+                                                      if (widget.speices[
+                                                              'name'] ==
+                                                          value
+                                                              .cart[i].spices) {
+                                                        cartProvider
+                                                            .minusAmount(
+                                                                value.cart[i]);
+                                                        setState(() {
+                                                          amount = value
+                                                              .cart[i].counter;
+                                                        });
+                                                      }
+                                                    }
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.remove_circle,
+                                                    color: Colors.black,
+                                                    size: fontSize(
+                                                        desktopCalc: 27,
+                                                        mobile: 15),
+                                                  ),
+                                                  tooltip: 'نقصان',
+                                                )
+                                              : Container(
+                                                  color: Colors.white,
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      for (int i = 0;
+                                                          i < value.cart.length;
+                                                          i++) {
+                                                        if (widget.speices[
+                                                                'name'] ==
+                                                            value.cart[i]
+                                                                .spices) {
+                                                          cartProvider
+                                                              .minusAmount(value
+                                                                  .cart[i]);
+                                                          setState(() {
+                                                            amount = value
+                                                                .cart[i]
+                                                                .counter;
+                                                          });
+                                                        }
+                                                      }
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.remove_circle,
+                                                      color: Colors.black,
+                                                      size: fontSize(
+                                                          desktopCalc: 27,
+                                                          mobile: 15),
+                                                    ),
+                                                    tooltip: 'نقصان',
+                                                  ),
+                                                ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                          ),
-                        ],
-                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

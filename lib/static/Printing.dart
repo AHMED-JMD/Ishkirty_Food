@@ -1,9 +1,11 @@
+import 'package:ashkerty_food/static/formatter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:flutter/foundation.dart';
 
 pw.Container createTableCell(String text) {
   return pw.Container(
@@ -57,6 +59,115 @@ pw.Table createTable(data) {
         )
     ],
   );
+}
+
+// Print sales report: totals and spieces table
+printSalesReport(
+    {required List spieces,
+    required int cashTotal,
+    required int bankTotal,
+    required int accountTotal,
+    String? period}) async {
+  var arabicFont =
+      pw.Font.ttf(await rootBundle.load("assets/fonts/HacenTunisia.ttf"));
+  var myTheme = pw.ThemeData.withFont(base: arabicFont);
+
+  final doc = pw.Document();
+
+  // load image
+  const imageProvider = AssetImage('assets/images/abdLogo.png');
+  final ByteData byteData = await rootBundle.load(imageProvider.assetName);
+  final Uint8List bytes = byteData.buffer.asUint8List();
+  final image = pw.Image(pw.MemoryImage(bytes));
+
+  DateTime now = DateTime.now();
+  String date = '${now.year}/${now.month}/${now.day}';
+  String time = '${now.hour}:${now.minute}:${now.second}';
+
+  doc.addPage(pw.Page(
+      pageFormat: PdfPageFormat.roll80,
+      theme: myTheme,
+      build: (pw.Context context) {
+        return pw.Directionality(
+            textDirection: pw.TextDirection.rtl,
+            child: pw.ListView(children: [
+              pw.Column(children: [
+                pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Container(width: 60, height: 60, child: image),
+                      pw.Column(children: [
+                        pw.Text('تقرير المبيعات',
+                            style: const pw.TextStyle(
+                              fontSize: 16,
+                            )),
+                        if (period != null) pw.Text('الفترة: $period'),
+                        pw.Text('التاريخ: $date   $time')
+                      ])
+                    ]),
+              ]),
+              pw.Divider(),
+              pw.Padding(
+                  padding:
+                      const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  child: pw.Column(children: [
+                    pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text('نقدي:'),
+                          pw.Text(numberFormatter(cashTotal)),
+                        ]),
+                    pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text('بنك:'),
+                          pw.Text(numberFormatter(bankTotal)),
+                        ]),
+                    pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text('حساب:'),
+                          pw.Text(numberFormatter(accountTotal)),
+                        ]),
+                    pw.Divider(),
+                    pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text('اجمالي:'),
+                          pw.Text(numberFormatter(
+                              cashTotal + bankTotal + accountTotal)),
+                        ]),
+                  ])),
+              pw.Divider(),
+              pw.Table(
+                  border: pw.TableBorder.symmetric(inside: pw.BorderSide.none),
+                  defaultColumnWidth: pw.IntrinsicColumnWidth(),
+                  children: [
+                    pw.TableRow(children: [
+                      createTableCell('الربح'),
+                      createTableCell('مبيعات'),
+                      createTableCell('الصنف'),
+                    ]),
+                    ...spieces.map((e) {
+                      final name = e is Map ? (e['name'] ?? '') : e.name ?? '';
+                      final totSales =
+                          e is Map ? (e['tot_sales'] ?? 0) : e.totSales ?? 0;
+                      final totCosts =
+                          e is Map ? (e['tot_costs'] ?? 0) : e.totCosts ?? 0;
+                      final profit = (totSales is num ? totSales : 0) -
+                          (totCosts is num ? totCosts : 0);
+                      return pw.TableRow(children: [
+                        createTableCell(profit.toString()),
+                        createTableCell(totSales.toString()),
+                        createTableCell(name.toString()),
+                      ]);
+                    }).toList()
+                  ])
+            ]));
+      }));
+
+  await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => doc.save());
 }
 
 //print future function
@@ -178,6 +289,195 @@ PrintingFunc(String Pname, counter, user, data,
 // Print two copies: first for cashier (includes label), second for client (no label)
 printTwoCopies(String Pname, counter, user, data,
     {String? cashierLabel}) async {
+  // On web: build a single PDF that contains two pages (cashier + client)
+  // so the browser print dialog prints both copies in one job.
+  if (kIsWeb) {
+    // Set the font for Arabic text
+    var arabicFont =
+        pw.Font.ttf(await rootBundle.load("assets/fonts/HacenTunisia.ttf"));
+    //set Theme
+    var myTheme = pw.ThemeData.withFont(
+      base: arabicFont,
+    );
+
+    // load and prepare image
+    const imageProvider = AssetImage('assets/images/abdLogo.png');
+    final ByteData byteData = await rootBundle.load(imageProvider.assetName);
+    final Uint8List bytes = byteData.buffer.asUint8List();
+
+    // Create a pw.Image instance with the imageBytes
+    final image = pw.Image(pw.MemoryImage(bytes));
+
+    //setting date and time
+    DateTime now = DateTime.now();
+    String date = '${now.year}/${now.month}/${now.day}';
+    String time = '${now.hour}:${now.minute}:${now.second}';
+    String amPm = now.hour < 12 ? 'AM' : 'PM';
+
+    final doc = pw.Document();
+
+    // Add cashier copy (with label)
+    doc.addPage(pw.Page(
+        pageFormat: PdfPageFormat.roll80,
+        theme: myTheme,
+        build: (pw.Context context) {
+          return pw.Directionality(
+              textDirection: pw.TextDirection.rtl,
+              child: pw.ListView(children: [
+                pw.Column(
+                    mainAxisAlignment: pw.MainAxisAlignment.center,
+                    children: [
+                      pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                          children: [
+                            pw.Container(width: 60, height: 60, child: image),
+                            pw.Column(
+                              children: [
+                                cashierLabel != null
+                                    ? pw.Container(
+                                        padding: const pw.EdgeInsets.all(1),
+                                        color: PdfColors.black,
+                                        child: pw.Text(cashierLabel,
+                                            style: pw.TextStyle(
+                                              font: arabicFont,
+                                              fontSize: 14,
+                                              color: PdfColors.white,
+                                            )),
+                                      )
+                                    : pw.Container(),
+                                pw.Text('سفري',
+                                    style: const pw.TextStyle(
+                                      fontSize: 12,
+                                    )),
+                                pw.Text('A$counter',
+                                    style: pw.TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: pw.FontWeight.bold)),
+                              ],
+                            )
+                          ]),
+                      pw.Divider(thickness: 2),
+                      pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Column(children: [
+                              pw.Text(
+                                "الدفع : ${data['paymentMethod']}",
+                              ),
+                              pw.Text(
+                                "التوصيل : ${data['delivery_cost']}",
+                              ),
+                              pw.Text(
+                                "العنوان  : ${data['delivery_address']}",
+                              ),
+                            ]),
+                            pw.Column(children: [
+                              pw.Text('التاريخ : ${date}'),
+                              pw.Text('الوقت : ${time} $amPm'),
+                              pw.Text(
+                                "الويتر : ${user['username']}",
+                              ),
+                            ]),
+                          ]),
+                      pw.Divider(),
+                      createTable(data),
+                      pw.Divider(),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.only(left: 10),
+                        child: pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.end,
+                            children: [
+                              pw.Text(
+                                "الجملة  =  ",
+                              ),
+                              pw.Text(
+                                '${data['amount']}',
+                              ),
+                            ]),
+                      ),
+                      pw.Divider(),
+                    ])
+              ]));
+        }));
+
+    // small gap between copies
+    doc.addPage(pw.Page(
+        pageFormat: PdfPageFormat.roll80,
+        theme: myTheme,
+        build: (pw.Context context) {
+          return pw.Directionality(
+              textDirection: pw.TextDirection.rtl,
+              child: pw.ListView(children: [
+                pw.Column(
+                    mainAxisAlignment: pw.MainAxisAlignment.center,
+                    children: [
+                      pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                          children: [
+                            pw.Container(width: 60, height: 60, child: image),
+                            pw.Column(
+                              children: [
+                                pw.Text('سفري',
+                                    style: const pw.TextStyle(
+                                      fontSize: 12,
+                                    )),
+                                pw.Text('A $counter',
+                                    style: pw.TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: pw.FontWeight.bold)),
+                              ],
+                            )
+                          ]),
+                      pw.Divider(thickness: 2),
+                      pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          children: [
+                            pw.Column(children: [
+                              pw.Text(
+                                "الدفع : ${data['paymentMethod']}",
+                              ),
+                              pw.Text(
+                                "التوصيل : ${data['delivery_cost']}",
+                              ),
+                              pw.Text(
+                                "العنوان  : ${data['delivery_address']}",
+                              ),
+                            ]),
+                            pw.Column(children: [
+                              pw.Text('التاريخ : ${date}'),
+                              pw.Text('الوقت : ${time} $amPm'),
+                              pw.Text(
+                                "الويتر : ${user['username']}",
+                              ),
+                            ]),
+                          ]),
+                      pw.Divider(),
+                      createTable(data),
+                      pw.Divider(),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.only(left: 10),
+                        child: pw.Row(
+                            mainAxisAlignment: pw.MainAxisAlignment.end,
+                            children: [
+                              pw.Text(
+                                "الجملة  =  ",
+                              ),
+                              pw.Text(
+                                '${data['amount']}',
+                              ),
+                            ]),
+                      ),
+                      pw.Divider(),
+                    ])
+              ]));
+        }));
+
+    await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => doc.save());
+    return;
+  }
+
+  // Non-web: send two separate print jobs to the printer (cashier then client)
   // cashier copy with label
   await PrintingFunc(Pname, counter, user, data,
       includeLabel: true, labelText: cashierLabel);
