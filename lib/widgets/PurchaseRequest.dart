@@ -295,7 +295,7 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
             backgroundColor: Colors.teal,
             title: const Center(
                 child: Text(
-              "طلبات الشراء",
+              "مشتريات المطبخ",
               style: TextStyle(fontSize: 25),
             )),
             actions: const [LeadingDrawerBtn()],

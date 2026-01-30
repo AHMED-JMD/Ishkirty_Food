@@ -1,4 +1,5 @@
 import 'package:ashkerty_food/models/Bill.dart';
+import 'package:ashkerty_food/static/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
@@ -131,7 +132,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 50, 8),
         child: Text(
-          currentRowData.id.toString(),
+          currentRowData.billCounter,
           style: const TextStyle(fontSize: 20),
         ),
       )),
@@ -143,7 +144,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
         padding: const EdgeInsets.fromLTRB(8, 8, 25, 8),
         child: Center(
             child: Text(
-          currentRowData.amount.toString(),
+          numberFormatter(currentRowData.amount),
           style: const TextStyle(fontSize: 20),
         )),
       )),

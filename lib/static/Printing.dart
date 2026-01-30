@@ -171,7 +171,7 @@ printSalesReport(
 }
 
 //print future function
-PrintingFunc(String Pname, counter, user, data,
+PrintingFunc(String Pname, counter, type, user, data,
     {bool includeLabel = true, String? labelText}) async {
   // Set the font for Arabic text
   var arabicFont =
@@ -228,7 +228,7 @@ PrintingFunc(String Pname, counter, user, data,
                                   style: const pw.TextStyle(
                                     fontSize: 12,
                                   )),
-                              pw.Text('A $counter',
+                              pw.Text(counter,
                                   style: pw.TextStyle(
                                       fontSize: 16,
                                       fontWeight: pw.FontWeight.bold)),
@@ -287,7 +287,7 @@ PrintingFunc(String Pname, counter, user, data,
 //EPSON TM-T20II Receipt
 
 // Print two copies: first for cashier (includes label), second for client (no label)
-printTwoCopies(String Pname, counter, user, data,
+printTwoCopies(String Pname, counter, type, user, data,
     {String? cashierLabel}) async {
   // On web: build a single PDF that contains two pages (cashier + client)
   // so the browser print dialog prints both copies in one job.
@@ -345,11 +345,11 @@ printTwoCopies(String Pname, counter, user, data,
                                             )),
                                       )
                                     : pw.Container(),
-                                pw.Text('سفري',
+                                pw.Text(type,
                                     style: const pw.TextStyle(
                                       fontSize: 12,
                                     )),
-                                pw.Text('A$counter',
+                                pw.Text(counter,
                                     style: pw.TextStyle(
                                         fontSize: 16,
                                         fontWeight: pw.FontWeight.bold)),
@@ -391,7 +391,7 @@ printTwoCopies(String Pname, counter, user, data,
                                 "الجملة  =  ",
                               ),
                               pw.Text(
-                                '${data['amount']}',
+                                numberFormatter(data['amount']),
                               ),
                             ]),
                       ),
@@ -417,11 +417,11 @@ printTwoCopies(String Pname, counter, user, data,
                             pw.Container(width: 60, height: 60, child: image),
                             pw.Column(
                               children: [
-                                pw.Text('سفري',
+                                pw.Text(type,
                                     style: const pw.TextStyle(
                                       fontSize: 12,
                                     )),
-                                pw.Text('A $counter',
+                                pw.Text(counter,
                                     style: pw.TextStyle(
                                         fontSize: 16,
                                         fontWeight: pw.FontWeight.bold)),
@@ -478,11 +478,5 @@ printTwoCopies(String Pname, counter, user, data,
   }
 
   // Non-web: send two separate print jobs to the printer (cashier then client)
-  // cashier copy with label
-  await PrintingFunc(Pname, counter, user, data,
-      includeLabel: true, labelText: cashierLabel);
-  // small delay can help the printer process first job before sending second
-  await Future.delayed(const Duration(milliseconds: 200));
-  // client copy without label
-  await PrintingFunc(Pname, counter, user, data, includeLabel: false);
+  // // cashier copy with label
 }

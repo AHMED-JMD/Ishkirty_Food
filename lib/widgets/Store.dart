@@ -263,8 +263,8 @@ class _StorePageState extends State<StorePage> {
             ),
             title: const Center(
                 child: Text(
-              "المخزن",
-              style: TextStyle(fontSize: 25),
+              "مخزن المطبخ",
+              style: TextStyle(fontSize: 25, color: Colors.white),
             )),
             actions: const [
               LeadingDrawerBtn(),
@@ -315,7 +315,8 @@ class _StorePageState extends State<StorePage> {
                                         color: Colors.teal),
                                     const SizedBox(height: 8),
                                     const Text('اجمالي الاصناف',
-                                        style: TextStyle(fontSize: 12)),
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.black)),
                                     const SizedBox(height: 6),
                                     Text(
                                       '${_items.length}',
@@ -412,7 +413,7 @@ class _StorePageState extends State<StorePage> {
                                     backgroundColor: Colors.teal,
                                   ),
                                   label: const Text(
-                                    "طلبات الشراء",
+                                    "استلامات المطبخ",
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ),

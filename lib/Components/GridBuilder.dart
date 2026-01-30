@@ -101,7 +101,7 @@ class _GridViewBuilderState extends State<GridViewBuilder> {
                       itemCount: speices.length,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 7,
+                        crossAxisCount: 6,
                       ),
                       itemBuilder: (context, index) => GridCart(
                           speices: speices[index],

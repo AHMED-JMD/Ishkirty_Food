@@ -21,11 +21,21 @@ List menuPages = [
   {
     'widget': Container(
       child: const MenuCategory(
-        category: 'لحوم',
+        category: 'كفتة',
         isAll: false,
       ),
     ),
-    'name': 'اللحوم',
+    'name': 'كفتة',
+    'icon': Icons.no_meals,
+  },
+  {
+    'widget': Container(
+      child: const MenuCategory(
+        category: 'شاورما',
+        isAll: false,
+      ),
+    ),
+    'name': 'شاورما',
     'icon': Icons.set_meal,
   },
   {

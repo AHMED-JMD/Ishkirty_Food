@@ -128,8 +128,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             // show inline form only on larger screens
                             if (!isPhone)
                               SizedBox(
-                                width: width / 5,
-                                height: height / 1.1,
+                                width: width / 4.5,
+                                height: height / 1,
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 5.0),
                                   child: CartForm(),

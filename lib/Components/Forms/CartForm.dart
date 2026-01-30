@@ -1,6 +1,7 @@
 import 'package:ashkerty_food/API/Client.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/Printing.dart';
+import 'package:ashkerty_food/static/formatter.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ashkerty_food/API/Bill.dart';
 import 'package:ashkerty_food/providers/cart_provider.dart';
@@ -25,6 +26,7 @@ class _CartFormState extends State<CartForm> {
   List clients = [];
   String? clientID;
   String? payment_method;
+  String type = "سفري";
   DateTime date = DateTime.now();
   String deliveryAddress = "";
   num deliveryCost = 0;
@@ -54,7 +56,7 @@ class _CartFormState extends State<CartForm> {
           style: TextStyle(fontSize: 22, color: Colors.white),
         )),
         backgroundColor: Colors.green,
-        duration: Duration(seconds: 3),
+        duration: Duration(seconds: 2),
       ));
       await Future.delayed(const Duration(seconds: 3));
       Navigator.pushReplacementNamed(context, '/home');
@@ -65,14 +67,8 @@ class _CartFormState extends State<CartForm> {
           "${response.body}",
           style: const TextStyle(fontSize: 22),
         )),
-        backgroundColor: Colors.red,
-        duration: const Duration(seconds: 3),
-        action: SnackBarAction(
-          label: "close X",
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        backgroundColor: Colors.red[900],
+        duration: const Duration(seconds: 2),
       ));
     }
   }
@@ -133,7 +129,7 @@ class _CartFormState extends State<CartForm> {
           height: isPhone ? height : height,
           child: Padding(
             padding: EdgeInsets.only(
-                top: 20.0, left: 20, right: 20, bottom: isPhone ? 20 : 0),
+                top: 20.0, left: 10, right: 10, bottom: isPhone ? 20 : 0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -152,7 +148,7 @@ class _CartFormState extends State<CartForm> {
                         ),
                         SpinKitThreeBounce(
                           color: Colors.black,
-                          size: 40,
+                          size: 30,
                         ),
                       ],
                     ),
@@ -161,10 +157,10 @@ class _CartFormState extends State<CartForm> {
                   height: 10,
                 ),
                 Text(
-                  'اختر طريقة الدفع',
+                  'دفع الفاتورة',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: fontSize(desktopCalc: width / 50, mobile: 23),
+                      fontSize: fontSize(desktopCalc: width / 60, mobile: 23),
                       color: Colors.white),
                 ),
                 const SizedBox(
@@ -175,38 +171,127 @@ class _CartFormState extends State<CartForm> {
                     child: Column(
                       children: [
                         FormBuilderRadioGroup(
-                          initialValue: isAfterSixPM ? 'مسائية' : 'صباحية',
-                          enabled: false,
-                          name: 'shift',
+                          // initialValue: isAfterSixPM ? 'مسائية' : 'صباحية',
+                          name: 'type',
                           decoration: const InputDecoration(
-                            labelText: 'الوردية',
+                            labelText: 'نوع الفاتورة',
                             contentPadding: EdgeInsets.all(10.0),
                           ),
                           options: [
                             FormBuilderFieldOption(
-                              value: 'صباحية',
-                              child: Text(
-                                'صباحية',
-                                style: TextStyle(
-                                  fontSize: fontSize(
-                                      desktopCalc: width / 90, mobile: 17),
-                                ),
-                              ),
+                              value: 'سفري',
+                              child: Text('سفري',
+                                  style: TextStyle(
+                                      fontSize: fontSize(
+                                          desktopCalc: width / 110,
+                                          mobile: 40))),
+                              // const SizedBox(width: 10),
+                              // Icon(
+                              //   Icons.flight_takeoff_outlined,
+                              //   color: Colors.orange[900],
+                              //   size: fontSize(
+                              //       desktopCalc: width / 50, mobile: 40),
+                              // ),
                             ),
                             FormBuilderFieldOption(
-                              value: 'مسائية',
-                              child: Text(
-                                'مسائية',
-                                style: TextStyle(
-                                  fontSize: fontSize(
-                                      desktopCalc: width / 90, mobile: 17),
-                                ),
-                              ),
+                              value: 'محلي',
+                              child: Text('محلي',
+                                  style: TextStyle(
+                                      fontSize: fontSize(
+                                          desktopCalc: width / 110,
+                                          mobile: 40))),
+                              // const SizedBox(width: 10),
+                              // Icon(
+                              //   Icons.restaurant,
+                              //   size: fontSize(
+                              //       desktopCalc: width / 50, mobile: 40),
+                              // ),
+                            ),
+                            FormBuilderFieldOption(
+                              value: 'استلام',
+                              child: Text('استلام',
+                                  style: TextStyle(
+                                      fontSize: fontSize(
+                                          desktopCalc: width / 110,
+                                          mobile: 40))),
+                              // const SizedBox(width: 10),
+                              // Icon(
+                              //   Icons.store,
+                              //   size: fontSize(
+                              //       desktopCalc: width / 50, mobile: 40),
+                              // ),
+                            ),
+                            FormBuilderFieldOption(
+                              value: 'توصيل',
+                              child: Text('توصيل',
+                                  style: TextStyle(
+                                      fontSize: fontSize(
+                                          desktopCalc: width / 110,
+                                          mobile: 40))),
+                              // const SizedBox(width: 10),
+                              // Icon(
+                              //   Icons.delivery_dining,
+                              //   color: Colors.red[900],
+                              //   size: fontSize(
+                              //       desktopCalc: width / 50, mobile: 40),
+                              // ),
                             ),
                           ],
+                          onChanged: (val) {
+                            setState(() {
+                              type = val ?? "سفري";
+                              if (type != "توصيل") {
+                                deliveryCost = 0;
+                                deliveryAddress = "";
+                              }
+                            });
+                          },
                           validator: FormBuilderValidators.required(
-                              errorText: "الرجاء اختيار الوردية"),
+                              errorText: "الرجاء اختيار نوع الفاتورة"),
                         ),
+                        if (type == "توصيل")
+                          Column(
+                            children: [
+                              const SizedBox(height: 5),
+                              FormBuilderTextField(
+                                name: 'delivery_cost',
+                                initialValue: deliveryCost != 0
+                                    ? deliveryCost.toString()
+                                    : '',
+                                decoration: const InputDecoration(
+                                  labelText: 'تكلفة التوصيل',
+                                ),
+                                keyboardType: TextInputType.number,
+                                validator: FormBuilderValidators.compose([
+                                  FormBuilderValidators.required(
+                                      errorText: 'ادخل تكلفة التوصيل'),
+                                  FormBuilderValidators.numeric(
+                                      errorText: 'ادخل رقم صحيح'),
+                                ]),
+                                onChanged: (val) {
+                                  setState(() {
+                                    deliveryCost =
+                                        num.tryParse(val ?? '0') ?? 0;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 5),
+                              FormBuilderTextField(
+                                name: 'delivery_address',
+                                initialValue: deliveryAddress,
+                                decoration: const InputDecoration(
+                                  labelText: 'عنوان التوصيل',
+                                ),
+                                validator: FormBuilderValidators.required(
+                                    errorText: 'ادخل عنوان التوصيل'),
+                                onChanged: (val) {
+                                  setState(() {
+                                    deliveryAddress = val ?? '';
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
                         const SizedBox(
                           height: 10,
                         ),
@@ -225,7 +310,7 @@ class _CartFormState extends State<CartForm> {
                                   MyIcon.bankak,
                                   color: Colors.red[900],
                                   size: fontSize(
-                                      desktopCalc: width / 40, mobile: 40),
+                                      desktopCalc: width / 50, mobile: 40),
                                 ),
                               ),
                             ),
@@ -237,7 +322,7 @@ class _CartFormState extends State<CartForm> {
                                   Icons.monetization_on,
                                   color: Colors.green[900],
                                   size: fontSize(
-                                      desktopCalc: width / 40, mobile: 40),
+                                      desktopCalc: width / 50, mobile: 40),
                                 ),
                               ),
                             ),
@@ -249,7 +334,7 @@ class _CartFormState extends State<CartForm> {
                                   Icons.account_box,
                                   color: Colors.blue[900],
                                   size: fontSize(
-                                      desktopCalc: width / 40, mobile: 40),
+                                      desktopCalc: width / 50, mobile: 40),
                                 ),
                               ),
                             ),
@@ -285,77 +370,118 @@ class _CartFormState extends State<CartForm> {
                         const SizedBox(
                           height: 15,
                         ),
-                        // FormBuilderCheckbox(
-                        //     name: 'secPrinter',
-                        //     ...existing code...
-                        //     )),
-
-                        Transform.scale(
-                          scale: isPhone ? 1.2 : 1.0,
-                          alignment: Alignment.centerLeft,
-                          child: FormBuilderCheckbox(
-                            name: 'isDelivery',
-                            initialValue: isDelivery,
-                            title: Text(
-                              'توصيل؟',
-                              style: TextStyle(
-                                  fontSize: fontSize(
-                                      desktopCalc: width / 90, mobile: 16)),
+                        // Small scrollable table of cart items: name, qt, price
+                        SizedBox(
+                          height: isPhone ? 120 : 180,
+                          child: Card(
+                            color: Colors.white70,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8.0, vertical: 6),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                          child: Text('الاسم',
+                                              style: TextStyle(
+                                                  fontWeight:
+                                                      FontWeight.bold))),
+                                      SizedBox(
+                                          width: 60,
+                                          child: Text('الكمية',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontWeight:
+                                                      FontWeight.bold))),
+                                      SizedBox(
+                                          width: 80,
+                                          child: Text('السعر',
+                                              textAlign: TextAlign.right,
+                                              style: TextStyle(
+                                                  fontWeight:
+                                                      FontWeight.bold))),
+                                    ],
+                                  ),
+                                ),
+                                const Divider(height: 1),
+                                Expanded(
+                                  child: value.cart.isEmpty
+                                      ? const Center(
+                                          child: Padding(
+                                          padding: EdgeInsets.all(5.0),
+                                          child: Text('لا توجد اصناف'),
+                                        ))
+                                      : ListView.separated(
+                                          padding: const EdgeInsets.only(
+                                              left: 5, right: 5),
+                                          itemCount: value.cart.length,
+                                          itemBuilder: (ctx, i) {
+                                            final item = value.cart[i];
+                                            final name = item.spices ??
+                                                (item['spices'] ?? '');
+                                            final qty = item.counter ??
+                                                (item['counter'] ?? 0);
+                                            final price = item.total_price ??
+                                                (item['total_price'] ?? 0);
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 6.0),
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                      child: Text(
+                                                    name.toString(),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  )),
+                                                  SizedBox(
+                                                      width: 60,
+                                                      child: Text(
+                                                        qty.toString(),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      )),
+                                                  SizedBox(
+                                                      width: 80,
+                                                      child: Text(
+                                                        price.toString(),
+                                                        textAlign:
+                                                            TextAlign.right,
+                                                      )),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                          separatorBuilder: (_, __) =>
+                                              const Divider(height: 1),
+                                        ),
+                                ),
+                              ],
                             ),
-                            onChanged: (val) {
-                              setState(() {
-                                isDelivery = val ?? false;
-                                if (!isDelivery) {
-                                  deliveryCost = 0;
-                                  deliveryAddress = "";
-                                }
-                              });
-                            },
                           ),
                         ),
-                        if (isDelivery)
-                          Column(
-                            children: [
-                              const SizedBox(height: 10),
-                              FormBuilderTextField(
-                                name: 'delivery_cost',
-                                initialValue: deliveryCost != 0
-                                    ? deliveryCost.toString()
-                                    : '',
-                                decoration: const InputDecoration(
-                                  labelText: 'تكلفة التوصيل',
-                                ),
-                                keyboardType: TextInputType.number,
-                                validator: FormBuilderValidators.compose([
-                                  FormBuilderValidators.required(
-                                      errorText: 'ادخل تكلفة التوصيل'),
-                                  FormBuilderValidators.numeric(
-                                      errorText: 'ادخل رقم صحيح'),
-                                ]),
-                                onChanged: (val) {
-                                  setState(() {
-                                    deliveryCost =
-                                        num.tryParse(val ?? '0') ?? 0;
-                                  });
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                              FormBuilderTextField(
-                                name: 'delivery_address',
-                                initialValue: deliveryAddress,
-                                decoration: const InputDecoration(
-                                  labelText: 'عنوان التوصيل',
-                                ),
-                                validator: FormBuilderValidators.required(
-                                    errorText: 'ادخل عنوان التوصيل'),
-                                onChanged: (val) {
-                                  setState(() {
-                                    deliveryAddress = val ?? '';
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
+                        Text(
+                          'عدد  = ${value.cart.length}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: fontSize(
+                                  desktopCalc: width / 110, mobile: 14),
+                              color: Colors.black),
+                        ),
+                        Text(
+                          "المبلغ : ${numberFormatter(totalAmount)}",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize:
+                                  fontSize(desktopCalc: width / 80, mobile: 20),
+                              color: Colors.white),
+                        ),
+
                         const SizedBox(
                           height: 20,
                         ),
@@ -375,15 +501,26 @@ class _CartFormState extends State<CartForm> {
                                     final cartProvider =
                                         context.read<CartProvider>();
                                     cartProvider.increment_counter();
+                                    //counter logic
+                                    String billCounter = value.counter <= 100
+                                        ? "A${value.counter}"
+                                        : value.counter <= 200
+                                            ? "B${value.counter - 100}"
+                                            : "C${value.counter - 200}";
 
                                     var data = {};
+                                    data['bill_counter'] = billCounter;
                                     data['date'] = date.toIso8601String();
                                     data['amount'] = totalAmount;
                                     data['trans'] = value.cart;
                                     data['paymentMethod'] = _formKey
                                         .currentState!.value['payment_method'];
+                                    // data['shiftTime'] =
+                                    //     _formKey.currentState!.value['shift'];
                                     data['shiftTime'] =
-                                        _formKey.currentState!.value['shift'];
+                                        isAfterSixPM ? 'مسائية' : 'صباحية';
+                                    data['type'] =
+                                        _formKey.currentState!.value['type'];
                                     data['clientId'] = clientID;
                                     data['admin_id'] = userVal.user['id'];
                                     // Delivery fields
@@ -395,61 +532,63 @@ class _CartFormState extends State<CartForm> {
 
                                     addBill(data);
                                     // print cashier + client copies
-                                    // PrintingFunc('XP-80C', value.counter,
+                                    // PrintingFunc('XP-80C', billCounter,
                                     //     userVal.user, data,
                                     //     includeLabel: true,
                                     //     labelText: 'كوبون استلام');
                                     // small delay can help the printer process first job before sending second
-                                    // await Future.delayed(
-                                    //     const Duration(milliseconds: 200));
                                     // // client copy without label
-                                    // PrintingFunc('XP-80C', value.counter,
+                                    // PrintingFunc('XP-80C', billCounter,
                                     //     userVal.user, data,
                                     //     includeLabel: false);
 
                                     await printTwoCopies('Save to PDF',
-                                        value.counter, userVal.user, data,
-                                        cashierLabel: 'كوبون استلام');
+                                        billCounter, type, userVal.user, data,
+                                        cashierLabel: 'كارت العميل');
                                     // if configured, send same pair to second printer as well
                                     if (isSecondPrinter) {
                                       await printTwoCopies('XP-80C',
-                                          value.counter, userVal.user, data,
-                                          cashierLabel: 'كوبون استلام');
+                                          billCounter, type, userVal.user, data,
+                                          cashierLabel: 'كارت العميل');
                                     }
                                     //reset cart
                                     cartProvider.resetCart();
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Center(
+                                            child: Text(
+                                          "الرجاء اضافة اصناف الى الفاتورة",
+                                          style: TextStyle(
+                                              fontSize: 22,
+                                              color: Colors.white),
+                                        )),
+                                        backgroundColor: Colors.red,
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
                                   }
                                 },
-                                icon: const Icon(Icons.paypal),
+                                icon: const Icon(
+                                  Icons.paypal,
+                                  color: Colors.black,
+                                ),
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.teal),
                                 label: Text(
                                   'دفع الفاتورة',
                                   style: TextStyle(
+                                      color: Colors.black,
                                       fontSize: fontSize(
                                           desktopCalc: width / 80, mobile: 16)),
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ],
                     )),
                 const SizedBox(height: 35),
-                Text(
-                  'عدد الاصناف = ${value.cart.length}',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: fontSize(desktopCalc: width / 80, mobile: 14),
-                      color: Colors.black),
-                ),
-                Text(
-                  "المبلغ الكلي: $totalAmount",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: fontSize(desktopCalc: width / 50, mobile: 20),
-                      color: Colors.black),
-                ),
               ],
             ),
           ),
