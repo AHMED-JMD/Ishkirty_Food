@@ -1,4 +1,5 @@
 import 'package:ashkerty_food/API/Spieces.dart';
+import 'package:ashkerty_food/API/Category.dart';
 import 'package:ashkerty_food/Components/menu.dart';
 import 'package:ashkerty_food/Components/menu_categ.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,47 @@ class _MenuNavState extends State<MenuNav> {
   bool isLoading = false;
   int selectedIndex = 0;
   late Widget selectedPage;
+  List menuPages = [
+    {
+      //------------------All Menu Items-----------------------------------
+      'widget': const Column(
+        children: [
+          MenuCategory(
+            category: 'الكل',
+            isAll: true,
+          ),
+        ],
+      ),
+      'name': 'الكل',
+      'icon': Icons.restaurant_menu,
+    }
+  ]; // start with default pages
+
+  @override
+  void initState() {
+    super.initState();
+
+    // initialize selectedPage to the first existing menu page (fallback)
+    selectedPage =
+        menuPages.isNotEmpty ? menuPages[0]['widget'] as Widget : Container();
+
+    // Try to load categories from server and rebuild menuPages dynamically.
+    () async {
+      try {
+        final res = await APICategory.Get();
+        if (res != false && res is List && res.isNotEmpty) {
+          final generated = generateMenuPages(res);
+          setState(() {
+            menuPages = generated;
+            selectedIndex = 0;
+            selectedPage = menuPages[0]['widget'] as Widget;
+          });
+        }
+      } catch (e) {
+        // ignore and keep defaults
+      }
+    }();
+  }
 
   //--get speices
   Future getSpieces(data) async {
@@ -27,33 +69,6 @@ class _MenuNavState extends State<MenuNav> {
       return response;
     } else {
       return [];
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // initialize selectedPage to the first menu page widget (if available)
-    if (menuPages.isNotEmpty) {
-      selectedPage = menuPages[0]['widget'] as Widget;
-      selectedIndex = 0;
-    } else {
-      selectedPage = const Column(
-        children: [
-          MenuCategory(
-            category: 'لحوم',
-            isAll: false,
-          ),
-          MenuCategory(
-            category: 'اضافات',
-            isAll: false,
-          ),
-          MenuCategory(
-            category: 'عصائر',
-            isAll: false,
-          ),
-        ],
-      );
     }
   }
 

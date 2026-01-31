@@ -3,14 +3,21 @@ import 'package:ashkerty_food/models/Discharge.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 
 class DischargeTable extends StatelessWidget {
+  final Map admin;
   final List<Discharge> items;
-  final void Function(Discharge) onDelete;
+  final void Function(Discharge, String) onDelete;
 
-  const DischargeTable({required this.items, required this.onDelete, Key? key})
+  const DischargeTable(
+      {required this.admin,
+      required this.items,
+      required this.onDelete,
+      Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    bool isAdmin = admin['role'] == 'admin' ? true : false;
+
     return SingleChildScrollView(
       child: DataTable(
         columns: [
@@ -46,15 +53,17 @@ class DischargeTable extends StatelessWidget {
             child: const Text('شهري؟',
                 style: TextStyle(fontSize: 20, color: Colors.teal)),
           )),
-          DataColumn(
-              label: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-                border: Border(
-                    right: BorderSide(color: Colors.grey.shade300, width: 1))),
-            child: const Text('الإجراءات',
-                style: TextStyle(fontSize: 20, color: Colors.teal)),
-          )),
+          if (isAdmin)
+            DataColumn(
+                label: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                  border: Border(
+                      right:
+                          BorderSide(color: Colors.grey.shade300, width: 1))),
+              child: const Text('الإجراءات',
+                  style: TextStyle(fontSize: 20, color: Colors.teal)),
+            )),
         ],
         rows: items.map((it) {
           return DataRow(
@@ -97,23 +106,24 @@ class DischargeTable extends StatelessWidget {
                   child: Text(it.isMonthly ? 'نعم' : 'لا',
                       style: const TextStyle(fontSize: 17)),
                 )),
-                DataCell(Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                              color: Colors.grey.shade300, width: 1))),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.delete,
-                            size: 18, color: Colors.redAccent),
-                        onPressed: () => onDelete(it),
-                      ),
-                    ],
-                  ),
-                )),
+                if (isAdmin)
+                  DataCell(Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(
+                                color: Colors.grey.shade300, width: 1))),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.delete,
+                              size: 18, color: Colors.redAccent),
+                          onPressed: () => onDelete(it, admin['id'].toString()),
+                        ),
+                      ],
+                    ),
+                  )),
               ]);
         }).toList(),
       ),

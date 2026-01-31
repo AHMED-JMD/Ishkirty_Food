@@ -45,10 +45,10 @@ class _EmployeePageState extends State<EmployeePage> {
     setState(() => loading = false);
   }
 
-  Future _runNewMonth() async {
+  Future _runNewMonth(String adminId) async {
     setState(() => loading = true);
 
-    final res = await api.APIEmployee.runNewMonth();
+    final res = await api.APIEmployee.runNewMonth({'admin_id': adminId});
     if (res.statusCode == 200) {
       fetchEmployees();
     } else {
@@ -65,7 +65,7 @@ class _EmployeePageState extends State<EmployeePage> {
         SnackBar(backgroundColor: Colors.greenAccent, content: Text(msg)));
   }
 
-  void showEmployeeForm([Employee? emp]) async {
+  void showEmployeeForm([Employee? emp, String? adminId]) async {
     final nameCtrl = TextEditingController(text: emp != null ? emp.name : '');
     final jobCtrl =
         TextEditingController(text: emp != null ? emp.jobTitle : '');
@@ -139,7 +139,7 @@ class _EmployeePageState extends State<EmployeePage> {
                         validator: (v) =>
                             double.tryParse(v ?? '') == null ? 'Invalid' : null,
                         decoration: const InputDecoration(
-                            labelText: 'الراتب الشهري الثابت'),
+                            labelText: 'الراتب الاسبوعي الثابت'),
                       ),
                       const SizedBox(height: 20),
                     ],
@@ -162,7 +162,8 @@ class _EmployeePageState extends State<EmployeePage> {
                     'name': nameCtrl.text,
                     'jobTitle': jobCtrl.text,
                     'shift': shiftCtrl.text,
-                    'salary': double.tryParse(fixSalaryCtrl.text) ?? 0
+                    'salary': double.tryParse(fixSalaryCtrl.text) ?? 0,
+                    if (adminId != null) 'admin_id': adminId,
                   };
                   Navigator.pop(ctx);
                   // call API
@@ -306,7 +307,7 @@ class _EmployeePageState extends State<EmployeePage> {
         });
   }
 
-  void _confirmDelete(Employee emp) {
+  void _confirmDelete(Employee emp, String adminId) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -324,7 +325,8 @@ class _EmployeePageState extends State<EmployeePage> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-              final res = await api.APIEmployee.delete({'id': emp.id});
+              final res = await api.APIEmployee.delete(
+                  {'id': emp.id, 'admin_id': adminId});
               if (res.statusCode == 200) {
                 await fetchEmployees();
               } else {
@@ -341,6 +343,8 @@ class _EmployeePageState extends State<EmployeePage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, value, child) {
+      bool isAdmin = value.user != null && value.user!['role'] == 'admin';
+
       return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
@@ -370,171 +374,155 @@ class _EmployeePageState extends State<EmployeePage> {
           body: Padding(
             padding: const EdgeInsets.only(top: 30.0, left: 50.0, right: 50.0),
             child: SingleChildScrollView(
-              child: value.user == null || value.user!['role'] != 'admin'
-                  ? const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Text(
-                            'انت غير مخول للوصول الى هذه الصفحة',
-                            style: TextStyle(fontSize: 30, color: Colors.red),
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Center(
-                          child: Icon(
-                            Icons.lock,
-                            size: 100,
-                            color: Colors.red,
-                          ),
-                        ),
-                      ],
-                    )
-                  : Column(
-                      children: [
-                        ElevatedButton.icon(
-                            onPressed: _runNewMonth,
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.orange),
-                            icon: const Icon(Icons.calendar_month,
-                                color: Colors.white, size: 25),
-                            label: const Text(
-                              'بداية شهر جديد',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 18),
-                            )),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            SizedBox(
-                              width: 160,
-                              child: Card(
-                                color: Colors.white,
-                                elevation: 2,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0, horizontal: 8.0),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      const Icon(Icons.person,
-                                          color: Colors.teal),
-                                      const SizedBox(height: 8),
-                                      const Text('عدد الموظفين',
-                                          style: TextStyle(fontSize: 12)),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        '${employees.length}',
-                                        style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            SizedBox(
-                              width: 180,
-                              child: Card(
-                                color: Colors.white,
-                                elevation: 2,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12.0, horizontal: 8.0),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      const Icon(Icons.monetization_on,
-                                          color: Colors.orange),
-                                      const SizedBox(height: 8),
-                                      const Text('اجمالي المرتبات',
-                                          style: TextStyle(fontSize: 12)),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        "${numberFormatter(totalSalaries)} (جنيه)",
-                                        style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 50),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Row(
+              child: Column(
+                children: [
+                  if (isAdmin)
+                    ElevatedButton.icon(
+                        onPressed: () {
+                          _runNewMonth(value.user!['id']);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange),
+                        icon: const Icon(Icons.calendar_month,
+                            color: Colors.white, size: 25),
+                        label: const Text(
+                          'بداية شهر جديد',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        )),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      SizedBox(
+                        width: 160,
+                        child: Card(
+                          color: Colors.white,
+                          elevation: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12.0, horizontal: 8.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                const SizedBox(width: 0),
-                                ElevatedButton.icon(
-                                  onPressed: showEmployeeForm,
-                                  icon: const Icon(
-                                    Icons.add_circle,
-                                    size: 20,
-                                    color: Colors.black,
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12.0, horizontal: 20.0),
-                                    backgroundColor: Colors.teal,
-                                  ),
-                                  label: const Text(
-                                    'موظف جديد',
-                                    style: TextStyle(
-                                        fontSize: 16, color: Colors.white),
-                                  ),
+                                const Icon(Icons.person, color: Colors.teal),
+                                const SizedBox(height: 8),
+                                const Text('عدد الموظفين',
+                                    style: TextStyle(fontSize: 12)),
+                                const SizedBox(height: 6),
+                                Text(
+                                  '${employees.length}',
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
                                 ),
-                                const SizedBox(width: 20),
-                                ElevatedButton.icon(
-                                    onPressed: () {
-                                      showAddTrans(employees);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 12.0, horizontal: 20.0),
-                                      backgroundColor: Colors.teal,
-                                    ),
-                                    label: const Text(
-                                      'خصم المرتب',
-                                      style: TextStyle(
-                                          fontSize: 16, color: Colors.white),
-                                    ),
-                                    icon: const Icon(
-                                      Icons.monetization_on,
-                                      size: 20,
-                                      color: Colors.black,
-                                    ))
                               ],
                             ),
-                          ],
+                          ),
                         ),
-                        loading
-                            ? const Center(child: CircularProgressIndicator())
-                            : EmployeeTable(
-                                employees: employees,
-                                onEdit: (emp) => showEmployeeForm(emp),
-                                onDelete: (emp) => _confirmDelete(emp),
-                                onView: (emp) => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            EmployeeTransactionsPage(
-                                                emp: emp))),
+                      ),
+                      const SizedBox(width: 8),
+                      SizedBox(
+                        width: 180,
+                        child: Card(
+                          color: Colors.white,
+                          elevation: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 12.0, horizontal: 8.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.monetization_on,
+                                    color: Colors.orange),
+                                const SizedBox(height: 8),
+                                const Text('اجمالي المرتبات',
+                                    style: TextStyle(fontSize: 12)),
+                                const SizedBox(height: 6),
+                                Text(
+                                  "${numberFormatter(totalSalaries)} (جنيه)",
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 50),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Row(
+                        children: [
+                          const SizedBox(width: 0),
+                          if (isAdmin)
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                showEmployeeForm(null, value.user!['id']);
+                              },
+                              icon: const Icon(
+                                Icons.add_circle,
+                                size: 20,
+                                color: Colors.black,
                               ),
-                        const SizedBox(height: 50),
-                      ],
-                    ),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12.0, horizontal: 20.0),
+                                backgroundColor: Colors.teal,
+                              ),
+                              label: const Text(
+                                'موظف جديد',
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.white),
+                              ),
+                            ),
+                          const SizedBox(width: 20),
+                          ElevatedButton.icon(
+                              onPressed: () {
+                                showAddTrans(employees);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12.0, horizontal: 20.0),
+                                backgroundColor: Colors.teal,
+                              ),
+                              label: const Text(
+                                'خصم المرتب',
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.white),
+                              ),
+                              icon: const Icon(
+                                Icons.monetization_on,
+                                size: 20,
+                                color: Colors.black,
+                              ))
+                        ],
+                      ),
+                    ],
+                  ),
+                  loading
+                      ? const Center(child: CircularProgressIndicator())
+                      : EmployeeTable(
+                          isAdmin: isAdmin,
+                          employees: employees,
+                          onEdit: (emp) =>
+                              showEmployeeForm(emp, value.user!['id']),
+                          onDelete: (emp) =>
+                              _confirmDelete(emp, value.user!['id']),
+                          onView: (emp) => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      EmployeeTransactionsPage(emp: emp))),
+                        ),
+                  const SizedBox(height: 50),
+                ],
+              ),
             ),
           ),
         ),

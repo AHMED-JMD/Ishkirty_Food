@@ -115,12 +115,13 @@ class APIEmployee {
     }
   }
 
-  static Future runNewMonth() async {
+  static Future runNewMonth(data) async {
     try {
       Map<String, String> configHeaders = {"Content-Type": "application/json"};
 
       final url = Uri.parse('$apiUrl/new_month');
-      Response response = await get(url, headers: configHeaders);
+      Response response =
+          await post(url, headers: configHeaders, body: jsonEncode(data));
 
       return response;
     } catch (e) {

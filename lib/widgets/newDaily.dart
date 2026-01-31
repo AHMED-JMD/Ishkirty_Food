@@ -39,14 +39,10 @@ class _NewDailyPageState extends State<NewDailyPage> {
   double bankSales = 0.0;
 
   // Sales cards state (morning / evening)
-  int cashMor = 0;
-  int bankMor = 0;
-  int accountMor = 0;
-  int totalMor = 0;
-  int cashEv = 0;
-  int bankEv = 0;
-  int accountEv = 0;
-  int totalEv = 0;
+  int totalCash = 0;
+  int totalBank = 0;
+  int totalAccount = 0;
+  int total = 0;
   String period = 'اليوم';
 
   //total spices from sales costs
@@ -112,14 +108,9 @@ class _NewDailyPageState extends State<NewDailyPage> {
       final res = jsonDecode(response.body);
       setState(() {
         _loading = false;
-        cashMor = res["cashMor"].toInt();
-        bankMor = res["bankMor"].toInt();
-        accountMor = res["accountMor"].toInt();
-        totalMor = res["totalMor"].toInt();
-        cashEv = res["cashEv"].toInt();
-        bankEv = res["bankEv"].toInt();
-        accountEv = res["accountEv"].toInt();
-        totalEv = res["totalEv"].toInt();
+        totalCash = res["totalCash"].toInt();
+        totalBank = res["totalBank"].toInt();
+        totalAccount = res["totalAccount"].toInt();
         period = 'اليوم';
       });
     } else {
@@ -188,7 +179,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
   }
 
   Future _loadStores() async {
-    final res = await api.APIStore.getItems();
+    final res = await api.APIStore.getItems("تصنيع");
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
       List data = List.from(body);
@@ -236,16 +227,12 @@ class _NewDailyPageState extends State<NewDailyPage> {
     double totalAccountCosts =
         totalDischargesAccount + totalPurchaseAccount + totalEmpTransAccount;
 
-    double cashSales = cashMor.toDouble() + cashEv.toDouble();
-    double bankSales = bankMor.toDouble() + bankEv.toDouble();
-    double accountSales = accountMor.toDouble() + accountEv.toDouble();
-
     final today = DateTime.now();
     final res = await APIDaily.addDaily({
       'date': today.toIso8601String(),
-      'cash_sales': cashSales,
-      'bank_sales': bankSales,
-      'account_sales': accountSales,
+      'cash_sales': totalCash,
+      'bank_sales': totalBank,
+      'account_sales': totalAccount,
       'today_costs': totalCosts,
       'cash_costs': totalCashCosts,
       'bank_costs': totalBankCosts,
@@ -633,6 +620,9 @@ class _NewDailyPageState extends State<NewDailyPage> {
 
   @override
   Widget build(BuildContext context) {
+    // total sales
+    total = totalCash + totalBank + totalAccount;
+
     return Consumer<AuthProvider>(builder: (context, value, child) {
       return Directionality(
         textDirection: TextDirection.rtl,
@@ -658,356 +648,329 @@ class _NewDailyPageState extends State<NewDailyPage> {
             padding: const EdgeInsets.all(24.0),
             child: _loading
                 ? const Center(child: CircularProgressIndicator())
-                : value.user != null && value.user['role'] != 'admin'
-                    ? const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Text(
-                              'انت غير مخول للوصول الى هذه الصفحة',
-                              style: TextStyle(fontSize: 30, color: Colors.red),
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          Center(
-                            child: Icon(
-                              Icons.lock,
-                              size: 100,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ],
-                      )
-                    : SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                : SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Section 0: totals (sales cards)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            // Section 0: totals (sales cards)
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            Column(
                               children: [
-                                Column(
-                                  children: [
-                                    Text(
-                                      'إجمالي الإيرادات $period',
-                                      style: const TextStyle(fontSize: 30),
-                                    ),
-                                    Text(
-                                      "${numberFormatter(totalMor + totalEv)} / (جنيه) ",
-                                      style: const TextStyle(fontSize: 30),
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        const Text(
-                                          ' تكاليف الاصناف ',
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.redAccent,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          " = ${numberFormatter(totalSalesCosts)} / (جنيه) ",
-                                          style: const TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.redAccent,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                Text(
+                                  'إجمالي الإيرادات $period',
+                                  style: const TextStyle(fontSize: 30),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width: 330,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                        border: Border.all(
-                                          width: 2,
-                                        ),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: SalesCard(
-                                        period: 'الوردية الصباحية',
-                                        cashAmount: cashMor,
-                                        bankakAmount: bankMor,
-                                        accountsAmount: accountMor,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 30),
-                                    Container(
-                                      width: 330,
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xffefecec),
-                                        border: Border.all(
-                                          width: 2,
-                                        ),
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: SalesCard(
-                                        period: 'الوردية المسائية',
-                                        cashAmount: cashEv,
-                                        bankakAmount: bankEv,
-                                        accountsAmount: accountEv,
-                                      ),
-                                    ),
-                                  ],
+                                Text(
+                                  "${numberFormatter(total)} / (جنيه) ",
+                                  style: const TextStyle(fontSize: 30),
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 120),
-
-                            // Section 1: employee transactions
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text('خصم مرتبات الموظفين',
-                                    style: TextStyle(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold)),
-                                const SizedBox(width: 10),
-                                ElevatedButton.icon(
-                                  onPressed: () {
-                                    _showAddEmpTrans(
-                                        value.user!['id'].toString());
-                                  },
-                                  icon: const Icon(
-                                    Icons.add_circle,
-                                    color: Colors.black,
-                                  ),
-                                  label: const Text(
-                                    'خصم المرتب',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.teal),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Text(
-                                      ' المرتبات كاش : ',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                    Text(
-                                      "${numberFormatter(totalEmpTransCash)} / (جنيه) ",
-                                      style: const TextStyle(fontSize: 20),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    const Text(
-                                      ' المرتبات بنكك : ',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.redAccent),
-                                    ),
-                                    Text(
-                                      "${numberFormatter(totalEmpTransBankak)} / (جنيه) ",
-                                      style: const TextStyle(fontSize: 20),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(30),
-                              child: EmployeeTranTable(
-                                  transactions: _empTrans,
-                                  confirmDelete: (it) async {
-                                    // reuse existing delete flow
-                                    final res =
-                                        await emp_api.APIEmployee.deleteTrans(
-                                            {'id': it.id});
-                                    if (res.statusCode == 200) {
-                                      await _loadEmpTrans();
-                                    }
-                                  }),
-                            ),
-                            const Divider(),
-                            const SizedBox(
-                              height: 80,
-                            ),
-
-                            // Section 2: purchases
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text('طلبات الشراء',
-                                    style: TextStyle(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold)),
                                 const SizedBox(
-                                  width: 10,
-                                ),
-                                ElevatedButton.icon(
-                                  onPressed: _showAddPurchaseDialog,
-                                  icon: const Icon(
-                                    Icons.add_circle,
-                                    color: Colors.black,
-                                  ),
-                                  label: const Text(
-                                    'اضافة طلب',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.teal),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Text(
-                                      ' المشتريات كاش : ',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                    Text(
-                                      "${numberFormatter(totalPurchaseCash)} / (جنيه) ",
-                                      style: const TextStyle(fontSize: 20),
-                                    ),
-                                  ],
+                                  height: 10,
                                 ),
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     const Text(
-                                      ' المشتريات بنكك : ',
+                                      ' تكاليف الاصناف ',
                                       style: TextStyle(
                                           fontSize: 20,
-                                          color: Colors.redAccent),
+                                          color: Colors.redAccent,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      "${numberFormatter(totalPurchaseBankak)} / (جنيه) ",
-                                      style: const TextStyle(fontSize: 20),
+                                      " = ${numberFormatter(totalSalesCosts)} / (جنيه) ",
+                                      style: const TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.redAccent,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   ],
                                 ),
                               ],
                             ),
-                            Container(
-                              padding: const EdgeInsets.all(30),
-                              child: PurchaseTable(
-                                  items: _purchases,
-                                  onDelete: (it) async {
-                                    // reuse existing delete flow
-                                    final res =
-                                        await api.APIStore.deletePurchase(
-                                            {'id': it.id});
-                                    if (res.statusCode == 200) {
-                                      await _loadPurchases();
-                                    }
-                                  }),
-                            ),
-                            const Divider(),
-
-                            const SizedBox(height: 80),
-
-                            // Section 3: deductions
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text('المنصرفات',
-                                    style: TextStyle(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold)),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                ElevatedButton.icon(
-                                  onPressed: _showDischargesForm,
-                                  icon: const Icon(
-                                    Icons.add_circle,
-                                    color: Colors.black,
+                                Container(
+                                  width: 330,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    border: Border.all(
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  label: const Text(
-                                    'اضافة منصرف',
-                                    style: TextStyle(color: Colors.white),
+                                  child: SalesCard(
+                                    period: 'مبيعات الوردية',
+                                    cashAmount: totalCash,
+                                    bankakAmount: totalBank,
+                                    accountsAmount: totalAccount,
                                   ),
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.teal),
                                 ),
+                                const SizedBox(width: 30),
+                                // Container(
+                                //   width: 330,
+                                //   decoration: BoxDecoration(
+                                //     color: const Color(0xffefecec),
+                                //     border: Border.all(
+                                //       width: 2,
+                                //     ),
+                                //     borderRadius: BorderRadius.circular(12),
+                                //   ),
+                                //   child: SalesCard(
+                                //     period: 'الوردية المسائية',
+                                //     cashAmount: cashEv,
+                                //     bankakAmount: bankEv,
+                                //     accountsAmount: accountEv,
+                                //   ),
+                                // ),
                               ],
                             ),
-                            const SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Text(
-                                      ' المنصرفات كاش : ',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                    Text(
-                                      "${numberFormatter(totalDischargesCash)} / (جنيه) ",
-                                      style: const TextStyle(fontSize: 20),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    const Text(
-                                      ' المنصرفات بنكك : ',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.redAccent),
-                                    ),
-                                    Text(
-                                      "${numberFormatter(totalDischargesBankak)} / (جنيه) ",
-                                      style: const TextStyle(fontSize: 20),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(30),
-                              child: DischargeTable(
-                                  items: _discharges,
-                                  onDelete: (it) async {
-                                    // reuse existing delete flow
-                                    final res =
-                                        await APIDischarges.deleteDischarge(
-                                            {'id': it.id});
-                                    if (res.statusCode == 200) {
-                                      await _loadDischarges();
-                                    }
-                                  }),
-                            ),
-                            const Divider(),
-
-                            const SizedBox(height: 40),
-                            SizedBox(
-                              width: double.infinity,
-                              height: 40,
-                              child: ElevatedButton(
-                                  onPressed: _createDaily,
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.teal),
-                                  child: const Text(
-                                    "حفظ اليومية",
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.white),
-                                  )),
-                            ),
-                            const SizedBox(height: 40),
                           ],
                         ),
-                      ),
+                        const SizedBox(height: 120),
+
+                        // Section 1: employee transactions
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text('خصم مرتبات الموظفين',
+                                style: TextStyle(
+                                    fontSize: 25, fontWeight: FontWeight.bold)),
+                            const SizedBox(width: 10),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                _showAddEmpTrans(value.user!['id'].toString());
+                              },
+                              icon: const Icon(
+                                Icons.add_circle,
+                                color: Colors.black,
+                              ),
+                              label: const Text(
+                                'خصم المرتب',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  ' المرتبات كاش : ',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Text(
+                                  "${numberFormatter(totalEmpTransCash)} / (جنيه) ",
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Text(
+                                  ' المرتبات بنكك : ',
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.redAccent),
+                                ),
+                                Text(
+                                  "${numberFormatter(totalEmpTransBankak)} / (جنيه) ",
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(30),
+                          child: EmployeeTranTable(
+                              admin: value.user,
+                              transactions: _empTrans,
+                              confirmDelete: (it, adminId) async {
+                                // reuse existing delete flow
+                                final res =
+                                    await emp_api.APIEmployee.deleteTrans(
+                                        {'id': it.id, 'admin_id': adminId});
+                                if (res.statusCode == 200) {
+                                  await _loadEmpTrans();
+                                }
+                              }),
+                        ),
+                        const Divider(),
+                        const SizedBox(
+                          height: 80,
+                        ),
+
+                        // Section 2: purchases
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text('طلبات الشراء',
+                                style: TextStyle(
+                                    fontSize: 25, fontWeight: FontWeight.bold)),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: _showAddPurchaseDialog,
+                              icon: const Icon(
+                                Icons.add_circle,
+                                color: Colors.black,
+                              ),
+                              label: const Text(
+                                'اضافة طلب',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  ' المشتريات كاش : ',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Text(
+                                  "${numberFormatter(totalPurchaseCash)} / (جنيه) ",
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Text(
+                                  ' المشتريات بنكك : ',
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.redAccent),
+                                ),
+                                Text(
+                                  "${numberFormatter(totalPurchaseBankak)} / (جنيه) ",
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(30),
+                          child: PurchaseTable(
+                              items: _purchases,
+                              onDelete: (it) async {
+                                // reuse existing delete flow
+                                final res = await api.APIStore.deletePurchase(
+                                    {'id': it.id});
+                                if (res.statusCode == 200) {
+                                  await _loadPurchases();
+                                }
+                              }),
+                        ),
+                        const Divider(),
+
+                        const SizedBox(height: 80),
+
+                        // Section 3: deductions
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text('المنصرفات',
+                                style: TextStyle(
+                                    fontSize: 25, fontWeight: FontWeight.bold)),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: _showDischargesForm,
+                              icon: const Icon(
+                                Icons.add_circle,
+                                color: Colors.black,
+                              ),
+                              label: const Text(
+                                'اضافة منصرف',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  ' المنصرفات كاش : ',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Text(
+                                  "${numberFormatter(totalDischargesCash)} / (جنيه) ",
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Text(
+                                  ' المنصرفات بنكك : ',
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.redAccent),
+                                ),
+                                Text(
+                                  "${numberFormatter(totalDischargesBankak)} / (جنيه) ",
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(30),
+                          child: DischargeTable(
+                              admin: value.user,
+                              items: _discharges,
+                              onDelete: (it, adminId) async {
+                                // reuse existing delete flow
+                                final res = await APIDischarges.deleteDischarge(
+                                    {'id': it.id, 'admin_id': adminId});
+                                if (res.statusCode == 200) {
+                                  await _loadDischarges();
+                                }
+                              }),
+                        ),
+                        const Divider(),
+
+                        const SizedBox(height: 40),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 40,
+                          child: ElevatedButton(
+                              onPressed: _createDaily,
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal),
+                              child: const Text(
+                                "حفظ اليومية",
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              )),
+                        ),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+                  ),
           ),
         ),
       );

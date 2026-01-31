@@ -1,6 +1,7 @@
 // Platform-independent file handling: avoid importing dart:io
 // import 'package:ashkerty_food/API/Spieces.dart';
 import 'package:ashkerty_food/API/Spieces_web.dart';
+import 'package:ashkerty_food/API/Category.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
@@ -23,14 +24,42 @@ class AddSpieces extends StatefulWidget {
 class _AddSpiecesState extends State<AddSpieces> {
   bool isLoading = false;
   dynamic file;
+  List categories = [];
+  bool categoriesLoading = false;
+  String? selectedCategoryId;
+
+  @override
+  void initState() {
+    super.initState();
+    loadCategories();
+  }
+
+  Future loadCategories() async {
+    setState(() {
+      categoriesLoading = true;
+    });
+    final res = await APICategory.Get();
+    if (res != false && res is List) {
+      setState(() {
+        categories = res;
+        categoriesLoading = false;
+      });
+    } else {
+      setState(() {
+        categories = [];
+        categoriesLoading = false;
+      });
+    }
+  }
 
   //--add client
-  Future addSpieces(name, price, category, file) async {
+  // category should be categoryId (string/int)
+  Future addSpieces(name, price, categoryId, file) async {
     setState(() {
       isLoading = true;
     });
     //call the api
-    final response = await APIWebSpieces.add(name, price, category, file);
+    final response = await APIWebSpieces.add(name, price, categoryId, file);
 
     setState(() {
       isLoading = false;
@@ -118,17 +147,34 @@ class _AddSpiecesState extends State<AddSpieces> {
                     ),
                     SizedBox(
                       width: 500,
-                      child: FormBuilderDropdown(
-                        name: 'category',
-                        decoration:
-                            const InputDecoration(labelText: 'اختر النوع'),
-                        items: ['لحوم', 'اضافات', 'عصائر']
-                            .map((type) => DropdownMenuItem(
-                                value: type, child: Text(type)))
-                            .toList(),
-                        validator: FormBuilderValidators.required(
-                            errorText: "الرجاء ادخال جميع الجقول"),
-                      ),
+                      child: categoriesLoading
+                          ? const Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: Center(child: CircularProgressIndicator()),
+                            )
+                          : DropdownButtonFormField<String>(
+                              initialValue: selectedCategoryId,
+                              decoration: const InputDecoration(
+                                  labelText: 'اختر النوع'),
+                              items:
+                                  categories.map<DropdownMenuItem<String>>((c) {
+                                final id = c['id'];
+                                final name = c['name'];
+                                return DropdownMenuItem<String>(
+                                    value: id?.toString(), child: Text(name));
+                              }).toList(),
+                              onChanged: (val) {
+                                setState(() {
+                                  selectedCategoryId = val;
+                                });
+                              },
+                              validator: (v) {
+                                if (v == null || v.isEmpty) {
+                                  return 'الرجاء ادخال جميع الحقول';
+                                }
+                                return null;
+                              },
+                            ),
                     ),
                     const SizedBox(
                       height: 20,
@@ -183,13 +229,22 @@ class _AddSpiecesState extends State<AddSpieces> {
                                     _formKey.currentState!.value['name'];
                                 String price =
                                     _formKey.currentState!.value['price'];
-                                String category =
-                                    _formKey.currentState!.value['category'];
                                 final file =
                                     _formKey.currentState!.value['file'];
 
-                                //server
-                                addSpieces(name, price, category, file[0]);
+                                // ensure category selected
+                                if (selectedCategoryId == null) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                    content: Text('يرجى اختيار النوع'),
+                                    backgroundColor: Colors.red,
+                                  ));
+                                  return;
+                                }
+
+                                //server: pass categoryId
+                                addSpieces(
+                                    name, price, selectedCategoryId, file[0]);
                                 _formKey.currentState!.reset();
                               }
                             },
@@ -246,13 +301,31 @@ AddSpeicies_Modal(
                       validator: FormBuilderValidators.required(
                           errorText: 'الرجاء ادخال جميع الحقول'),
                     ),
-                    FormBuilderTextField(
-                      name: 'type',
-                      decoration: const InputDecoration(labelText: 'النوع'),
-                      initialValue: null,
-                      validator: FormBuilderValidators.required(
-                          errorText: 'الرجاء ادخال جميع الحقول'),
-                    ),
+                    // type/category dropdown - load categories from APICategory
+                    FutureBuilder(
+                        future: APICategory.Get(),
+                        builder: (ctx, snap) {
+                          if (!snap.hasData) {
+                            return const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child:
+                                    Center(child: CircularProgressIndicator()));
+                          }
+                          final cats =
+                              (snap.data is List) ? snap.data as List : [];
+                          return FormBuilderDropdown(
+                            name: 'type',
+                            decoration:
+                                const InputDecoration(labelText: 'النوع'),
+                            items: cats
+                                .map((c) => DropdownMenuItem(
+                                    value: c['id'] ?? c['_id'] ?? c['ID'],
+                                    child: Text(c['name'] ?? c['title'] ?? '')))
+                                .toList(),
+                            validator: FormBuilderValidators.required(
+                                errorText: 'الرجاء ادخال جميع الحقول'),
+                          );
+                        }),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0, top: 30),
                       child: Center(

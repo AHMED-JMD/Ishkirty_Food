@@ -2,74 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:ashkerty_food/models/Employee.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 
-class EmployeeDataSource extends DataTableSource {
-  final List<Employee> _data;
-  final void Function(Employee) onEdit;
-  final void Function(Employee) onDelete;
-  final void Function(Employee) onView;
-
-  EmployeeDataSource(this._data,
-      {required this.onEdit, required this.onDelete, required this.onView});
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= _data.length) return null;
-    final emp = _data[index];
-
-    Widget cell(String text) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Text(text, style: const TextStyle(fontSize: 17)),
-        );
-    return DataRow.byIndex(
-      index: index,
-      color: WidgetStateProperty.resolveWith<Color?>((states) {
-        return index.isEven ? Colors.grey.withOpacity(0.03) : null;
-      }),
-      cells: [
-        DataCell(cell(emp.name)),
-        DataCell(cell(emp.jobTitle)),
-        DataCell(cell(emp.shift)),
-        DataCell(cell("${numberFormatter(emp.salary)} (جنيه)")),
-        DataCell(Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            children: [
-              IconButton(
-                  icon: const Icon(Icons.edit, size: 18),
-                  color: Colors.blueGrey,
-                  onPressed: () => onEdit(emp)),
-              IconButton(
-                  icon: const Icon(Icons.delete, size: 18),
-                  color: Colors.redAccent,
-                  onPressed: () => onDelete(emp)),
-              IconButton(
-                  icon: const Icon(Icons.remove_red_eye, size: 18),
-                  color: Colors.teal,
-                  onPressed: () => onView(emp)),
-            ],
-          ),
-        )),
-      ],
-    );
-  }
-
-  @override
-  bool get isRowCountApproximate => false;
-
-  @override
-  int get rowCount => _data.length;
-
-  @override
-  int get selectedRowCount => 0;
-}
-
 class EmployeeTable extends StatefulWidget {
+  final bool isAdmin;
   final List<Employee> employees;
   final void Function(Employee) onEdit;
   final void Function(Employee) onDelete;
   final void Function(Employee) onView;
 
   const EmployeeTable({
+    required this.isAdmin,
     required this.employees,
     required this.onEdit,
     required this.onDelete,
@@ -181,6 +122,7 @@ class _EmployeeTableState extends State<EmployeeTable> {
                           color: Colors.teal))),
             ],
             source: EmployeeDataSource(
+              isAdmin: widget.isAdmin,
               filtered,
               onEdit: widget.onEdit,
               onDelete: widget.onDelete,
@@ -201,4 +143,74 @@ class _EmployeeTableState extends State<EmployeeTable> {
       ],
     );
   }
+}
+
+class EmployeeDataSource extends DataTableSource {
+  final bool isAdmin;
+  final List<Employee> _data;
+  final void Function(Employee) onEdit;
+  final void Function(Employee) onDelete;
+  final void Function(Employee) onView;
+
+  EmployeeDataSource(this._data,
+      {required this.isAdmin,
+      required this.onEdit,
+      required this.onDelete,
+      required this.onView});
+
+  @override
+  DataRow? getRow(int index) {
+    if (index >= _data.length) return null;
+    final emp = _data[index];
+
+    Widget cell(String text) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Text(text, style: const TextStyle(fontSize: 17)),
+        );
+    return DataRow.byIndex(
+      index: index,
+      color: WidgetStateProperty.resolveWith<Color?>((states) {
+        return index.isEven ? Colors.grey.withOpacity(0.03) : null;
+      }),
+      cells: [
+        DataCell(cell(emp.name)),
+        DataCell(cell(emp.jobTitle)),
+        DataCell(cell(emp.shift)),
+        DataCell(cell("${numberFormatter(emp.salary)} (جنيه)")),
+        DataCell(Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            children: [
+              if (isAdmin)
+                Row(
+                  children: [
+                    IconButton(
+                        icon: const Icon(Icons.edit, size: 18),
+                        color: Colors.blueGrey,
+                        onPressed: () => onEdit(emp)),
+                    IconButton(
+                        icon: const Icon(Icons.delete, size: 18),
+                        color: Colors.redAccent,
+                        onPressed: () => onDelete(emp)),
+                  ],
+                ),
+              IconButton(
+                  icon: const Icon(Icons.remove_red_eye, size: 18),
+                  color: Colors.teal,
+                  onPressed: () => onView(emp)),
+            ],
+          ),
+        )),
+      ],
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => _data.length;
+
+  @override
+  int get selectedRowCount => 0;
 }

@@ -103,55 +103,54 @@ class MyDrawer extends StatelessWidget {
                               ),
                             ),
                           ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pushReplacementNamed(context, '/daily');
-                            },
-                            child: const ListTile(
-                              leading: Icon(
-                                Icons.badge,
-                                color: Colors.teal,
-                              ),
-                              title: Text(
-                                'اليوميات',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pushReplacementNamed(
-                                  context, '/newDaily');
-                            },
-                            child: const ListTile(
-                              leading: Icon(
-                                Icons.badge,
-                                color: Colors.teal,
-                              ),
-                              title: Text(
-                                'يومية جديدة',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pushReplacementNamed(context, '/store');
-                            },
-                            child: const ListTile(
-                              leading: Icon(
-                                Icons.store,
-                                color: Colors.teal,
-                              ),
-                              title: Text(
-                                'المخزن',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            ),
-                          )
                         ],
                       )
                     : const SizedBox(),
+                InkWell(
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, '/daily');
+                  },
+                  child: const ListTile(
+                    leading: Icon(
+                      Icons.badge,
+                      color: Colors.teal,
+                    ),
+                    title: Text(
+                      'اليوميات',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, '/newDaily');
+                  },
+                  child: const ListTile(
+                    leading: Icon(
+                      Icons.badge,
+                      color: Colors.teal,
+                    ),
+                    title: Text(
+                      'يومية جديدة',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, '/store_sell');
+                  },
+                  child: const ListTile(
+                    leading: Icon(
+                      Icons.store,
+                      color: Colors.teal,
+                    ),
+                    title: Text(
+                      'مخزن البيع',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ),
                 InkWell(
                   onTap: () {
                     Navigator.pushReplacementNamed(context, '/sales');
@@ -184,6 +183,21 @@ class MyDrawer extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
+                    Navigator.pushReplacementNamed(context, '/employees');
+                  },
+                  child: const ListTile(
+                    leading: Icon(
+                      Icons.badge,
+                      color: Colors.teal,
+                    ),
+                    title: Text(
+                      'الموظفين',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
                     Navigator.pushReplacementNamed(context, '/speices');
                   },
                   child: const ListTile(
@@ -197,23 +211,6 @@ class MyDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
-                value.user != null && value.user['role'] == 'admin'
-                    ? InkWell(
-                        onTap: () {
-                          Navigator.pushReplacementNamed(context, '/employees');
-                        },
-                        child: const ListTile(
-                          leading: Icon(
-                            Icons.badge,
-                            color: Colors.teal,
-                          ),
-                          title: Text(
-                            'الموظفين',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
-                      )
-                    : const SizedBox(),
                 InkWell(
                   onTap: () {
                     Navigator.pushReplacementNamed(context, '/clients');

@@ -24,14 +24,10 @@ class Sales extends StatefulWidget {
 
 class _SalesState extends State<Sales> {
   bool isLoading = false;
-  int cashMor = 0;
-  int bankMor = 0;
-  int accountMor = 0;
-  int totalMor = 0;
-  int cashEv = 0;
-  int bankEv = 0;
-  int accountEv = 0;
-  int totalEv = 0;
+  int totalCash = 0;
+  int totalBank = 0;
+  int totalAccount = 0;
+  int total = 0;
 
   List spieces = [];
   String period = 'اليوم';
@@ -77,14 +73,9 @@ class _SalesState extends State<Sales> {
 
       setState(() {
         isLoading = false;
-        cashMor = res["cashMor"].toInt();
-        bankMor = res["bankMor"].toInt();
-        accountMor = res["accountMor"].toInt();
-        totalMor = res["totalMor"].toInt();
-        cashEv = res["cashEv"].toInt();
-        bankEv = res["bankEv"].toInt();
-        accountEv = res["accountEv"].toInt();
-        totalEv = res["totalEv"].toInt();
+        totalCash = int.parse(res["totalCash"].toString());
+        totalBank = int.parse(res["totalBank"].toString());
+        totalAccount = int.parse(res["totalAccount"].toString());
         period = sPeriod;
       });
     } else {
@@ -116,14 +107,9 @@ class _SalesState extends State<Sales> {
 
       setState(() {
         isLoading = false;
-        cashMor = res["cashMor"].toInt();
-        bankMor = res["bankMor"].toInt();
-        accountMor = res["accountMor"].toInt();
-        totalMor = res["totalMor"].toInt();
-        cashEv = res["cashEv"].toInt();
-        bankEv = res["bankEv"].toInt();
-        accountEv = res["accountEv"].toInt();
-        totalEv = res["totalEv"].toInt();
+        totalCash = int.parse(res["totalCash"].toString());
+        totalBank = int.parse(res["totalBank"].toString());
+        totalAccount = int.parse(res["totalAccount"].toString());
         period = 'اليوم';
       });
     } else {
@@ -164,6 +150,7 @@ class _SalesState extends State<Sales> {
   @override
   Widget build(BuildContext context) {
     //getting the morning variables values
+    total = totalCash + totalBank + totalAccount;
 
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -217,7 +204,7 @@ class _SalesState extends State<Sales> {
                         style: const TextStyle(fontSize: 30),
                       ),
                       Text(
-                        "${numberFormatter(totalMor + totalEv)} / (جنيه) ",
+                        "${numberFormatter(total)} / (جنيه) ",
                         style: const TextStyle(fontSize: 30),
                       ),
                     ],
@@ -235,31 +222,31 @@ class _SalesState extends State<Sales> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: SalesCard(
-                          period: 'الوردية الصباحية',
-                          cashAmount: cashMor,
-                          bankakAmount: bankMor,
-                          accountsAmount: accountMor,
+                          period: 'مبيعات الوردية',
+                          cashAmount: totalCash,
+                          bankakAmount: totalBank,
+                          accountsAmount: totalAccount,
                         ),
                       ),
                       const SizedBox(
                         width: 30,
                       ),
-                      Container(
-                        width: 330,
-                        decoration: BoxDecoration(
-                          color: const Color(0xffefecec),
-                          border: Border.all(
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: SalesCard(
-                          period: 'الوردية المسائية',
-                          cashAmount: cashEv,
-                          bankakAmount: bankEv,
-                          accountsAmount: accountEv,
-                        ),
-                      ),
+                      // Container(
+                      //   width: 330,
+                      //   decoration: BoxDecoration(
+                      //     color: const Color(0xffefecec),
+                      //     border: Border.all(
+                      //       width: 2,
+                      //     ),
+                      //     borderRadius: BorderRadius.circular(12),
+                      //   ),
+                      //   child: SalesCard(
+                      //     period: 'الوردية المسائية',
+                      //     cashAmount: totalCash,
+                      //     bankakAmount: totalBank,
+                      //     accountsAmount: totalAccount,
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],
@@ -278,14 +265,11 @@ class _SalesState extends State<Sales> {
                   ElevatedButton.icon(
                     onPressed: (spieces.isNotEmpty && !isLoading)
                         ? () async {
-                            final int cashTotal = cashMor + cashEv;
-                            final int bankTotal = bankMor + bankEv;
-                            final int accountTotal = accountMor + accountEv;
                             await printSalesReport(
                                 spieces: spieces,
-                                cashTotal: cashTotal,
-                                bankTotal: bankTotal,
-                                accountTotal: accountTotal,
+                                cashTotal: totalCash,
+                                bankTotal: totalBank,
+                                accountTotal: totalAccount,
                                 period: period);
                           }
                         : null,

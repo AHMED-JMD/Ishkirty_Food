@@ -4,13 +4,13 @@ import 'package:http/http.dart';
 String apiUrl = 'http://localhost:3000/api/spieces';
 
 class APISpieces {
-  static Future add(name, price, category, file) async {
+  static Future add(name, price, categoryId, file) async {
     try {
       final url = Uri.parse('$apiUrl/');
       var request = MultipartRequest('POST', url);
       request.fields['name'] = name;
       request.fields['price'] = price;
-      request.fields['category'] = category;
+      request.fields['categoryid'] = categoryId;
       request.files.add(await MultipartFile.fromPath(
         'file',
         file.path,

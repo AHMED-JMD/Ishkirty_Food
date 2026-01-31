@@ -3,15 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 
 class EmployeeTranTable extends StatelessWidget {
+  final Map admin;
   final List<EmpTransaction> transactions;
-  final void Function(EmpTransaction) confirmDelete;
+  final void Function(EmpTransaction, String) confirmDelete;
 
-  const EmployeeTranTable(
-      {required this.transactions, required this.confirmDelete, Key? key})
+  EmployeeTranTable(
+      {required this.admin,
+      required this.transactions,
+      required this.confirmDelete,
+      Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    bool isAdmin = admin['role'] == 'admin' ? true : false;
+
     return SingleChildScrollView(
       child: DataTable(
         columns: [
@@ -57,23 +63,28 @@ class EmployeeTranTable extends StatelessWidget {
                     'المبلغ',
                     style: TextStyle(fontSize: 20, color: Colors.teal),
                   ))),
-          DataColumn(
-              label: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                              color: Colors.grey.shade300, width: 1))),
-                  child: const Text(
-                    'اجراء',
-                    style: TextStyle(fontSize: 20, color: Colors.teal),
-                  ))),
+          if (isAdmin)
+            DataColumn(
+                label: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(
+                                color: Colors.grey.shade300, width: 1))),
+                    child: const Text(
+                      'اجراء',
+                      style: TextStyle(fontSize: 20, color: Colors.teal),
+                    ))),
         ],
         rows: transactions.map((t) {
           return DataRow(
               color: WidgetStateProperty.resolveWith<Color?>((states) {
-                return t.id.isEven ? Colors.grey.shade200 : null;
+                return t.type == 'اضافة'
+                    ? Colors.redAccent.shade200
+                    : t.id.isEven
+                        ? Colors.grey.shade200
+                        : null;
               }),
               cells: [
                 DataCell(Container(
@@ -102,7 +113,7 @@ class EmployeeTranTable extends StatelessWidget {
                             right: BorderSide(
                                 color: Colors.grey.shade300, width: 1))),
                     child: Text(
-                      t.type,
+                      t.type == 'اضافة' ? 'بداية اسبوع' : t.type,
                       style: const TextStyle(fontSize: 17),
                     ))),
                 DataCell(Container(
@@ -117,14 +128,20 @@ class EmployeeTranTable extends StatelessWidget {
                     style: const TextStyle(fontSize: 17),
                   ),
                 )),
-                DataCell(Row(children: [
-                  IconButton(
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.redAccent,
-                      ),
-                      onPressed: () => confirmDelete(t))
-                ])),
+                if (isAdmin)
+                  DataCell(Row(children: [
+                    IconButton(
+                        icon: Icon(
+                          Icons.delete,
+                          color:
+                              t.type == 'اضافة' ? Colors.redAccent : Colors.red,
+                        ),
+                        onPressed: () {
+                          t.type != 'اضافة'
+                              ? confirmDelete(t, admin['id'].toString())
+                              : null;
+                        })
+                  ])),
               ]);
         }).toList(),
       ),

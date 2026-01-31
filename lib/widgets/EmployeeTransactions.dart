@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:ashkerty_food/Components/tables/EmployeeTransTable.dart';
 import 'package:ashkerty_food/models/EmpTrans.dart';
 import 'package:ashkerty_food/static/drawer.dart';
+import 'package:ashkerty_food/static/formatter.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,8 +37,10 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
   @override
   void initState() {
     super.initState();
-    fetchTransactions(todayDate, todayDate);
+    fetchTransactions(todayDate.subtract(const Duration(days: 7)), todayDate);
   }
+
+  double get totalTran => transactions.fold(0.0, (p, e) => p + e.amount);
 
   Future fetchTransactions(
     DateTime startDate,
@@ -177,7 +180,7 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
         });
   }
 
-  void confirmDelete(EmpTransaction t) async {
+  void confirmDelete(EmpTransaction t, String adminId) async {
     final ok = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
@@ -205,7 +208,8 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
               ],
             ));
     if (ok == true) {
-      final res = await api.APIEmployee.deleteTrans({'id': t.id});
+      final res =
+          await api.APIEmployee.deleteTrans({'id': t.id, 'admin_id': adminId});
       if (res.statusCode == 200) {
         await fetchTransactions(todayDate, todayDate);
       } else {
@@ -233,7 +237,7 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
               },
             ),
             title: Center(
-                child: Text('خصومات [${widget.emp.name}]',
+                child: Text('خصومات (${widget.emp.name})',
                     style: const TextStyle(fontSize: 30, color: Colors.white))),
             actions: const [LeadingDrawerBtn()],
             toolbarHeight: 45,
@@ -241,132 +245,156 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
           endDrawer: const MyDrawer(),
           body: Padding(
             padding: const EdgeInsets.all(24.0),
-            child: value.user == null || value.user!['role'] != 'admin'
-                ? const Center(
-                    child: Text('انت غير مخول للوصول الى هذه الصفحة',
-                        style: TextStyle(fontSize: 30, color: Colors.red)))
-                : Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: 200,
-                            height: 40,
-                            child: ElevatedButton.icon(
-                                onPressed: () async {
-                                  final d = await showDatePicker(
-                                      context: context,
-                                      initialDate: startDate ?? DateTime.now(),
-                                      firstDate: DateTime(2000),
-                                      lastDate: DateTime(2100));
-                                  if (d != null) setState(() => startDate = d);
-                                },
-                                icon: const Icon(
-                                  Icons.date_range,
-                                  color: Colors.teal,
-                                ),
-                                label: Text(
-                                  startDate == null
-                                      ? 'اختر : تاريخ البداية'
-                                      : '${startDate!.year}/${startDate!.month}/${startDate!.day}',
-                                  style: const TextStyle(color: Colors.black),
-                                )),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 200,
+                      height: 40,
+                      child: ElevatedButton.icon(
+                          onPressed: () async {
+                            final d = await showDatePicker(
+                                context: context,
+                                initialDate: startDate ?? DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2100));
+                            if (d != null) setState(() => startDate = d);
+                          },
+                          icon: const Icon(
+                            Icons.date_range,
+                            color: Colors.teal,
                           ),
-                          const SizedBox(width: 8),
-                          SizedBox(
-                            width: 200,
-                            height: 40,
-                            child: ElevatedButton.icon(
-                                onPressed: () async {
-                                  final d = await showDatePicker(
-                                      context: context,
-                                      initialDate: endDate ?? DateTime.now(),
-                                      firstDate: DateTime(2000),
-                                      lastDate: DateTime(2100));
-                                  if (d != null) setState(() => endDate = d);
-                                },
-                                icon: const Icon(
-                                  Icons.date_range,
-                                  color: Colors.teal,
-                                ),
-                                label: Text(
-                                  endDate == null
-                                      ? 'اختر : تاريخ النهاية'
-                                      : '${endDate!.year}/${endDate!.month}/${endDate!.day}',
-                                  style: const TextStyle(color: Colors.black),
-                                )),
+                          label: Text(
+                            startDate == null
+                                ? 'اختر : تاريخ البداية'
+                                : '${startDate!.year}/${startDate!.month}/${startDate!.day}',
+                            style: const TextStyle(color: Colors.black),
+                          )),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 200,
+                      height: 40,
+                      child: ElevatedButton.icon(
+                          onPressed: () async {
+                            final d = await showDatePicker(
+                                context: context,
+                                initialDate: endDate ?? DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2100));
+                            if (d != null) setState(() => endDate = d);
+                          },
+                          icon: const Icon(
+                            Icons.date_range,
+                            color: Colors.teal,
                           ),
-                          const SizedBox(width: 8),
-                          SizedBox(
-                            height: 40,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (startDate == null || endDate == null) {
-                                  showMessage('الرجاء اختيار كلا التاريخين');
-                                  return;
-                                }
-                                fetchTransactions(startDate!, endDate!);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.teal),
-                              child: const Text(
-                                'عرض',
-                                style: TextStyle(color: Colors.white),
+                          label: Text(
+                            endDate == null
+                                ? 'اختر : تاريخ النهاية'
+                                : '${endDate!.year}/${endDate!.month}/${endDate!.day}',
+                            style: const TextStyle(color: Colors.black),
+                          )),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      height: 40,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (startDate == null || endDate == null) {
+                            showMessage('الرجاء اختيار كلا التاريخين');
+                            return;
+                          }
+                          fetchTransactions(startDate!, endDate!);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal),
+                        child: const Text(
+                          'عرض',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton.icon(
+                        onPressed: () {
+                          showAddTrans(value.user!['id'].toString());
+                        },
+                        icon: const Icon(
+                          Icons.add,
+                          color: Colors.black,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal),
+                        label: const Text(
+                          'اضافة معاملة',
+                          style: TextStyle(color: Colors.white),
+                        )),
+                    const SizedBox(width: 12),
+                    SizedBox(
+                      width: 180,
+                      child: Card(
+                        color: Colors.white,
+                        elevation: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12.0, horizontal: 8.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.monetization_on,
+                                  color: Colors.orange),
+                              const SizedBox(height: 8),
+                              const Text('اجمالي الخصومات',
+                                  style: TextStyle(fontSize: 12)),
+                              const SizedBox(height: 6),
+                              Text(
+                                "${numberFormatter(totalTran)} (جنيه)",
+                                style: const TextStyle(
+                                    fontSize: 22, fontWeight: FontWeight.bold),
                               ),
-                            ),
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                        ],
+                        ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          ElevatedButton.icon(
-                              onPressed: () {
-                                showAddTrans(value.user!['id'].toString());
-                              },
-                              icon: const Icon(
-                                Icons.add,
-                                color: Colors.black,
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.teal),
-                              label: const Text(
-                                'اضافة معاملة',
-                                style: TextStyle(color: Colors.white),
-                              )),
-                          const SizedBox(width: 12),
-                        ],
-                      ),
-                      const SizedBox(height: 60),
-                      Expanded(
-                        child: loading
-                            ? const Center(child: CircularProgressIndicator())
-                            : Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(30),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Center(
-                                      child: Text(
-                                        ' ($period)',
-                                        style: const TextStyle(fontSize: 30),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 30),
-                                    EmployeeTranTable(
-                                        transactions: transactions,
-                                        confirmDelete: confirmDelete)
-                                  ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 60),
+                Expanded(
+                  child: loading
+                      ? const Center(child: CircularProgressIndicator())
+                      : Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(30),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Center(
+                                child: Text(
+                                  ' ($period)',
+                                  style: const TextStyle(fontSize: 30),
                                 ),
                               ),
-                      ),
-                    ],
-                  ),
+                              const SizedBox(height: 30),
+                              EmployeeTranTable(
+                                  admin: value.user,
+                                  transactions: transactions,
+                                  confirmDelete: confirmDelete)
+                            ],
+                          ),
+                        ),
+                ),
+              ],
+            ),
           ),
         ),
       );

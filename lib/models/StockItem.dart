@@ -4,6 +4,7 @@ class StockItem {
   double quantity;
   double warnValue;
   double sellPrice;
+  String type;
   bool isKilo;
   DateTime? createdAt;
   DateTime? updatedAt;
@@ -14,6 +15,7 @@ class StockItem {
     required this.quantity,
     required this.warnValue,
     required this.sellPrice,
+    required this.type,
     required this.isKilo,
     this.createdAt,
     this.updatedAt,
@@ -31,6 +33,7 @@ class StockItem {
       sellPrice: (json['price'] is num)
           ? (json['price'] as num).toDouble()
           : double.tryParse(json['price'].toString()) ?? 0.0,
+      type: json['type'] ?? '',
       isKilo: json['isKilo'] ?? false,
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'])
@@ -44,6 +47,7 @@ class StockItem {
         'name': name,
         'sellPrice': sellPrice,
         'quantity': quantity,
+        'type': type,
         'isKilo': isKilo,
         if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
         if (updatedAt != null) 'updatedAt': updatedAt!.toIso8601String(),

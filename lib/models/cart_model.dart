@@ -6,14 +6,13 @@ class Cart {
   late int unit_price;
   late num total_price;
 
-  Cart({
-    required this.spices,
-    required this.counter,
-    required this.category,
-    required this.addons,
-    required this.unit_price,
-    required this.total_price
-  });
+  Cart(
+      {required this.spices,
+      required this.counter,
+      required this.category,
+      required this.addons,
+      required this.unit_price,
+      required this.total_price});
 
   Cart.fromJson(Map<String, dynamic> json) {
     spices = json['spices'];
@@ -34,7 +33,5 @@ class Cart {
     _data['total_price'] = total_price;
 
     return _data;
-
   }
-
 }

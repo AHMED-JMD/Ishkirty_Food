@@ -1,54 +1,69 @@
 import 'dart:convert';
-import 'package:ashkerty_food/models/Discharge.dart';
+import 'package:ashkerty_food/models/PurchaseRequest.dart';
+import 'package:ashkerty_food/models/StockItem.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../API/Discharges.dart' as api;
-import 'package:ashkerty_food/Components/tables/DischargeTable.dart';
+import '../API/Store.dart' as api;
+import 'package:ashkerty_food/Components/tables/PurchaseTable.dart';
 
-class DischargesPage extends StatefulWidget {
-  const DischargesPage({Key? key}) : super(key: key);
+class StoreAcquisitions extends StatefulWidget {
+  const StoreAcquisitions({Key? key}) : super(key: key);
 
   @override
-  State<DischargesPage> createState() => _DischargesPageState();
+  State<StoreAcquisitions> createState() => _StoreAcquisitionsState();
 }
 
-class _DischargesPageState extends State<DischargesPage> {
-  List<Discharge> _items = [];
-  List<Discharge> _filtered = [];
+class _StoreAcquisitionsState extends State<StoreAcquisitions> {
+  List<PurchaseRequest> _items = [];
+  List<PurchaseRequest> _filtered = [];
+  List<StockItem> stores = [];
   bool _loading = true;
   String _search = '';
   final todayDate = DateTime.now();
-  String period = '';
+  String period = "";
 
   @override
   void initState() {
     super.initState();
-    _load(todayDate, todayDate, 'اليوم');
+    _load(todayDate, todayDate, "اليوم");
+    _loadStores();
   }
 
-  Future _load(DateTime startDate, DateTime endDate, String periodText) async {
+  Future _load(DateTime startDate, DateTime endDate, period) async {
     setState(() => _loading = true);
-    final res = await api.APIDischarges.getByDate({
+
+    final res = await api.APIStore.getPurchasesByDate({
       'startDate': startDate.toIso8601String(),
       'endDate': endDate.toIso8601String()
     });
 
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
-      List data = List.from(body);
-      print(data);
-      _items = data.map((e) => Discharge.fromJson(e)).toList();
-    }
 
+      List data = List.from(body);
+      _items = data.map((e) => PurchaseRequest.fromJson(e)).toList();
+    }
     _applyFilter();
     setState(() {
       _loading = false;
-      period = periodText;
+      this.period = period;
     });
+  }
+
+  Future _loadStores() async {
+    //call
+    final res = await api.APIStore.getItems('بيع');
+    if (res.statusCode == 200) {
+      final body = jsonDecode(res.body);
+      List data = List.from(body);
+      stores = data.map((e) => StockItem.fromJson(e)).toList();
+    } else {
+      // keep empty or show error
+    }
   }
 
   void _applyFilter() {
@@ -56,27 +71,32 @@ class _DischargesPageState extends State<DischargesPage> {
       _filtered = List.from(_items);
     } else {
       final q = _search.toLowerCase();
-      _filtered =
-          _items.where((it) => it.name.toLowerCase().contains(q)).toList();
+      _filtered = _items
+          .where((it) => it.store.name.toString().toLowerCase().contains(q))
+          .toList();
     }
   }
 
-  double get totalAmount => _items.fold(0.0, (p, e) => p + e.price);
+  double get totalStockValue =>
+      _items.fold(0.0, (p, e) => p + e.buyPrice * e.quantity);
 
   void _showForm() {
-    final nameCtrl = TextEditingController();
-    final amountCtrl = TextEditingController();
+    final vendorCtrl = TextEditingController(text: "عام");
+    final qtyCtrl = TextEditingController();
+
+    final netQtyCtrl = TextEditingController();
+    // final priceCtrl = TextEditingController();
+    final storeCtrl = TextEditingController();
     DateTime pickedDate = todayDate;
-    bool isMonthly = false;
     final formKey = GlobalKey<FormState>();
 
     String paymentMethod = 'كاش';
     showDialog(
         context: context,
         builder: (_) => StatefulBuilder(
-                builder: (BuildContext context, StateSetter setStateSB) {
+                builder: (BuildContext context, StateSetter setState) {
               return AlertDialog(
-                title: const Center(child: Text('اضافة مصروف')),
+                title: const Center(child: Text('اضافة طلب شراء')),
                 content: Form(
                   key: formKey,
                   child: Directionality(
@@ -86,9 +106,9 @@ class _DischargesPageState extends State<DischargesPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           TextFormField(
-                            controller: nameCtrl,
+                            controller: vendorCtrl,
                             decoration:
-                                const InputDecoration(labelText: 'الاسم'),
+                                const InputDecoration(labelText: 'المورد'),
                             validator: (v) => (v == null || v.trim().isEmpty)
                                 ? 'Required'
                                 : null,
@@ -102,37 +122,62 @@ class _DischargesPageState extends State<DischargesPage> {
                                   value: 'بنكك', child: Text('بنكك')),
                             ],
                             onChanged: (v) =>
-                                setStateSB(() => paymentMethod = v ?? 'كاش'),
+                                setState(() => paymentMethod = v ?? 'كاش'),
                             decoration:
                                 const InputDecoration(labelText: 'طريقة الدفع'),
                           ),
-                          TextFormField(
-                            controller: amountCtrl,
+                          DropdownButtonFormField<String>(
                             decoration:
-                                const InputDecoration(labelText: 'المبلغ'),
+                                const InputDecoration(labelText: 'اختر المخزن'),
+                            items: stores
+                                .map((s) => DropdownMenuItem(
+                                      value: s.id,
+                                      child: Text(s.name),
+                                    ))
+                                .toList(),
+                            onChanged: (val) {
+                              storeCtrl.text = val ?? '';
+                            },
+                            validator: (v) =>
+                                (v == null || v.isEmpty) ? 'Required' : null,
+                          ),
+                          TextFormField(
+                            controller: qtyCtrl,
+                            decoration:
+                                const InputDecoration(labelText: 'الكمية'),
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
                             validator: (v) => double.tryParse(v ?? '') == null
                                 ? 'Invalid'
                                 : null,
                           ),
-                          // Row(
-                          //   children: [
-                          //     const Text('شهري؟'),
-                          //     Checkbox(
-                          //         value: isMonthly,
-                          //         onChanged: (v) {
-                          //           isMonthly = v ?? false;
-                          //           setStateSB(() {});
-                          //         }),
-                          //   ],
+                          TextFormField(
+                            controller: netQtyCtrl,
+                            decoration:
+                                const InputDecoration(labelText: 'صافي الكمية'),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            validator: (v) => double.tryParse(v ?? '') == null
+                                ? 'Invalid'
+                                : null,
+                          ),
+                          // TextFormField(
+                          //   controller: priceCtrl,
+                          //   decoration:
+                          //       const InputDecoration(labelText: 'سعر الشراء'),
+                          //   keyboardType: const TextInputType.numberWithOptions(
+                          //       decimal: true),
+                          //   validator: (v) => double.tryParse(v ?? '') == null
+                          //       ? 'Invalid'
+                          //       : null,
                           // ),
                           const SizedBox(height: 8),
                           Row(
                             children: [
                               Expanded(
-                                  child: Text(
-                                      pickedDate.toString().split(' ').first)),
+                                child: Text(
+                                    pickedDate.toString().split(' ').first),
+                              ),
                               ElevatedButton(
                                   onPressed: () async {
                                     final d = await showDatePicker(
@@ -142,7 +187,7 @@ class _DischargesPageState extends State<DischargesPage> {
                                         lastDate: DateTime(2100));
                                     if (d != null) {
                                       pickedDate = d;
-                                      setStateSB(() {});
+                                      setState(() {});
                                     }
                                   },
                                   child: const Text('تحديد'))
@@ -162,16 +207,17 @@ class _DischargesPageState extends State<DischargesPage> {
                     onPressed: () async {
                       if (!formKey.currentState!.validate()) return;
                       final dto = {
-                        'name': nameCtrl.text.trim(),
-                        'price': double.parse(amountCtrl.text.trim()),
+                        'store_item': storeCtrl.text.trim(),
+                        'vendor': vendorCtrl.text.trim(),
+                        'quantity': double.parse(qtyCtrl.text.trim()),
+                        'net_quantity': double.parse(netQtyCtrl.text.trim()),
+                        'payment_method': paymentMethod,
                         'date': pickedDate.toIso8601String(),
-                        'isMonthly': isMonthly,
-                        'paymentMethod': paymentMethod,
                       };
                       Navigator.pop(context);
-                      final res = await api.APIDischarges.addDischarge(dto);
+                      final res = await api.APIStore.addPurchase(dto);
                       if (res.statusCode == 200) {
-                        await _load(todayDate, todayDate, 'اليوم');
+                        await _load(todayDate, todayDate, "اليوم");
                       } else {
                         _showError(res.body);
                       }
@@ -184,13 +230,15 @@ class _DischargesPageState extends State<DischargesPage> {
             }));
   }
 
-  void _confirmDelete(Discharge it, String adminId) {
+  void _confirmDelete(PurchaseRequest it) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Center(child: Text('حذف المصروف')),
-        content: Text('سيتم حذف المصروف ${it.name}',
-            textDirection: TextDirection.rtl),
+        title: const Center(child: Text('حذف طلب الشراء')),
+        content: Text(
+          "سيتم حذف طلب الشراء للمورد ${it.vendor}",
+          textDirection: TextDirection.rtl,
+        ),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
@@ -199,11 +247,9 @@ class _DischargesPageState extends State<DischargesPage> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-
-              final res = await api.APIDischarges.deleteDischarge(
-                  {'id': it.id, 'admin_id': adminId});
+              final res = await api.APIStore.deletePurchase({'id': it.id});
               if (res.statusCode == 200) {
-                await _load(todayDate, todayDate, 'اليوم');
+                await _load(todayDate, todayDate, "اليوم");
               } else {
                 _showError(res.body);
               }
@@ -243,12 +289,15 @@ class _DischargesPageState extends State<DischargesPage> {
                 color: Colors.white,
               ),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/store');
+                Navigator.pushReplacementNamed(context, '/store_sell');
               },
             ),
             backgroundColor: Colors.teal,
             title: const Center(
-                child: Text('المصروفات', style: TextStyle(fontSize: 25))),
+                child: Text(
+              "استلامات المطبخ",
+              style: TextStyle(fontSize: 25),
+            )),
             actions: const [LeadingDrawerBtn()],
             toolbarHeight: 45,
           ),
@@ -267,7 +316,7 @@ class _DischargesPageState extends State<DischargesPage> {
                           child: TextField(
                             decoration: const InputDecoration(
                                 prefixIcon: Icon(Icons.search),
-                                hintText: 'ايجاد مصروف .....'),
+                                hintText: 'ايجاد طلب بالصنف .....'),
                             onChanged: (v) {
                               setState(() {
                                 _search = v;
@@ -278,45 +327,65 @@ class _DischargesPageState extends State<DischargesPage> {
                         ),
                         const SizedBox(width: 20),
                         IconButton(
-                            onPressed: _showForm,
-                            icon: const Icon(Icons.add_circle, size: 30),
-                            tooltip: 'اضافة مصروف'),
+                          onPressed: _showForm,
+                          icon: const Icon(
+                            Icons.add_circle,
+                            size: 30,
+                          ),
+                          tooltip: "اضافة طلب",
+                        ),
                         const SizedBox(width: 10),
-                        const Text('تصفية بالتاريخ: ',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        const Text(
+                          "تصفية بالتاريخ: ",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
                         PopupMenuButton(
-                          icon: const Icon(Icons.date_range_rounded,
-                              size: 36, color: Colors.teal),
-                          tooltip: 'تصفية',
+                          icon: const Icon(
+                            Icons.date_range_rounded,
+                            size: 36,
+                            color: Colors.teal,
+                          ),
+                          tooltip: "تصفية",
                           onSelected: (value) {},
                           itemBuilder: (BuildContext context) {
                             return [
                               PopupMenuItem(
                                 value: 'week',
                                 onTap: () {
+                                  // Get the date of a week before the current date
                                   DateTime weekBeforeDate = todayDate
                                       .subtract(const Duration(days: 7));
-                                  _load(weekBeforeDate, todayDate, 'الإسبوع');
+
+                                  //call server
+                                  _load(weekBeforeDate, todayDate, "الإسبوع");
                                 },
-                                child: const Text('المصروفات الإسبوع',
-                                    style: TextStyle(color: Colors.black)),
+                                child: const Text(
+                                  'طلبات الإسبوع',
+                                  style: TextStyle(color: Colors.black),
+                                ),
                               ),
                               PopupMenuItem(
                                   value: 'month',
                                   onTap: () {
+                                    // Get the date of a week before the current date
                                     DateTime monthBeforeDate = todayDate
                                         .subtract(const Duration(days: 30));
-                                    _load(monthBeforeDate, todayDate, 'الشهر');
+                                    //call server
+                                    _load(monthBeforeDate, todayDate, "الشهر");
                                   },
-                                  child: const Text('المصروفات الشهر',
-                                      style: TextStyle(color: Colors.black))),
+                                  child: const Text(
+                                    'طلبات الشهر',
+                                    style: TextStyle(color: Colors.black),
+                                  )),
                               PopupMenuItem(
                                   value: 'day',
                                   onTap: () =>
-                                      _load(todayDate, todayDate, 'اليوم'),
-                                  child: const Text('المصروفات اليوم',
-                                      style: TextStyle(color: Colors.black))),
+                                      _load(todayDate, todayDate, "اليوم"),
+                                  child: const Text(
+                                    'طلبات اليوم',
+                                    style: TextStyle(color: Colors.black),
+                                  )),
                               PopupMenuItem(
                                 value: 'search_day',
                                 child: Form(
@@ -330,13 +399,15 @@ class _DischargesPageState extends State<DischargesPage> {
                                             firstDate: DateTime(2000),
                                             lastDate: DateTime(2100));
                                         if (d != null) {
-                                          _load(d, d, 'يوم محدد');
+                                          //call server
+                                          _load(d, d, "يوم محدد");
                                         }
                                         Navigator.pop(context);
                                       },
-                                      child: const Text('تحديد يوم',
-                                          style:
-                                              TextStyle(color: Colors.black)),
+                                      child: const Text(
+                                        'تحديد يوم',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
                                     ),
                                   ],
                                 )),
@@ -360,16 +431,18 @@ class _DischargesPageState extends State<DischargesPage> {
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.account_balance_wallet,
+                                  const Icon(Icons.shopping_bag,
                                       color: Colors.teal),
                                   const SizedBox(height: 8),
-                                  const Text('اجمالي المصروفات',
+                                  const Text('اجمالي طلبات الشراء',
                                       style: TextStyle(fontSize: 12)),
                                   const SizedBox(height: 6),
-                                  Text('${_items.length}',
-                                      style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold)),
+                                  Text(
+                                    '${_items.length}',
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ],
                               ),
                             ),
@@ -391,13 +464,15 @@ class _DischargesPageState extends State<DischargesPage> {
                                   const Icon(Icons.monetization_on,
                                       color: Colors.orange),
                                   const SizedBox(height: 8),
-                                  const Text('قيمة المصروفات',
+                                  const Text('قيمة المشتروات',
                                       style: TextStyle(fontSize: 12)),
                                   const SizedBox(height: 6),
-                                  Text("${numberFormatter(totalAmount)} (جنيه)",
-                                      style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold)),
+                                  Text(
+                                    "${numberFormatter(totalStockValue)} (جنيه)",
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ],
                               ),
                             ),
@@ -417,15 +492,18 @@ class _DischargesPageState extends State<DischargesPage> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Center(
-                                  child: Text('المصروفات: ($period)',
-                                      style: const TextStyle(fontSize: 30))),
+                                child: Text(
+                                  'طلبات الشراء: ($period)',
+                                  style: const TextStyle(fontSize: 30),
+                                ),
+                              ),
                               const SizedBox(height: 30),
                               Expanded(
-                                  child: DischargeTable(
-                                      admin: value.user,
-                                      items: _filtered,
-                                      onDelete: (it, adminId) =>
-                                          _confirmDelete(it, adminId))),
+                                child: PurchaseTable(
+                                  items: _filtered,
+                                  onDelete: (it) => _confirmDelete(it),
+                                ),
+                              ),
                             ],
                           ),
                         ),

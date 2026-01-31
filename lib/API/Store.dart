@@ -4,9 +4,12 @@ import 'package:http/http.dart';
 String storeApiUrl = 'http://localhost:3000/api/store';
 
 class APIStore {
-  static Future getItems() async {
+  static Future getItems(String type) async {
     try {
-      Map<String, String> headers = {"Content-Type": "application/json"};
+      Map<String, String> headers = {
+        "Content-Type": "application/json",
+        "type": type
+      };
       final url = Uri.parse('$storeApiUrl/');
       Response response = await get(url, headers: headers);
       return response;

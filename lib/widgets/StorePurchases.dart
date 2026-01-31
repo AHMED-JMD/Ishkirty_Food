@@ -10,14 +10,14 @@ import 'package:provider/provider.dart';
 import '../API/Store.dart' as api;
 import 'package:ashkerty_food/Components/tables/PurchaseTable.dart';
 
-class PurchaseRequestPage extends StatefulWidget {
-  const PurchaseRequestPage({Key? key}) : super(key: key);
+class StorePurchases extends StatefulWidget {
+  const StorePurchases({Key? key}) : super(key: key);
 
   @override
-  State<PurchaseRequestPage> createState() => _PurchaseRequestPageState();
+  State<StorePurchases> createState() => _StorePurchasesState();
 }
 
-class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
+class _StorePurchasesState extends State<StorePurchases> {
   List<PurchaseRequest> _items = [];
   List<PurchaseRequest> _filtered = [];
   List<StockItem> stores = [];
@@ -56,7 +56,7 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
 
   Future _loadStores() async {
     //call
-    final res = await api.APIStore.getItems();
+    final res = await api.APIStore.getItems("تصنيع");
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
       List data = List.from(body);
@@ -289,7 +289,7 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
                 color: Colors.white,
               ),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/store');
+                Navigator.pushReplacementNamed(context, '/store_products');
               },
             ),
             backgroundColor: Colors.teal,
@@ -304,239 +304,212 @@ class _PurchaseRequestPageState extends State<PurchaseRequestPage> {
           endDrawer: const MyDrawer(),
           body: Padding(
             padding: const EdgeInsets.all(50.0),
-            child: value.user == null || value.user!['role'] != 'admin'
-                ? const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Center(
-                        child: Text(
-                          'انت غير مخول للوصول الى هذه الصفحة',
-                          style: TextStyle(fontSize: 30, color: Colors.red),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          child: TextField(
+                            decoration: const InputDecoration(
+                                prefixIcon: Icon(Icons.search),
+                                hintText: 'ايجاد طلب بالصنف .....'),
+                            onChanged: (v) {
+                              setState(() {
+                                _search = v;
+                                _applyFilter();
+                              });
+                            },
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 20),
-                      Center(
-                        child: Icon(
-                          Icons.lock,
-                          size: 100,
-                          color: Colors.red,
+                        const SizedBox(width: 20),
+                        IconButton(
+                          onPressed: _showForm,
+                          icon: const Icon(
+                            Icons.add_circle,
+                            size: 30,
+                          ),
+                          tooltip: "اضافة طلب",
                         ),
-                      ),
-                    ],
-                  )
-                : Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                      prefixIcon: Icon(Icons.search),
-                                      hintText: 'ايجاد طلب بالصنف .....'),
-                                  onChanged: (v) {
-                                    setState(() {
-                                      _search = v;
-                                      _applyFilter();
-                                    });
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-                              IconButton(
-                                onPressed: _showForm,
-                                icon: const Icon(
-                                  Icons.add_circle,
-                                  size: 30,
-                                ),
-                                tooltip: "اضافة طلب",
-                              ),
-                              const SizedBox(width: 10),
-                              const Text(
-                                "تصفية بالتاريخ: ",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              PopupMenuButton(
-                                icon: const Icon(
-                                  Icons.date_range_rounded,
-                                  size: 36,
-                                  color: Colors.teal,
-                                ),
-                                tooltip: "تصفية",
-                                onSelected: (value) {},
-                                itemBuilder: (BuildContext context) {
-                                  return [
-                                    PopupMenuItem(
-                                      value: 'week',
-                                      onTap: () {
-                                        // Get the date of a week before the current date
-                                        DateTime weekBeforeDate = todayDate
-                                            .subtract(const Duration(days: 7));
+                        const SizedBox(width: 10),
+                        const Text(
+                          "تصفية بالتاريخ: ",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        PopupMenuButton(
+                          icon: const Icon(
+                            Icons.date_range_rounded,
+                            size: 36,
+                            color: Colors.teal,
+                          ),
+                          tooltip: "تصفية",
+                          onSelected: (value) {},
+                          itemBuilder: (BuildContext context) {
+                            return [
+                              PopupMenuItem(
+                                value: 'week',
+                                onTap: () {
+                                  // Get the date of a week before the current date
+                                  DateTime weekBeforeDate = todayDate
+                                      .subtract(const Duration(days: 7));
 
-                                        //call server
-                                        _load(weekBeforeDate, todayDate,
-                                            "الإسبوع");
+                                  //call server
+                                  _load(weekBeforeDate, todayDate, "الإسبوع");
+                                },
+                                child: const Text(
+                                  'طلبات الإسبوع',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                              PopupMenuItem(
+                                  value: 'month',
+                                  onTap: () {
+                                    // Get the date of a week before the current date
+                                    DateTime monthBeforeDate = todayDate
+                                        .subtract(const Duration(days: 30));
+                                    //call server
+                                    _load(monthBeforeDate, todayDate, "الشهر");
+                                  },
+                                  child: const Text(
+                                    'طلبات الشهر',
+                                    style: TextStyle(color: Colors.black),
+                                  )),
+                              PopupMenuItem(
+                                  value: 'day',
+                                  onTap: () =>
+                                      _load(todayDate, todayDate, "اليوم"),
+                                  child: const Text(
+                                    'طلبات اليوم',
+                                    style: TextStyle(color: Colors.black),
+                                  )),
+                              PopupMenuItem(
+                                value: 'search_day',
+                                child: Form(
+                                    child: Row(
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        final d = await showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime(2000),
+                                            lastDate: DateTime(2100));
+                                        if (d != null) {
+                                          //call server
+                                          _load(d, d, "يوم محدد");
+                                        }
+                                        Navigator.pop(context);
                                       },
                                       child: const Text(
-                                        'طلبات الإسبوع',
+                                        'تحديد يوم',
                                         style: TextStyle(color: Colors.black),
                                       ),
                                     ),
-                                    PopupMenuItem(
-                                        value: 'month',
-                                        onTap: () {
-                                          // Get the date of a week before the current date
-                                          DateTime monthBeforeDate =
-                                              todayDate.subtract(
-                                                  const Duration(days: 30));
-                                          //call server
-                                          _load(monthBeforeDate, todayDate,
-                                              "الشهر");
-                                        },
-                                        child: const Text(
-                                          'طلبات الشهر',
-                                          style: TextStyle(color: Colors.black),
-                                        )),
-                                    PopupMenuItem(
-                                        value: 'day',
-                                        onTap: () => _load(
-                                            todayDate, todayDate, "اليوم"),
-                                        child: const Text(
-                                          'طلبات اليوم',
-                                          style: TextStyle(color: Colors.black),
-                                        )),
-                                    PopupMenuItem(
-                                      value: 'search_day',
-                                      child: Form(
-                                          child: Row(
-                                        children: [
-                                          ElevatedButton(
-                                            onPressed: () async {
-                                              final d = await showDatePicker(
-                                                  context: context,
-                                                  initialDate: DateTime.now(),
-                                                  firstDate: DateTime(2000),
-                                                  lastDate: DateTime(2100));
-                                              if (d != null) {
-                                                //call server
-                                                _load(d, d, "يوم محدد");
-                                              }
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text(
-                                              'تحديد يوم',
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                            ),
-                                          ),
-                                        ],
-                                      )),
-                                    ),
-                                  ];
-                                },
+                                  ],
+                                )),
+                              ),
+                            ];
+                          },
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 160,
+                          child: Card(
+                            color: Colors.white,
+                            elevation: 2,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12.0, horizontal: 8.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.shopping_bag,
+                                      color: Colors.teal),
+                                  const SizedBox(height: 8),
+                                  const Text('اجمالي طلبات الشراء',
+                                      style: TextStyle(fontSize: 12)),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    '${_items.length}',
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        SizedBox(
+                          width: 180,
+                          child: Card(
+                            color: Colors.white,
+                            elevation: 2,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12.0, horizontal: 8.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.monetization_on,
+                                      color: Colors.orange),
+                                  const SizedBox(height: 8),
+                                  const Text('قيمة المشتروات',
+                                      style: TextStyle(fontSize: 12)),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    "${numberFormatter(totalStockValue)} (جنيه)",
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                const SizedBox(height: 80),
+                Expanded(
+                  child: _loading
+                      ? const Center(child: CircularProgressIndicator())
+                      : SizedBox(
+                          width: double.infinity,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Center(
+                                child: Text(
+                                  'طلبات الشراء: ($period)',
+                                  style: const TextStyle(fontSize: 30),
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              Expanded(
+                                child: PurchaseTable(
+                                  items: _filtered,
+                                  onDelete: (it) => _confirmDelete(it),
+                                ),
                               ),
                             ],
                           ),
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 160,
-                                child: Card(
-                                  color: Colors.white,
-                                  elevation: 2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12.0, horizontal: 8.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        const Icon(Icons.shopping_bag,
-                                            color: Colors.teal),
-                                        const SizedBox(height: 8),
-                                        const Text('اجمالي طلبات الشراء',
-                                            style: TextStyle(fontSize: 12)),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          '${_items.length}',
-                                          style: const TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              SizedBox(
-                                width: 180,
-                                child: Card(
-                                  color: Colors.white,
-                                  elevation: 2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12.0, horizontal: 8.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        const Icon(Icons.monetization_on,
-                                            color: Colors.orange),
-                                        const SizedBox(height: 8),
-                                        const Text('قيمة المشتروات',
-                                            style: TextStyle(fontSize: 12)),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          "${numberFormatter(totalStockValue)} (جنيه)",
-                                          style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 80),
-                      Expanded(
-                        child: _loading
-                            ? const Center(child: CircularProgressIndicator())
-                            : SizedBox(
-                                width: double.infinity,
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Center(
-                                      child: Text(
-                                        'طلبات الشراء: ($period)',
-                                        style: const TextStyle(fontSize: 30),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 30),
-                                    Expanded(
-                                      child: PurchaseTable(
-                                        items: _filtered,
-                                        onDelete: (it) => _confirmDelete(it),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                      ),
-                    ],
-                  ),
+                        ),
+                ),
+              ],
+            ),
           ),
         ),
       );

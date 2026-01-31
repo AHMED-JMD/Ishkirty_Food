@@ -7,6 +7,7 @@ import 'package:ashkerty_food/models/kebordKeys.dart';
 import 'package:ashkerty_food/models/speicies.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
+import 'package:ashkerty_food/API/Category.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -28,6 +29,9 @@ class _EditSpiecesState extends State<EditSpieces> {
   bool cancelFav = false;
   bool isControl = false;
   List<StockItem> stores = [];
+  List categories = [];
+  bool categoriesLoading = false;
+  String? selectedCategoryId;
 
   List<StoreAssociation> _assocs = [];
   bool _assocsLoading = false;
@@ -37,6 +41,25 @@ class _EditSpiecesState extends State<EditSpieces> {
     super.initState();
     _loadAssocs();
     _loadStores();
+    _loadCategories();
+  }
+
+  Future _loadCategories() async {
+    setState(() {
+      categoriesLoading = true;
+    });
+    try {
+      final res = await APICategory.Get();
+      if (res != false && res is List) {
+        categories = res;
+        selectedCategoryId = widget.data.categoryId?.toString();
+      }
+    } catch (e) {
+      // ignore
+    }
+    setState(() {
+      categoriesLoading = false;
+    });
   }
 
   Future _loadAssocs() async {
@@ -57,7 +80,7 @@ class _EditSpiecesState extends State<EditSpieces> {
 
   Future _loadStores() async {
     //call
-    final res = await api.APIStore.getItems();
+    final res = await api.APIStore.getItems("بيع");
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
       List data = List.from(body);
@@ -314,18 +337,38 @@ class _EditSpiecesState extends State<EditSpieces> {
                         ),
                         SizedBox(
                           width: 700,
-                          child: FormBuilderDropdown(
-                            name: 'category',
-                            decoration:
-                                const InputDecoration(labelText: 'النوع'),
-                            initialValue: widget.data.category.toString(),
-                            items: ['لحوم', 'اضافات', 'عصائر']
-                                .map((type) => DropdownMenuItem(
-                                    value: type, child: Text(type)))
-                                .toList(),
-                            validator: FormBuilderValidators.required(
-                                errorText: "الرجاء ادخال جميع الجقول"),
-                          ),
+                          child: categoriesLoading
+                              ? const Padding(
+                                  padding: EdgeInsets.all(12.0),
+                                  child: Center(
+                                      child: CircularProgressIndicator()),
+                                )
+                              : DropdownButtonFormField<String>(
+                                  initialValue:
+                                      widget.data.categoryId?.toString() ??
+                                          widget.data.category,
+                                  decoration:
+                                      const InputDecoration(labelText: 'النوع'),
+                                  items: categories
+                                      .map<DropdownMenuItem<String>>((c) {
+                                    final id = c['id'];
+                                    final name = c['name'];
+                                    return DropdownMenuItem<String>(
+                                        value: id?.toString(),
+                                        child: Text(name));
+                                  }).toList(),
+                                  onChanged: (val) {
+                                    setState(() {
+                                      selectedCategoryId = val;
+                                    });
+                                  },
+                                  validator: (v) {
+                                    if (v == null || v.isEmpty) {
+                                      return 'الرجاء ادخال جميع الحقول';
+                                    }
+                                    return null;
+                                  },
+                                ),
                         ),
                         widget.data.isFavourites
                             ? Row(
@@ -455,8 +498,8 @@ class _EditSpiecesState extends State<EditSpieces> {
                                         _formKey.currentState!.value['name'];
                                     data['price'] =
                                         _formKey.currentState!.value['price'];
-                                    data['category'] = _formKey
-                                        .currentState!.value['category'];
+                                    // send categoryId (selectedCategoryId) or fallback to form value
+                                    data['categoryId'] = selectedCategoryId;
                                     data['isFavourites'] = _formKey
                                         .currentState!.value['isFavourite'];
                                     data['favBtn'] =
@@ -467,6 +510,7 @@ class _EditSpiecesState extends State<EditSpieces> {
                                         .currentState!.value['cancelFav'];
 
                                     //server
+                                    print(data);
                                     editSpieces(data);
                                   }
                                 },

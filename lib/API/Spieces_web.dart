@@ -5,13 +5,13 @@ import 'package:http/http.dart';
 String apiUrl = 'http://localhost:3000/api/spieces';
 
 class APIWebSpieces {
-  static Future add(name, price, category, file) async {
+  static Future add(name, price, categoryId, file) async {
     try {
       final url = '$apiUrl/';
       final formData = html.FormData();
       formData.append('name', name);
       formData.append('price', price);
-      formData.append('category', category);
+      formData.append('categoryid', categoryId);
 
       // Support multiple possible file shapes returned by file pickers on web.
       try {

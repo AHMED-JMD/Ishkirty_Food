@@ -8,6 +8,7 @@ import 'package:ashkerty_food/Components/tables/UserBillsTable.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
+import 'package:ashkerty_food/API/Category.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
@@ -22,12 +23,148 @@ class UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   List data = [];
   List managers = [];
+  List categories = [];
   bool isLoading = false;
+  bool categoriesLoading = false;
 
   @override
   void initState() {
     super.initState();
     getManagers();
+    getCategories();
+  }
+
+  // get categories
+  Future getCategories() async {
+    setState(() {
+      categoriesLoading = true;
+    });
+
+    final response = await APICategory.Get();
+    if (response != false) {
+      setState(() {
+        categories = response;
+        categoriesLoading = false;
+      });
+    } else {
+      setState(() {
+        categories = [];
+        categoriesLoading = false;
+      });
+    }
+  }
+
+  // delete category with confirmation
+  Future deleteCategory(id) async {
+    final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: const Text('تأكيد الحذف'),
+              content: const Text('هل تريد حذف هذه الفئة؟'),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: const Text('الغاء')),
+                TextButton(
+                    onPressed: () => Navigator.pop(ctx, true),
+                    child:
+                        const Text('حذف', style: TextStyle(color: Colors.red)))
+              ],
+            ));
+
+    if (confirmed == true) {
+      setState(() {
+        categoriesLoading = true;
+      });
+      final res = await APICategory.Delete({'id': id});
+      setState(() {
+        categoriesLoading = false;
+      });
+      if (res == true) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('تم الحذف'),
+          backgroundColor: Colors.green,
+        ));
+        getCategories();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(res.toString()),
+          backgroundColor: Colors.red,
+        ));
+      }
+    }
+  }
+
+  // add category dialog
+  Future addCategoryDialog() async {
+    final nameCtrl = TextEditingController();
+    final descCtrl = TextEditingController();
+
+    final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) {
+          return Directionality(
+            textDirection: TextDirection.rtl,
+            child: AlertDialog(
+              title: const Text('اضافة قائمة جديدة'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: nameCtrl,
+                    decoration: const InputDecoration(labelText: 'الاسم'),
+                  ),
+                  TextField(
+                    controller: descCtrl,
+                    decoration: const InputDecoration(labelText: 'الوصف'),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: const Text('الغاء')),
+                TextButton(
+                    onPressed: () async {
+                      final name = nameCtrl.text.trim();
+                      final desc = descCtrl.text.trim();
+                      if (name.isEmpty) return;
+                      Navigator.pop(ctx, true);
+                      setState(() {
+                        categoriesLoading = true;
+                      });
+                      final res = await APICategory.Add({
+                        'name': name,
+                        'description': desc,
+                      });
+                      setState(() {
+                        categoriesLoading = false;
+                      });
+                      if (res == true) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text('تمت الاضافة'),
+                          backgroundColor: Colors.green,
+                        ));
+                        getCategories();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(res.toString()),
+                          backgroundColor: Colors.red,
+                        ));
+                      }
+                    },
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+                    child: const Text(
+                      'اضافة',
+                      style: TextStyle(color: Colors.white),
+                    ))
+              ],
+            ),
+          );
+        });
+    return confirmed;
   }
 
   //function to get managers
@@ -168,6 +305,122 @@ class _UserProfileState extends State<UserProfile> {
                   ],
                 ),
               ),
+              const SizedBox(
+                height: 40,
+              ),
+
+              // Categories horizontal clickable cards (similar to menu_nav)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'قائمة الطعام',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    if (value.user['role'] == 'admin')
+                      ElevatedButton.icon(
+                        onPressed: addCategoryDialog,
+                        icon: const Icon(
+                          Icons.add,
+                          color: Colors.black,
+                        ),
+                        label: const Text(
+                          'اضافة',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal),
+                      )
+                  ],
+                ),
+              ),
+
+              Container(
+                height: 120,
+                color: Colors.transparent,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: categoriesLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView.separated(
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: categories.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(width: 10),
+                          itemBuilder: (context, index) {
+                            final cat = categories[index];
+                            return GestureDetector(
+                              onTap: () {
+                                // You can add navigation or edit action here
+                              },
+                              child: Stack(
+                                children: [
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 185),
+                                    width: 140,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: Colors.grey.shade300,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.category,
+                                          color: Colors.teal.shade400,
+                                          size: 28,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          '${cat['name'] ?? ''}',
+                                          textAlign: TextAlign.center,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  if (value.user['role'] == 'admin')
+                                    Positioned(
+                                      right: 4,
+                                      top: 4,
+                                      child: InkWell(
+                                        onTap: () => deleteCategory(cat['id'] ??
+                                            cat['ID'] ??
+                                            cat['_id']),
+                                        child: const CircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: Colors.red,
+                                          child: Icon(Icons.delete,
+                                              size: 14, color: Colors.white),
+                                        ),
+                                      ),
+                                    )
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ),
+
               const SizedBox(
                 height: 80,
               ),

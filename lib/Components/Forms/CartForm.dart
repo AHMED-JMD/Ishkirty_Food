@@ -297,7 +297,6 @@ class _CartFormState extends State<CartForm> {
                         ),
                         FormBuilderRadioGroup(
                           name: 'payment_method',
-                          initialValue: 'بنكك',
                           decoration: const InputDecoration(
                               labelText: 'اختر طريقة الدفع',
                               contentPadding: EdgeInsets.all(10.0)),
@@ -542,14 +541,93 @@ class _CartFormState extends State<CartForm> {
                                     //     userVal.user, data,
                                     //     includeLabel: false);
 
-                                    await printTwoCopies('Save to PDF',
-                                        billCounter, type, userVal.user, data,
-                                        cashierLabel: 'كارت العميل');
-                                    // if configured, send same pair to second printer as well
-                                    if (isSecondPrinter) {
-                                      await printTwoCopies('XP-80C',
-                                          billCounter, type, userVal.user, data,
-                                          cashierLabel: 'كارت العميل');
+                                    // Split cart into two groups: shawarma/juices vs others
+                                    final shawarmaCats = ['شاورما'];
+                                    final shawarmaItems =
+                                        value.cart.where((item) {
+                                      final cat = (item is Map)
+                                          ? (item['category'] ?? '')
+                                          : (item.category ?? '');
+                                      return shawarmaCats.contains(cat);
+                                    }).toList();
+
+                                    // cart for juices
+                                    final juicesCats = ['عصائر'];
+                                    final juicesItems =
+                                        value.cart.where((item) {
+                                      final cat = (item is Map)
+                                          ? (item['category'] ?? '')
+                                          : (item.category ?? '');
+                                      return juicesCats.contains(cat);
+                                    }).toList();
+
+                                    //other cart items list
+                                    final otherItems = value.cart.where((item) {
+                                      final cat = (item is Map)
+                                          ? (item['category'] ?? '')
+                                          : (item.category ?? '');
+                                      return !shawarmaCats.contains(cat) &&
+                                          !juicesCats.contains(cat);
+                                    }).toList();
+
+                                    // Prepare and print separate payloads for each group
+                                    try {
+                                      if (shawarmaItems.isNotEmpty) {
+                                        var shawData = Map.from(data);
+                                        shawData['trans'] = shawarmaItems;
+                                        shawData['amount'] =
+                                            sumTotal(shawarmaItems);
+
+                                        // printing here
+                                        await printTwoCopies(
+                                            'Save to PDF',
+                                            billCounter,
+                                            type,
+                                            userVal.user,
+                                            shawData,
+                                            cashierLabel: 'كارت عميل');
+                                      }
+
+                                      if (juicesItems.isNotEmpty) {
+                                        var juiceData = Map.from(data);
+                                        juiceData['trans'] = juicesItems;
+                                        juiceData['amount'] =
+                                            sumTotal(juicesItems);
+
+                                        await printTwoCopies(
+                                            'Save to PDF',
+                                            billCounter,
+                                            type,
+                                            userVal.user,
+                                            juiceData,
+                                            cashierLabel: 'كارت عميل');
+                                      }
+
+                                      if (otherItems.isNotEmpty) {
+                                        var otherData = Map.from(data);
+                                        otherData['trans'] = otherItems;
+                                        otherData['amount'] =
+                                            sumTotal(otherItems);
+
+                                        await printTwoCopies(
+                                            'Save to PDF',
+                                            billCounter,
+                                            type,
+                                            userVal.user,
+                                            otherData,
+                                            cashierLabel: 'كارت عميل');
+                                      }
+                                    } catch (e) {
+                                      // Common on web: cross-realm JS exceptions (Permission denied...)
+                                      // Provide a user-friendly fallback instead of letting it crash.
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                              'خطأ أثناء الطباعة: ${e.toString()}. حاول حفظ الفاتورة كـ PDF أو استخدم متصفحًا مختلفًا.'),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
                                     }
                                     //reset cart
                                     cartProvider.resetCart();
