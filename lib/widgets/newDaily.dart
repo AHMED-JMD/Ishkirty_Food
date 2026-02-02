@@ -4,6 +4,7 @@ import 'package:ashkerty_food/API/Daily.dart';
 import 'package:ashkerty_food/API/Discharges.dart';
 import 'package:ashkerty_food/Components/tables/DischargeTable.dart';
 import 'package:ashkerty_food/Components/tables/PurchaseTable.dart';
+import 'package:ashkerty_food/models/Daily.dart';
 import 'package:ashkerty_food/models/Discharge.dart';
 import 'package:ashkerty_food/models/PurchaseRequest.dart';
 import 'package:ashkerty_food/Components/tables/EmployeeTransTable.dart';
@@ -11,6 +12,7 @@ import 'package:ashkerty_food/models/EmpTrans.dart';
 import 'package:ashkerty_food/models/Employee.dart';
 import 'package:ashkerty_food/models/StockItem.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
+import 'package:ashkerty_food/static/Printing.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:ashkerty_food/static/formatter.dart';
@@ -34,6 +36,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
   List<EmpTransaction> _empTrans = [];
   List<Employee> _employees = [];
   List<StockItem> _stores = [];
+  Daily? newDaily;
   bool _loading = true;
   double cashSales = 0.0;
   double bankSales = 0.0;
@@ -42,7 +45,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
   int totalCash = 0;
   int totalBank = 0;
   int totalAccount = 0;
-  int total = 0;
+  int totalSales = 0;
   String period = 'اليوم';
 
   //total spices from sales costs
@@ -84,6 +87,9 @@ class _NewDailyPageState extends State<NewDailyPage> {
   @override
   void initState() {
     super.initState();
+    _loadDaily(Provider.of<AuthProvider>(context, listen: false)
+        .user!['id']
+        .toString());
     _loadDischarges();
     _loadPurchases();
     _loadEmpTrans();
@@ -94,6 +100,26 @@ class _NewDailyPageState extends State<NewDailyPage> {
   }
 
   // fetch API'S
+  Future _loadDaily(String adminId) async {
+    setState(() => _loading = true);
+
+    // load daily if exist's
+    final today = DateTime.now();
+    final res = await APIDaily.getOne({
+      'date': today.toIso8601String(),
+      'admin_id': adminId,
+    });
+
+    if (res.statusCode == 200) {
+      final body = jsonDecode(res.body);
+      newDaily = Daily.fromJson(body);
+    } else {
+      _showMessage(res.body);
+    }
+
+    setState(() => _loading = false);
+  }
+
   Future _loadSales(DateTime startDate, DateTime endDate) async {
     setState(() {
       _loading = true;
@@ -163,7 +189,8 @@ class _NewDailyPageState extends State<NewDailyPage> {
     final today = DateTime.now();
     final res = await api.APIStore.getPurchasesByDate({
       'startDate': today.toIso8601String(),
-      'endDate': today.toIso8601String()
+      'endDate': today.toIso8601String(),
+      'type': 'تصنيع',
     });
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
@@ -179,7 +206,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
   }
 
   Future _loadStores() async {
-    final res = await api.APIStore.getItems("تصنيع");
+    final res = await api.APIStore.getItems({'type': 'تصنيع'});
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
       List data = List.from(body);
@@ -216,7 +243,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
   }
 
 //POST API'S
-  Future _createDaily() async {
+  Future _createDaily(String adminId) async {
     setState(() => _loading = true);
 
     double totalCosts = totalSalesCosts;
@@ -237,16 +264,18 @@ class _NewDailyPageState extends State<NewDailyPage> {
       'cash_costs': totalCashCosts,
       'bank_costs': totalBankCosts,
       'account_costs': totalAccountCosts,
+      'admin_id': adminId,
     });
     if (res.statusCode == 200) {
       _showMessage(res.body);
+      Navigator.pushReplacementNamed(context, '/daily');
     }
     _showMessage(res.body);
     setState(() => _loading = false);
   }
 
 //models for form control
-  void _showAddPurchaseDialog() async {
+  void _showAddPurchaseDialog(String adminId) async {
     final vendorCtrl = TextEditingController(text: "عام");
     final qtyCtrl = TextEditingController();
     final netQtyCtrl = TextEditingController();
@@ -359,6 +388,8 @@ class _NewDailyPageState extends State<NewDailyPage> {
                     'net_quantity': double.parse(netQtyCtrl.text.trim()),
                     'payment_method': paymentMethod,
                     'date': pickedDate.toIso8601String(),
+                    'type': 'تصنيع',
+                    'admin_id': adminId
                   };
                   Navigator.pop(ctx);
                   final res = await api.APIStore.addPurchase(dto);
@@ -377,7 +408,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
         });
   }
 
-  void _showDischargesForm() {
+  void _showDischargesForm(String adminId) {
     final nameCtrl = TextEditingController();
     final amountCtrl = TextEditingController();
     DateTime pickedDate = DateTime.now();
@@ -430,17 +461,17 @@ class _NewDailyPageState extends State<NewDailyPage> {
                                 ? 'Invalid'
                                 : null,
                           ),
-                          Row(
-                            children: [
-                              const Text('شهري؟'),
-                              Checkbox(
-                                  value: isMonthly,
-                                  onChanged: (v) {
-                                    isMonthly = v ?? false;
-                                    setStateSB(() {});
-                                  }),
-                            ],
-                          ),
+                          // Row(
+                          //   children: [
+                          //     const Text('شهري؟'),
+                          //     Checkbox(
+                          //         value: isMonthly,
+                          //         onChanged: (v) {
+                          //           isMonthly = v ?? false;
+                          //           setStateSB(() {});
+                          //         }),
+                          //   ],
+                          // ),
                           const SizedBox(height: 8),
                           Row(
                             children: [
@@ -481,6 +512,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
                         'date': pickedDate.toIso8601String(),
                         'isMonthly': isMonthly,
                         'paymentMethod': paymentMethod,
+                        'admin_id': adminId
                       };
                       Navigator.pop(context);
                       final res = await APIDischarges.addDischarge(dto);
@@ -586,6 +618,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
                       'amount': double.tryParse(amountCtrl.text) ?? 0,
                       'date': date.toIso8601String(),
                       'paymentMethod': paymentMethod,
+                      'admin_id': adminId,
                     };
                     final res = await emp_api.APIEmployee.addTrans(dto);
                     if (res.statusCode == 200) {
@@ -620,10 +653,22 @@ class _NewDailyPageState extends State<NewDailyPage> {
 
   @override
   Widget build(BuildContext context) {
-    // total sales
-    total = totalCash + totalBank + totalAccount;
+    // totals
+    double totalEmployeeTran =
+        totalEmpTransAccount + totalEmpTransBankak + totalEmpTransCash;
+    double totalPurchase =
+        totalPurchaseAccount + totalPurchaseBankak + totalPurchaseCash;
+    double totalDischarges =
+        totalDischargesAccount + totalDischargesBankak + totalDischargesCash;
+    //sales and costs
+    double totalCosts =
+        totalSalesCosts + totalEmployeeTran + totalPurchase + totalDischarges;
+    totalSales = totalCash + totalBank + totalAccount;
 
     return Consumer<AuthProvider>(builder: (context, value, child) {
+      bool updateDaily = (newDaily != null && !newDaily!.isCreated);
+      bool isAdmin = value.user!['role'] == 'admin' ? true : false;
+
       return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
@@ -663,7 +708,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
                                   style: const TextStyle(fontSize: 30),
                                 ),
                                 Text(
-                                  "${numberFormatter(total)} / (جنيه) ",
+                                  "${numberFormatter(totalSales)} / (جنيه) ",
                                   style: const TextStyle(fontSize: 30),
                                 ),
                                 const SizedBox(
@@ -728,6 +773,39 @@ class _NewDailyPageState extends State<NewDailyPage> {
                                 // ),
                               ],
                             ),
+                            isAdmin
+                                ? SizedBox(
+                                    width: 200,
+                                    height: 50,
+                                    child: ElevatedButton.icon(
+                                        onPressed: () async =>
+                                            await printDailyComponents(
+                                                admin: value.user!['username']
+                                                    .toString(),
+                                                totalSales: totalSales,
+                                                totalCosts: totalCosts,
+                                                totalSpiceCosts:
+                                                    totalSalesCosts,
+                                                totalEmployeeTran:
+                                                    totalEmployeeTran,
+                                                totalPurchase: totalPurchase,
+                                                totalDischarges:
+                                                    totalDischarges,
+                                                empTrans: _empTrans,
+                                                purchases: _purchases,
+                                                discharges: _discharges),
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.grey[300]),
+                                        icon: const Icon(Icons.print,
+                                            color: Colors.black),
+                                        label: const Text(
+                                          "طباعة اليومية",
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              color: Colors.black),
+                                        )),
+                                  )
+                                : Container(),
                           ],
                         ),
                         const SizedBox(height: 120),
@@ -740,21 +818,24 @@ class _NewDailyPageState extends State<NewDailyPage> {
                                 style: TextStyle(
                                     fontSize: 25, fontWeight: FontWeight.bold)),
                             const SizedBox(width: 10),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                _showAddEmpTrans(value.user!['id'].toString());
-                              },
-                              icon: const Icon(
-                                Icons.add_circle,
-                                color: Colors.black,
-                              ),
-                              label: const Text(
-                                'خصم المرتب',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.teal),
-                            ),
+                            updateDaily || isAdmin
+                                ? ElevatedButton.icon(
+                                    onPressed: () {
+                                      _showAddEmpTrans(
+                                          value.user!['id'].toString());
+                                    },
+                                    icon: const Icon(
+                                      Icons.add_circle,
+                                      color: Colors.black,
+                                    ),
+                                    label: const Text(
+                                      'خصم المرتب',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.teal),
+                                  )
+                                : Container(),
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -818,19 +899,24 @@ class _NewDailyPageState extends State<NewDailyPage> {
                             const SizedBox(
                               width: 10,
                             ),
-                            ElevatedButton.icon(
-                              onPressed: _showAddPurchaseDialog,
-                              icon: const Icon(
-                                Icons.add_circle,
-                                color: Colors.black,
-                              ),
-                              label: const Text(
-                                'اضافة طلب',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.teal),
-                            ),
+                            updateDaily || isAdmin
+                                ? ElevatedButton.icon(
+                                    onPressed: () {
+                                      _showAddPurchaseDialog(
+                                          value.user!['id'].toString());
+                                    },
+                                    icon: const Icon(
+                                      Icons.add_circle,
+                                      color: Colors.black,
+                                    ),
+                                    label: const Text(
+                                      'اضافة طلب',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.teal),
+                                  )
+                                : Container(),
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -867,11 +953,13 @@ class _NewDailyPageState extends State<NewDailyPage> {
                         Container(
                           padding: const EdgeInsets.all(30),
                           child: PurchaseTable(
+                              admin: value.user,
+                              type: 'تصنيع',
                               items: _purchases,
-                              onDelete: (it) async {
+                              onDelete: (it, adminId) async {
                                 // reuse existing delete flow
                                 final res = await api.APIStore.deletePurchase(
-                                    {'id': it.id});
+                                    {'id': it.id, 'admin_id': adminId});
                                 if (res.statusCode == 200) {
                                   await _loadPurchases();
                                 }
@@ -891,19 +979,24 @@ class _NewDailyPageState extends State<NewDailyPage> {
                             const SizedBox(
                               width: 10,
                             ),
-                            ElevatedButton.icon(
-                              onPressed: _showDischargesForm,
-                              icon: const Icon(
-                                Icons.add_circle,
-                                color: Colors.black,
-                              ),
-                              label: const Text(
-                                'اضافة منصرف',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.teal),
-                            ),
+                            updateDaily || isAdmin
+                                ? ElevatedButton.icon(
+                                    onPressed: () => {
+                                      _showDischargesForm(
+                                          value.user!['id'].toString())
+                                    },
+                                    icon: const Icon(
+                                      Icons.add_circle,
+                                      color: Colors.black,
+                                    ),
+                                    label: const Text(
+                                      'اضافة منصرف',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.teal),
+                                  )
+                                : Container(),
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -954,19 +1047,49 @@ class _NewDailyPageState extends State<NewDailyPage> {
                         const Divider(),
 
                         const SizedBox(height: 40),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 40,
-                          child: ElevatedButton(
-                              onPressed: _createDaily,
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.teal),
-                              child: const Text(
-                                "حفظ اليومية",
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.white),
-                              )),
-                        ),
+                        updateDaily || isAdmin
+                            ? SizedBox(
+                                width: double.infinity,
+                                height: 40,
+                                child: ElevatedButton(
+                                    onPressed: () => _createDaily(
+                                        value.user!['id'].toString()),
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.teal),
+                                    child: const Text(
+                                      "حفظ اليومية",
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.white),
+                                    )),
+                              )
+                            : SizedBox(
+                                width: double.infinity,
+                                height: 60,
+                                child: ElevatedButton.icon(
+                                    onPressed: () async =>
+                                        await printDailyComponents(
+                                            admin: value.user!['username']
+                                                .toString(),
+                                            totalSales: totalSales,
+                                            totalCosts: totalCosts,
+                                            totalSpiceCosts: totalSalesCosts,
+                                            totalEmployeeTran:
+                                                totalEmployeeTran,
+                                            totalPurchase: totalPurchase,
+                                            totalDischarges: totalDischarges,
+                                            empTrans: _empTrans,
+                                            purchases: _purchases,
+                                            discharges: _discharges),
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.grey[300]),
+                                    icon: const Icon(Icons.print,
+                                        color: Colors.black),
+                                    label: const Text(
+                                      "طباعة اليومية",
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.black),
+                                    )),
+                              ),
                         const SizedBox(height: 40),
                       ],
                     ),

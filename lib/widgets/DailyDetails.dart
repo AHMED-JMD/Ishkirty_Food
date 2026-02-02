@@ -160,7 +160,8 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
     // load today's purchases as sample
     final res = await api.APIStore.getPurchasesByDate({
       'startDate': widget.daily.date.toIso8601String(),
-      'endDate': widget.daily.date.toIso8601String()
+      'endDate': widget.daily.date.toIso8601String(),
+      'type': 'تصنيع',
     });
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
@@ -172,7 +173,7 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
   }
 
   Future _loadStores() async {
-    final res = await api.APIStore.getItems("تصنيع");
+    final res = await api.APIStore.getItems({'type': 'تصنيع'});
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
       List data = List.from(body);
@@ -241,7 +242,7 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
   }
 
   //modals for editing
-  void _showAddPurchaseDialog() async {
+  void _showAddPurchaseDialog(String adminId) async {
     final vendorCtrl = TextEditingController(text: "عام");
     final qtyCtrl = TextEditingController();
     final netqtyCtrl = TextEditingController();
@@ -354,6 +355,8 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
                     'net_quantity': double.parse(netqtyCtrl.text.trim()),
                     'payment_method': paymentMethod,
                     'date': pickedDate.toIso8601String(),
+                    'type': 'تصنيع',
+                    'admin_id': adminId,
                   };
                   Navigator.pop(ctx);
                   final res = await api.APIStore.addPurchase(dto);
@@ -372,7 +375,7 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
         });
   }
 
-  void _showDischargesForm() {
+  void _showDischargesForm(String adminId) {
     final nameCtrl = TextEditingController();
     final amountCtrl = TextEditingController();
     DateTime pickedDate = widget.daily.date;
@@ -425,17 +428,17 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
                                 ? 'Invalid'
                                 : null,
                           ),
-                          Row(
-                            children: [
-                              const Text('شهري؟'),
-                              Checkbox(
-                                  value: isMonthly,
-                                  onChanged: (v) {
-                                    isMonthly = v ?? false;
-                                    setStateSB(() {});
-                                  }),
-                            ],
-                          ),
+                          // Row(
+                          //   children: [
+                          //     const Text('شهري؟'),
+                          //     Checkbox(
+                          //         value: isMonthly,
+                          //         onChanged: (v) {
+                          //           isMonthly = v ?? false;
+                          //           setStateSB(() {});
+                          //         }),
+                          //   ],
+                          // ),
                           const SizedBox(height: 8),
                           Row(
                             children: [
@@ -476,6 +479,7 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
                         'date': pickedDate.toIso8601String(),
                         'isMonthly': isMonthly,
                         'paymentMethod': paymentMethod,
+                        'admin_id': adminId,
                       };
                       Navigator.pop(context);
                       final res = await APIDischarges.addDischarge(dto);
@@ -581,6 +585,7 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
                       'amount': double.tryParse(amountCtrl.text) ?? 0,
                       'date': date.toIso8601String(),
                       'paymentMethod': paymentMethod,
+                      'admin_id': adminId,
                     };
                     final res = await emp_api.APIEmployee.addTrans(dto);
                     if (res.statusCode == 200) {
@@ -760,7 +765,7 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
                             const SizedBox(width: 10),
                             ElevatedButton.icon(
                               onPressed: () {
-                                _showAddEmpTrans('adminId');
+                                _showAddEmpTrans(value.user!['id'].toString());
                               },
                               icon: const Icon(
                                 Icons.add_circle,
@@ -838,7 +843,10 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
                               width: 10,
                             ),
                             ElevatedButton.icon(
-                              onPressed: _showAddPurchaseDialog,
+                              onPressed: () {
+                                _showAddPurchaseDialog(
+                                    value.user['id'].toString());
+                              },
                               icon: const Icon(
                                 Icons.add_circle,
                                 color: Colors.black,
@@ -886,11 +894,13 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
                         Container(
                           padding: const EdgeInsets.all(30),
                           child: PurchaseTable(
+                              admin: value.user,
+                              type: 'تصنيع',
                               items: _purchases,
-                              onDelete: (it) async {
+                              onDelete: (it, adminId) async {
                                 // reuse existing delete flow
                                 final res = await api.APIStore.deletePurchase(
-                                    {'id': it.id});
+                                    {'id': it.id, 'admin_id': adminId});
                                 if (res.statusCode == 200) {
                                   await _loadPurchases();
                                 }
@@ -912,7 +922,10 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
                               width: 10,
                             ),
                             ElevatedButton.icon(
-                              onPressed: _showDischargesForm,
+                              onPressed: () {
+                                _showDischargesForm(
+                                    value.user!['id'].toString());
+                              },
                               icon: const Icon(
                                 Icons.add_circle,
                                 color: Colors.black,

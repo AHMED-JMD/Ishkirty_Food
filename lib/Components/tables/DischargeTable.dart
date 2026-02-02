@@ -50,7 +50,7 @@ class DischargeTable extends StatelessWidget {
             decoration: BoxDecoration(
                 border: Border(
                     right: BorderSide(color: Colors.grey.shade300, width: 1))),
-            child: const Text('شهري؟',
+            child: const Text('المستخدم',
                 style: TextStyle(fontSize: 20, color: Colors.teal)),
           )),
           if (isAdmin)
@@ -103,8 +103,7 @@ class DischargeTable extends StatelessWidget {
                       border: Border(
                           right: BorderSide(
                               color: Colors.grey.shade300, width: 1))),
-                  child: Text(it.isMonthly ? 'نعم' : 'لا',
-                      style: const TextStyle(fontSize: 17)),
+                  child: Text(it.admin, style: const TextStyle(fontSize: 17)),
                 )),
                 if (isAdmin)
                   DataCell(Container(

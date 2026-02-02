@@ -5,10 +5,10 @@ class PurchaseRequest {
   final String vendor;
   final double quantity;
   final double netQuantity;
-
   final int buyPrice;
   final DateTime date;
   final String paymentMethod;
+  final String admin;
   final StockItem store;
 
   PurchaseRequest({
@@ -19,6 +19,7 @@ class PurchaseRequest {
     required this.buyPrice,
     required this.date,
     required this.paymentMethod,
+    required this.admin,
     required this.store,
   });
 
@@ -33,6 +34,7 @@ class PurchaseRequest {
           : (int.tryParse(json['buy_price']?.toString() ?? '') ?? 0),
       date: DateTime.tryParse(json['date']?.toString() ?? '') ?? DateTime.now(),
       paymentMethod: json['payment_method'] ?? '',
+      admin: json['admin'] ?? '',
       store: StockItem.fromJson(json['Store']),
     );
   }
@@ -46,6 +48,7 @@ class PurchaseRequest {
       'buy_price': buyPrice,
       'date': date.toIso8601String(),
       'payment_method': paymentMethod,
+      'admin': admin,
       'Store': store.toJson(),
     };
   }

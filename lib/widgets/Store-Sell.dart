@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:ashkerty_food/Components/tables/StoreTable.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/drawer.dart';
-import 'package:ashkerty_food/static/formatter.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:ashkerty_food/widgets/Discharges.dart';
 import 'package:ashkerty_food/widgets/StoreAcquisition.dart';
@@ -36,10 +35,10 @@ class _StorePageState extends State<StorePage> {
     });
 
     //call
-    final res = await api.APIStore.getItems('بيع');
+
+    final res = await api.APIStore.getItems({'type': 'بيع'});
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
-      print(body);
       List data = List.from(body);
       _items = data.map((e) => StockItem.fromJson(e)).toList();
     } else {
@@ -64,7 +63,7 @@ class _StorePageState extends State<StorePage> {
   double get totalStockValue =>
       _items.fold(0.0, (p, e) => p + e.sellPrice * e.quantity);
 
-  void _showForm({StockItem? item}) {
+  void _showForm({StockItem? item, String? adminId}) {
     final nameCtrl = TextEditingController(text: item?.name ?? '');
     final sellCtrl = TextEditingController(
         text: item != null ? item.sellPrice.toString() : '0');
@@ -87,8 +86,8 @@ class _StorePageState extends State<StorePage> {
                 builder: (BuildContext context, StateSetter setState) {
               return AlertDialog(
                 title: Center(
-                    child: Text(
-                        item == null ? 'اضافة عنصر للمخزون' : 'تعديل العنصر')),
+                    child:
+                        Text(item == null ? 'اضافة منتج بيع' : 'تعديل المنتج')),
                 content: Form(
                   key: formKey,
                   child: Directionality(
@@ -106,26 +105,18 @@ class _StorePageState extends State<StorePage> {
                                 ? 'Required'
                                 : null,
                           ),
-                          DropdownButtonFormField<String>(
-                            initialValue: typeCtrl.text.isNotEmpty
-                                ? typeCtrl.text
-                                : 'بيع',
+                          TextFormField(
+                            controller: typeCtrl,
+                            readOnly: true,
                             decoration:
                                 const InputDecoration(labelText: 'نوع المخزن'),
-                            items: const [
-                              DropdownMenuItem(
-                                value: 'بيع',
-                                child: Text('بيع'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'تصنيع',
-                                child: Text('تصنيع'),
-                              ),
-                            ],
+                            validator: (v) => (v == null || v.trim().isEmpty)
+                                ? 'Required'
+                                : null,
                             onChanged: (val) {
-                              setState(() {
-                                typeCtrl.text = val!;
-                              });
+                              setState(
+                                () => typeCtrl.text = val,
+                              );
                             },
                           ),
                           if (typeCtrl.text == 'تصنيع')
@@ -196,12 +187,14 @@ class _StorePageState extends State<StorePage> {
                         'warn_value': int.parse(warnCtrl.text.trim()),
                         'type': typeCtrl.text,
                         'isKilo': isKilo,
+                        'admin_id': adminId,
                       };
 
                       Navigator.pop(context);
                       // call API
                       if (item == null) {
                         final res = await api.APIStore.addItem(dto);
+
                         if (res.statusCode == 200) {
                           await _load();
                         } else {
@@ -224,7 +217,7 @@ class _StorePageState extends State<StorePage> {
             }));
   }
 
-  void _confirmDelete(StockItem it) {
+  void _confirmDelete(StockItem it, String adminId) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -242,7 +235,8 @@ class _StorePageState extends State<StorePage> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-              final res = await api.APIStore.deleteItem({'id': it.id});
+              final res = await api.APIStore.deleteItem(
+                  {'id': it.id, 'admin_id': adminId});
               if (res.statusCode == 200) {
                 await _load();
               } else {
@@ -276,6 +270,8 @@ class _StorePageState extends State<StorePage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, value, child) {
+      bool isAdmin = value.user['role'] == 'admin' ? true : false;
+
       return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
@@ -330,7 +326,7 @@ class _StorePageState extends State<StorePage> {
                               Text(
                                 '${_items.length}',
                                 style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
+                                    fontSize: 22, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -338,34 +334,34 @@ class _StorePageState extends State<StorePage> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    SizedBox(
-                      width: 180,
-                      child: Card(
-                        color: Colors.white,
-                        elevation: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 12.0, horizontal: 8.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.monetization_on,
-                                  color: Colors.orange),
-                              const SizedBox(height: 8),
-                              const Text('قيمة المخزون',
-                                  style: TextStyle(fontSize: 12)),
-                              const SizedBox(height: 6),
-                              Text(
-                                "${numberFormatter(totalStockValue)} (جنيه)",
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    // SizedBox(
+                    //   width: 180,
+                    //   child: Card(
+                    //     color: Colors.white,
+                    //     elevation: 2,
+                    //     child: Padding(
+                    //       padding: const EdgeInsets.symmetric(
+                    //           vertical: 12.0, horizontal: 8.0),
+                    //       child: Column(
+                    //         mainAxisSize: MainAxisSize.min,
+                    //         crossAxisAlignment: CrossAxisAlignment.center,
+                    //         children: [
+                    //           const Icon(Icons.monetization_on,
+                    //               color: Colors.orange),
+                    //           const SizedBox(height: 8),
+                    //           const Text('قيمة المخزون',
+                    //               style: TextStyle(fontSize: 12)),
+                    //           const SizedBox(height: 6),
+                    //           Text(
+                    //             "${numberFormatter(totalStockValue)} (جنيه)",
+                    //             style: const TextStyle(
+                    //                 fontSize: 18, fontWeight: FontWeight.bold),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
                 const SizedBox(height: 30),
@@ -389,14 +385,16 @@ class _StorePageState extends State<StorePage> {
                           ),
                         ),
                         const SizedBox(width: 20),
-                        IconButton(
-                          onPressed: _showForm,
-                          icon: const Icon(
-                            Icons.add_circle,
-                            size: 30,
+                        if (isAdmin)
+                          IconButton(
+                            onPressed: () =>
+                                _showForm(adminId: value.user['id'].toString()),
+                            icon: const Icon(
+                              Icons.add_circle,
+                              size: 30,
+                            ),
+                            tooltip: "اضافة منتج",
                           ),
-                          tooltip: "اضافة منتج",
-                        ),
                         const SizedBox(width: 20),
                         ElevatedButton.icon(
                             onPressed: () {
@@ -429,11 +427,11 @@ class _StorePageState extends State<StorePage> {
                                           const StoreAcquisitions()));
                             },
                             icon: const Icon(
-                              Icons.download,
+                              Icons.download_for_offline,
                               color: Colors.black,
                             ),
                             label: const Text(
-                              "استلام",
+                              "الاستلامات",
                               style: TextStyle(color: Colors.black),
                             ),
                           ),
@@ -483,6 +481,8 @@ class _StorePageState extends State<StorePage> {
                                         CrossAxisAlignment.stretch,
                                     children: [
                                       StoreTable(
+                                          admin: value.user,
+                                          type: 'بيع',
                                           items: _filtered,
                                           confirmDelete: _confirmDelete,
                                           showForm: _showForm)

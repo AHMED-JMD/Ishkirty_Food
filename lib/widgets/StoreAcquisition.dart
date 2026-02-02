@@ -4,7 +4,6 @@ import 'package:ashkerty_food/models/StockItem.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
-import 'package:ashkerty_food/static/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../API/Store.dart' as api;
@@ -38,7 +37,8 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
 
     final res = await api.APIStore.getPurchasesByDate({
       'startDate': startDate.toIso8601String(),
-      'endDate': endDate.toIso8601String()
+      'endDate': endDate.toIso8601String(),
+      'type': 'بيع',
     });
 
     if (res.statusCode == 200) {
@@ -56,7 +56,7 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
 
   Future _loadStores() async {
     //call
-    final res = await api.APIStore.getItems('بيع');
+    final res = await api.APIStore.getItems({'type': 'بيع'});
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
       List data = List.from(body);
@@ -80,7 +80,7 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
   double get totalStockValue =>
       _items.fold(0.0, (p, e) => p + e.buyPrice * e.quantity);
 
-  void _showForm() {
+  void _showForm(String adminId) {
     final vendorCtrl = TextEditingController(text: "عام");
     final qtyCtrl = TextEditingController();
 
@@ -96,7 +96,7 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
         builder: (_) => StatefulBuilder(
                 builder: (BuildContext context, StateSetter setState) {
               return AlertDialog(
-                title: const Center(child: Text('اضافة طلب شراء')),
+                title: const Center(child: Text('استلام مطبخ')),
                 content: Form(
                   key: formKey,
                   child: Directionality(
@@ -113,19 +113,19 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
                                 ? 'Required'
                                 : null,
                           ),
-                          DropdownButtonFormField<String>(
-                            initialValue: paymentMethod,
-                            items: const [
-                              DropdownMenuItem(
-                                  value: 'كاش', child: Text('كاش')),
-                              DropdownMenuItem(
-                                  value: 'بنكك', child: Text('بنكك')),
-                            ],
-                            onChanged: (v) =>
-                                setState(() => paymentMethod = v ?? 'كاش'),
-                            decoration:
-                                const InputDecoration(labelText: 'طريقة الدفع'),
-                          ),
+                          // DropdownButtonFormField<String>(
+                          //   initialValue: paymentMethod,
+                          //   items: const [
+                          //     DropdownMenuItem(
+                          //         value: 'كاش', child: Text('كاش')),
+                          //     DropdownMenuItem(
+                          //         value: 'بنكك', child: Text('بنكك')),
+                          //   ],
+                          //   onChanged: (v) =>
+                          //       setState(() => paymentMethod = v ?? 'كاش'),
+                          //   decoration:
+                          //       const InputDecoration(labelText: 'طريقة الدفع'),
+                          // ),
                           DropdownButtonFormField<String>(
                             decoration:
                                 const InputDecoration(labelText: 'اختر المخزن'),
@@ -213,6 +213,8 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
                         'net_quantity': double.parse(netQtyCtrl.text.trim()),
                         'payment_method': paymentMethod,
                         'date': pickedDate.toIso8601String(),
+                        'type': 'بيع',
+                        'admin_id': adminId,
                       };
                       Navigator.pop(context);
                       final res = await api.APIStore.addPurchase(dto);
@@ -230,13 +232,13 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
             }));
   }
 
-  void _confirmDelete(PurchaseRequest it) {
+  void _confirmDelete(PurchaseRequest it, String adminId) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Center(child: Text('حذف طلب الشراء')),
+        title: const Center(child: Text('حذف كمية الاستلام')),
         content: Text(
-          "سيتم حذف طلب الشراء للمورد ${it.vendor}",
+          "سيتم حذف الاستلام ${it.vendor}",
           textDirection: TextDirection.rtl,
         ),
         actions: [
@@ -247,7 +249,8 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-              final res = await api.APIStore.deletePurchase({'id': it.id});
+              final res = await api.APIStore.deletePurchase(
+                  {'id': it.id, 'admin_id': adminId});
               if (res.statusCode == 200) {
                 await _load(todayDate, todayDate, "اليوم");
               } else {
@@ -296,7 +299,7 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
             title: const Center(
                 child: Text(
               "استلامات المطبخ",
-              style: TextStyle(fontSize: 25),
+              style: TextStyle(fontSize: 25, color: Colors.white),
             )),
             actions: const [LeadingDrawerBtn()],
             toolbarHeight: 45,
@@ -327,93 +330,14 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
                         ),
                         const SizedBox(width: 20),
                         IconButton(
-                          onPressed: _showForm,
+                          onPressed: () {
+                            _showForm(value.user['id'].toString());
+                          },
                           icon: const Icon(
                             Icons.add_circle,
                             size: 30,
                           ),
-                          tooltip: "اضافة طلب",
-                        ),
-                        const SizedBox(width: 10),
-                        const Text(
-                          "تصفية بالتاريخ: ",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        PopupMenuButton(
-                          icon: const Icon(
-                            Icons.date_range_rounded,
-                            size: 36,
-                            color: Colors.teal,
-                          ),
-                          tooltip: "تصفية",
-                          onSelected: (value) {},
-                          itemBuilder: (BuildContext context) {
-                            return [
-                              PopupMenuItem(
-                                value: 'week',
-                                onTap: () {
-                                  // Get the date of a week before the current date
-                                  DateTime weekBeforeDate = todayDate
-                                      .subtract(const Duration(days: 7));
-
-                                  //call server
-                                  _load(weekBeforeDate, todayDate, "الإسبوع");
-                                },
-                                child: const Text(
-                                  'طلبات الإسبوع',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                  value: 'month',
-                                  onTap: () {
-                                    // Get the date of a week before the current date
-                                    DateTime monthBeforeDate = todayDate
-                                        .subtract(const Duration(days: 30));
-                                    //call server
-                                    _load(monthBeforeDate, todayDate, "الشهر");
-                                  },
-                                  child: const Text(
-                                    'طلبات الشهر',
-                                    style: TextStyle(color: Colors.black),
-                                  )),
-                              PopupMenuItem(
-                                  value: 'day',
-                                  onTap: () =>
-                                      _load(todayDate, todayDate, "اليوم"),
-                                  child: const Text(
-                                    'طلبات اليوم',
-                                    style: TextStyle(color: Colors.black),
-                                  )),
-                              PopupMenuItem(
-                                value: 'search_day',
-                                child: Form(
-                                    child: Row(
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        final d = await showDatePicker(
-                                            context: context,
-                                            initialDate: DateTime.now(),
-                                            firstDate: DateTime(2000),
-                                            lastDate: DateTime(2100));
-                                        if (d != null) {
-                                          //call server
-                                          _load(d, d, "يوم محدد");
-                                        }
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text(
-                                        'تحديد يوم',
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                    ),
-                                  ],
-                                )),
-                              ),
-                            ];
-                          },
+                          tooltip: "استلام منتج",
                         ),
                       ],
                     ),
@@ -434,7 +358,7 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
                                   const Icon(Icons.shopping_bag,
                                       color: Colors.teal),
                                   const SizedBox(height: 8),
-                                  const Text('اجمالي طلبات الشراء',
+                                  const Text('اجمالي طلبات الاستلام',
                                       style: TextStyle(fontSize: 12)),
                                   const SizedBox(height: 6),
                                   Text(
@@ -449,35 +373,35 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        SizedBox(
-                          width: 180,
-                          child: Card(
-                            color: Colors.white,
-                            elevation: 2,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 12.0, horizontal: 8.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.monetization_on,
-                                      color: Colors.orange),
-                                  const SizedBox(height: 8),
-                                  const Text('قيمة المشتروات',
-                                      style: TextStyle(fontSize: 12)),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    "${numberFormatter(totalStockValue)} (جنيه)",
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                        // SizedBox(
+                        //   width: 180,
+                        //   child: Card(
+                        //     color: Colors.white,
+                        //     elevation: 2,
+                        //     child: Padding(
+                        //       padding: const EdgeInsets.symmetric(
+                        //           vertical: 12.0, horizontal: 8.0),
+                        //       child: Column(
+                        //         mainAxisSize: MainAxisSize.min,
+                        //         crossAxisAlignment: CrossAxisAlignment.center,
+                        //         children: [
+                        //           const Icon(Icons.monetization_on,
+                        //               color: Colors.orange),
+                        //           const SizedBox(height: 8),
+                        //           const Text('قيمة المشتروات',
+                        //               style: TextStyle(fontSize: 12)),
+                        //           const SizedBox(height: 6),
+                        //           Text(
+                        //             "${numberFormatter(totalStockValue)} (جنيه)",
+                        //             style: const TextStyle(
+                        //                 fontSize: 18,
+                        //                 fontWeight: FontWeight.bold),
+                        //           ),
+                        //         ],
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     )
                   ],
@@ -491,17 +415,111 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Center(
-                                child: Text(
-                                  'طلبات الشراء: ($period)',
-                                  style: const TextStyle(fontSize: 30),
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'استلامات : ($period)',
+                                    style: const TextStyle(fontSize: 30),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  PopupMenuButton(
+                                    icon: const Icon(
+                                      Icons.date_range_rounded,
+                                      size: 36,
+                                      color: Colors.teal,
+                                    ),
+                                    tooltip: "تصفية",
+                                    onSelected: (value) {},
+                                    itemBuilder: (BuildContext context) {
+                                      return [
+                                        PopupMenuItem(
+                                          value: 'week',
+                                          onTap: () {
+                                            // Get the date of a week before the current date
+                                            DateTime weekBeforeDate =
+                                                todayDate.subtract(
+                                                    const Duration(days: 7));
+
+                                            //call server
+                                            _load(weekBeforeDate, todayDate,
+                                                "الإسبوع");
+                                          },
+                                          child: const Text(
+                                            'استلامات الإسبوع',
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                            value: 'month',
+                                            onTap: () {
+                                              // Get the date of a week before the current date
+                                              DateTime monthBeforeDate =
+                                                  todayDate.subtract(
+                                                      const Duration(days: 30));
+                                              //call server
+                                              _load(monthBeforeDate, todayDate,
+                                                  "الشهر");
+                                            },
+                                            child: const Text(
+                                              'استلامات الشهر',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )),
+                                        PopupMenuItem(
+                                            value: 'day',
+                                            onTap: () => _load(
+                                                todayDate, todayDate, "اليوم"),
+                                            child: const Text(
+                                              'استلامات اليوم',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )),
+                                        PopupMenuItem(
+                                          value: 'search_day',
+                                          child: Form(
+                                              child: Row(
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  final d =
+                                                      await showDatePicker(
+                                                          context: context,
+                                                          initialDate:
+                                                              DateTime.now(),
+                                                          firstDate:
+                                                              DateTime(2000),
+                                                          lastDate:
+                                                              DateTime(2100));
+                                                  if (d != null) {
+                                                    //call server
+                                                    _load(d, d, "يوم محدد");
+                                                  }
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text(
+                                                  'تحديد يوم',
+                                                  style: TextStyle(
+                                                      color: Colors.black),
+                                                ),
+                                              ),
+                                            ],
+                                          )),
+                                        ),
+                                      ];
+                                    },
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 30),
                               Expanded(
                                 child: PurchaseTable(
+                                  admin: value.user,
+                                  type: 'بيع',
                                   items: _filtered,
-                                  onDelete: (it) => _confirmDelete(it),
+                                  onDelete: (it, adminId) =>
+                                      _confirmDelete(it, adminId),
                                 ),
                               ),
                             ],

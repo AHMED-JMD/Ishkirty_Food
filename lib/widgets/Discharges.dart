@@ -63,7 +63,7 @@ class _DischargesPageState extends State<DischargesPage> {
 
   double get totalAmount => _items.fold(0.0, (p, e) => p + e.price);
 
-  void _showForm() {
+  void _showForm(String adminId) {
     final nameCtrl = TextEditingController();
     final amountCtrl = TextEditingController();
     DateTime pickedDate = todayDate;
@@ -167,6 +167,7 @@ class _DischargesPageState extends State<DischargesPage> {
                         'date': pickedDate.toIso8601String(),
                         'isMonthly': isMonthly,
                         'paymentMethod': paymentMethod,
+                        'admin_id': adminId,
                       };
                       Navigator.pop(context);
                       final res = await api.APIDischarges.addDischarge(dto);
@@ -243,7 +244,7 @@ class _DischargesPageState extends State<DischargesPage> {
                 color: Colors.white,
               ),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/store');
+                Navigator.pushReplacementNamed(context, '/store_sell');
               },
             ),
             backgroundColor: Colors.teal,
@@ -278,72 +279,10 @@ class _DischargesPageState extends State<DischargesPage> {
                         ),
                         const SizedBox(width: 20),
                         IconButton(
-                            onPressed: _showForm,
+                            onPressed: () =>
+                                _showForm(value.user['id'].toString()),
                             icon: const Icon(Icons.add_circle, size: 30),
                             tooltip: 'اضافة مصروف'),
-                        const SizedBox(width: 10),
-                        const Text('تصفية بالتاريخ: ',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                        PopupMenuButton(
-                          icon: const Icon(Icons.date_range_rounded,
-                              size: 36, color: Colors.teal),
-                          tooltip: 'تصفية',
-                          onSelected: (value) {},
-                          itemBuilder: (BuildContext context) {
-                            return [
-                              PopupMenuItem(
-                                value: 'week',
-                                onTap: () {
-                                  DateTime weekBeforeDate = todayDate
-                                      .subtract(const Duration(days: 7));
-                                  _load(weekBeforeDate, todayDate, 'الإسبوع');
-                                },
-                                child: const Text('المصروفات الإسبوع',
-                                    style: TextStyle(color: Colors.black)),
-                              ),
-                              PopupMenuItem(
-                                  value: 'month',
-                                  onTap: () {
-                                    DateTime monthBeforeDate = todayDate
-                                        .subtract(const Duration(days: 30));
-                                    _load(monthBeforeDate, todayDate, 'الشهر');
-                                  },
-                                  child: const Text('المصروفات الشهر',
-                                      style: TextStyle(color: Colors.black))),
-                              PopupMenuItem(
-                                  value: 'day',
-                                  onTap: () =>
-                                      _load(todayDate, todayDate, 'اليوم'),
-                                  child: const Text('المصروفات اليوم',
-                                      style: TextStyle(color: Colors.black))),
-                              PopupMenuItem(
-                                value: 'search_day',
-                                child: Form(
-                                    child: Row(
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        final d = await showDatePicker(
-                                            context: context,
-                                            initialDate: DateTime.now(),
-                                            firstDate: DateTime(2000),
-                                            lastDate: DateTime(2100));
-                                        if (d != null) {
-                                          _load(d, d, 'يوم محدد');
-                                        }
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('تحديد يوم',
-                                          style:
-                                              TextStyle(color: Colors.black)),
-                                    ),
-                                  ],
-                                )),
-                              ),
-                            ];
-                          },
-                        ),
                       ],
                     ),
                     Row(
@@ -416,9 +355,87 @@ class _DischargesPageState extends State<DischargesPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Center(
-                                  child: Text('المصروفات: ($period)',
-                                      style: const TextStyle(fontSize: 30))),
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('المصروفات: ($period)',
+                                        style: const TextStyle(fontSize: 30)),
+                                    const SizedBox(width: 10),
+                                    PopupMenuButton(
+                                      icon: const Icon(Icons.date_range_rounded,
+                                          size: 36, color: Colors.teal),
+                                      tooltip: 'تصفية',
+                                      onSelected: (value) {},
+                                      itemBuilder: (BuildContext context) {
+                                        return [
+                                          PopupMenuItem(
+                                            value: 'week',
+                                            onTap: () {
+                                              DateTime weekBeforeDate =
+                                                  todayDate.subtract(
+                                                      const Duration(days: 7));
+                                              _load(weekBeforeDate, todayDate,
+                                                  'الإسبوع');
+                                            },
+                                            child: const Text(
+                                                'المصروفات الإسبوع',
+                                                style: TextStyle(
+                                                    color: Colors.black)),
+                                          ),
+                                          PopupMenuItem(
+                                              value: 'month',
+                                              onTap: () {
+                                                DateTime monthBeforeDate =
+                                                    todayDate.subtract(
+                                                        const Duration(
+                                                            days: 30));
+                                                _load(monthBeforeDate,
+                                                    todayDate, 'الشهر');
+                                              },
+                                              child: const Text(
+                                                  'المصروفات الشهر',
+                                                  style: TextStyle(
+                                                      color: Colors.black))),
+                                          PopupMenuItem(
+                                              value: 'day',
+                                              onTap: () => _load(todayDate,
+                                                  todayDate, 'اليوم'),
+                                              child: const Text(
+                                                  'المصروفات اليوم',
+                                                  style: TextStyle(
+                                                      color: Colors.black))),
+                                          PopupMenuItem(
+                                            value: 'search_day',
+                                            child: Form(
+                                                child: Row(
+                                              children: [
+                                                ElevatedButton(
+                                                  onPressed: () async {
+                                                    final d =
+                                                        await showDatePicker(
+                                                            context: context,
+                                                            initialDate:
+                                                                DateTime.now(),
+                                                            firstDate:
+                                                                DateTime(2000),
+                                                            lastDate:
+                                                                DateTime(2100));
+                                                    if (d != null) {
+                                                      _load(d, d, 'يوم محدد');
+                                                    }
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: const Text('تحديد يوم',
+                                                      style: TextStyle(
+                                                          color: Colors.black)),
+                                                ),
+                                              ],
+                                            )),
+                                          ),
+                                        ];
+                                      },
+                                    ),
+                                  ]),
                               const SizedBox(height: 30),
                               Expanded(
                                   child: DischargeTable(

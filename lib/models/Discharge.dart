@@ -5,6 +5,7 @@ class Discharge {
   final DateTime date;
   final bool isMonthly;
   final String paymentMethod;
+  final String admin;
 
   Discharge(
       {required this.id,
@@ -12,7 +13,8 @@ class Discharge {
       required this.price,
       required this.date,
       required this.isMonthly,
-      required this.paymentMethod});
+      required this.paymentMethod,
+      required this.admin});
 
   factory Discharge.fromJson(Map<String, dynamic> json) {
     return Discharge(
@@ -27,6 +29,7 @@ class Discharge {
           : (json['isMonthly']?.toString() == '1' ||
               json['isMonthly']?.toString().toLowerCase() == 'true'),
       paymentMethod: json['payment_method'] ?? '',
+      admin: json['admin'] ?? '',
     );
   }
 
@@ -38,6 +41,7 @@ class Discharge {
       'date': date.toIso8601String(),
       'isMonthly': isMonthly,
       'payment_method': paymentMethod,
+      'admin': admin,
     };
   }
 }

@@ -242,7 +242,7 @@ class _SafePageState extends State<SafePage> {
     });
   }
 
-  void _showTransferModal() {
+  void _showTransferModal(String adminId) {
     showDialog(
       context: context,
       builder: (_) {
@@ -331,6 +331,7 @@ class _SafePageState extends State<SafePage> {
                     'to': to,
                     'amount': transferAmount,
                     'client_id': selectedClient,
+                    'admin_id': adminId,
                   };
                   //call server
                   final res = await APISafe.transfer(data);
@@ -386,7 +387,9 @@ class _SafePageState extends State<SafePage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, value, child) {
-      if (value.user == null || value.user!['role'] != 'admin') {
+      bool isAdmin = value.user != null && value.user!['role'] == 'admin';
+
+      if (!isAdmin) {
         return Scaffold(
           appBar: AppBar(
             leading: IconButton(
@@ -447,7 +450,8 @@ class _SafePageState extends State<SafePage> {
                         ),
                         const SizedBox(height: 40),
                         ElevatedButton.icon(
-                          onPressed: _showTransferModal,
+                          onPressed: () =>
+                              _showTransferModal(value.user!['id'].toString()),
                           icon: const Icon(
                             Icons.compare_arrows,
                             color: Colors.white,
@@ -601,15 +605,20 @@ class _SafePageState extends State<SafePage> {
                                                               ],
                                                             ),
                                                           ),
-                                                          trailing: IconButton(
-                                                            icon: const Icon(
-                                                                Icons.delete,
-                                                                color:
-                                                                    Colors.red),
-                                                            onPressed: () =>
-                                                                _deleteSafeDaily(
-                                                                    d),
-                                                          ),
+                                                          trailing: isAdmin
+                                                              ? IconButton(
+                                                                  icon: const Icon(
+                                                                      Icons
+                                                                          .delete,
+                                                                      color: Colors
+                                                                          .red),
+                                                                  onPressed: () =>
+                                                                      isAdmin
+                                                                          ? _deleteSafeDaily(
+                                                                              d)
+                                                                          : null,
+                                                                )
+                                                              : null,
                                                         ),
                                                       ),
                                                     );

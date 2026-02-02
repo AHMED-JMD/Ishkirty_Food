@@ -9,6 +9,7 @@ class Daily {
   final double bankCosts;
   final double accountCosts;
   final String businessLocation;
+  final bool isCreated;
   final bool isAddedtoSafe;
 
   Daily({
@@ -22,6 +23,7 @@ class Daily {
     required this.bankCosts,
     required this.accountCosts,
     required this.businessLocation,
+    required this.isCreated,
     required this.isAddedtoSafe,
   });
 
@@ -37,6 +39,7 @@ class Daily {
       accountCosts: (json['account_costs'] ?? 0).toDouble(),
       date: DateTime.tryParse(json['date']?.toString() ?? '') ?? DateTime.now(),
       businessLocation: json['business_location']?.toString() ?? '',
+      isCreated: json['isCreated'] ?? false,
       isAddedtoSafe: json['isAddedtoSafe'] ?? false,
     );
   }
@@ -53,6 +56,7 @@ class Daily {
       'account_costs': accountCosts,
       'date': date.toIso8601String(),
       'business_location': businessLocation,
+      'isCreated': isCreated,
       'isAddedtoSafe': isAddedtoSafe,
     };
   }

@@ -4,14 +4,14 @@ import 'package:http/http.dart';
 String storeApiUrl = 'http://localhost:3000/api/store';
 
 class APIStore {
-  static Future getItems(String type) async {
+  static Future getItems(data) async {
     try {
       Map<String, String> headers = {
         "Content-Type": "application/json",
-        "type": type
       };
       final url = Uri.parse('$storeApiUrl/');
-      Response response = await get(url, headers: headers);
+      Response response =
+          await post(url, headers: headers, body: jsonEncode(data));
       return response;
     } catch (e) {
       rethrow;
@@ -21,7 +21,7 @@ class APIStore {
   static Future addItem(data) async {
     try {
       Map<String, String> headers = {"Content-Type": "application/json"};
-      final url = Uri.parse('$storeApiUrl/');
+      final url = Uri.parse('$storeApiUrl/add');
       Response response =
           await post(url, headers: headers, body: jsonEncode(data));
       return response;

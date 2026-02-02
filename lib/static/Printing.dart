@@ -480,3 +480,185 @@ printTwoCopies(String Pname, counter, type, user, data,
   // Non-web: send two separate print jobs to the printer (cashier then client)
   // // cashier copy with label
 }
+
+// Print a daily summary with totals and three tables: empTrans, purchases, discharges
+printDailyComponents({
+  String? printerName,
+  required String admin,
+  required num totalSales,
+  required num totalCosts,
+  required num totalSpiceCosts,
+  required num totalEmployeeTran,
+  required num totalPurchase,
+  required num totalDischarges,
+  required List empTrans,
+  required List purchases,
+  required List discharges,
+  String? period,
+}) async {
+  var arabicFont =
+      pw.Font.ttf(await rootBundle.load("assets/fonts/HacenTunisia.ttf"));
+  var myTheme = pw.ThemeData.withFont(base: arabicFont);
+
+  final doc = pw.Document();
+
+  // load image
+  const imageProvider = AssetImage('assets/images/abdLogo.png');
+  final ByteData byteData = await rootBundle.load(imageProvider.assetName);
+  final Uint8List bytes = byteData.buffer.asUint8List();
+  final image = pw.Image(pw.MemoryImage(bytes));
+
+  DateTime now = DateTime.now();
+  String date = '${now.year}/${now.month}/${now.day}';
+  String time = '${now.hour}:${now.minute}:${now.second}';
+
+  pw.Table buildGenericTable(
+      List list, List<String> headers, List<Function> accessors) {
+    return pw.Table(
+        border: pw.TableBorder.symmetric(inside: pw.BorderSide.none),
+        defaultColumnWidth: pw.IntrinsicColumnWidth(),
+        children: [
+          pw.TableRow(
+              children: headers.map((h) => createTableCell(h)).toList()),
+          ...list.map((row) {
+            return pw.TableRow(
+                children: accessors.map((acc) {
+              try {
+                final v = acc(row) ?? '';
+                return createTableCell(v.toString());
+              } catch (e) {
+                return createTableCell('');
+              }
+            }).toList());
+          }).toList()
+        ]);
+  }
+
+  doc.addPage(pw.Page(
+      pageFormat: PdfPageFormat.roll80,
+      theme: myTheme,
+      build: (pw.Context context) {
+        return pw.Directionality(
+            textDirection: pw.TextDirection.rtl,
+            child: pw.ListView(children: [
+              pw.Column(children: [
+                pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Container(width: 60, height: 60, child: image),
+                      pw.Column(children: [
+                        pw.Text('تقرير اليومية',
+                            style: const pw.TextStyle(fontSize: 16)),
+                        if (period != null) pw.Text('الفترة: $period'),
+                        pw.Text('التاريخ: $date   $time'),
+                        pw.Text('المستخدم: $admin'),
+                      ])
+                    ])
+              ]),
+              pw.Divider(),
+              pw.Padding(
+                  padding:
+                      const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  child: pw.Column(children: [
+                    pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text('اجمالي المبيعات:'),
+                          pw.Text(
+                            numberFormatter(totalSales),
+                            style: pw.TextStyle(
+                                fontWeight: pw.FontWeight.bold, fontSize: 13),
+                          )
+                        ]),
+                    pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text('اجمالي التكاليف:'),
+                          pw.Text(
+                            numberFormatter(totalCosts),
+                            style: pw.TextStyle(
+                                fontWeight: pw.FontWeight.bold, fontSize: 13),
+                          )
+                        ]),
+                    pw.Divider(),
+                    pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text('صافي الربح:'),
+                          pw.Text(
+                            numberFormatter(totalSales - totalCosts),
+                            style: pw.TextStyle(
+                                fontWeight: pw.FontWeight.bold, fontSize: 13),
+                          )
+                        ]),
+                  ])),
+              pw.Divider(),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.center, children: [
+                pw.Text(' تكاليف الاصناف : '),
+                pw.Text(numberFormatter(totalSpiceCosts))
+              ]),
+              pw.Divider(),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.center, children: [
+                pw.Text('مرتبات الموظفين',
+                    style: const pw.TextStyle(fontSize: 12)),
+                pw.SizedBox(width: 4),
+                pw.Text(' ${numberFormatter(totalEmployeeTran)} : ',
+                    style: const pw.TextStyle(fontSize: 12)),
+              ]),
+              pw.SizedBox(height: 4),
+              buildGenericTable(empTrans, [
+                'المبلغ',
+                'الموظف',
+              ], [
+                (r) => r is Map ? (r['amount'] ?? '') : (r.amount ?? ''),
+                (r) =>
+                    r is Map ? (r['employee'] ?? '') : (r.employeeName ?? ''),
+              ]),
+              pw.Divider(),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.center, children: [
+                pw.Text('المشتريات', style: const pw.TextStyle(fontSize: 12)),
+                pw.SizedBox(width: 4),
+                pw.Text(' ${numberFormatter(totalPurchase)} : ',
+                    style: const pw.TextStyle(fontSize: 12)),
+              ]),
+              pw.SizedBox(height: 4),
+              buildGenericTable(purchases, [
+                'المبلغ',
+                'الكمية',
+                'الصنف'
+              ], [
+                (r) => r is Map
+                    ? (r['buyPrice'] ?? r['unit_price'] ?? '')
+                    : (r.buyPrice * r.quantity ?? ''),
+                (r) => r is Map ? (r['quantity'] ?? '') : (r.quantity ?? ''),
+                (r) => r is Map ? (r['name'] ?? '') : (r.store.name ?? ''),
+              ]),
+              pw.Divider(),
+              pw.Row(mainAxisAlignment: pw.MainAxisAlignment.center, children: [
+                pw.Text('المصروفات', style: const pw.TextStyle(fontSize: 12)),
+                pw.SizedBox(width: 4),
+                pw.Text(' ${numberFormatter(totalDischarges)} : ',
+                    style: const pw.TextStyle(fontSize: 12)),
+              ]),
+              pw.SizedBox(height: 4),
+              buildGenericTable(discharges, [
+                'السعر',
+                'الاسم'
+              ], [
+                (r) => r is Map ? (r['price'] ?? '') : (r.price ?? ''),
+                (r) => r is Map ? (r['name'] ?? '') : (r.name ?? ''),
+              ]),
+              pw.SizedBox(height: 8),
+            ]));
+      }));
+
+  // Send to printer: prefer direct print if a printerName is provided and not web
+  if (!kIsWeb && printerName != null) {
+    await Printing.directPrintPdf(
+        printer: Printer(url: printerName),
+        onLayout: (PdfPageFormat format) async => doc.save());
+  } else {
+    await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => doc.save());
+  }
+}

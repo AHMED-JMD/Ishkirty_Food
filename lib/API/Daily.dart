@@ -15,6 +15,18 @@ class APIDaily {
     }
   }
 
+  static Future getOne(data) async {
+    try {
+      Map<String, String> headers = {"Content-Type": "application/json"};
+      final url = Uri.parse('$ApiUrl/get-one');
+      Response response =
+          await post(url, headers: headers, body: jsonEncode(data));
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   static Future getByDate(data) async {
     try {
       Map<String, String> headers = {"Content-Type": "application/json"};

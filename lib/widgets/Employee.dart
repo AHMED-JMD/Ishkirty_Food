@@ -190,7 +190,7 @@ class _EmployeePageState extends State<EmployeePage> {
         });
   }
 
-  void showAddTrans(List<Employee> emps) async {
+  void showAddTrans(List<Employee> emps, String adminId) async {
     final amountCtrl = TextEditingController();
     String type = 'خصم';
     DateTime date = DateTime.now();
@@ -285,6 +285,7 @@ class _EmployeePageState extends State<EmployeePage> {
                     Navigator.pop(ctx);
                     final dto = {
                       'emp_id': emp.id,
+                      'admin_id': adminId,
                       'type': type,
                       'amount': double.tryParse(amountCtrl.text) ?? 0,
                       'date': date.toIso8601String(),
@@ -484,7 +485,7 @@ class _EmployeePageState extends State<EmployeePage> {
                           const SizedBox(width: 20),
                           ElevatedButton.icon(
                               onPressed: () {
-                                showAddTrans(employees);
+                                showAddTrans(employees, value.user!['id']);
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(

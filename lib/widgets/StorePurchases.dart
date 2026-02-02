@@ -38,7 +38,8 @@ class _StorePurchasesState extends State<StorePurchases> {
 
     final res = await api.APIStore.getPurchasesByDate({
       'startDate': startDate.toIso8601String(),
-      'endDate': endDate.toIso8601String()
+      'endDate': endDate.toIso8601String(),
+      'type': 'تصنيع',
     });
 
     if (res.statusCode == 200) {
@@ -56,7 +57,7 @@ class _StorePurchasesState extends State<StorePurchases> {
 
   Future _loadStores() async {
     //call
-    final res = await api.APIStore.getItems("تصنيع");
+    final res = await api.APIStore.getItems({'type': 'تصنيع'});
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
       List data = List.from(body);
@@ -80,7 +81,7 @@ class _StorePurchasesState extends State<StorePurchases> {
   double get totalStockValue =>
       _items.fold(0.0, (p, e) => p + e.buyPrice * e.quantity);
 
-  void _showForm() {
+  void _showForm(String adminId) {
     final vendorCtrl = TextEditingController(text: "عام");
     final qtyCtrl = TextEditingController();
 
@@ -213,6 +214,8 @@ class _StorePurchasesState extends State<StorePurchases> {
                         'net_quantity': double.parse(netQtyCtrl.text.trim()),
                         'payment_method': paymentMethod,
                         'date': pickedDate.toIso8601String(),
+                        'type': 'تصنيع',
+                        'admin_id': adminId,
                       };
                       Navigator.pop(context);
                       final res = await api.APIStore.addPurchase(dto);
@@ -230,7 +233,7 @@ class _StorePurchasesState extends State<StorePurchases> {
             }));
   }
 
-  void _confirmDelete(PurchaseRequest it) {
+  void _confirmDelete(PurchaseRequest it, String adminId) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -247,7 +250,8 @@ class _StorePurchasesState extends State<StorePurchases> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-              final res = await api.APIStore.deletePurchase({'id': it.id});
+              final res = await api.APIStore.deletePurchase(
+                  {'id': it.id, 'admin_id': adminId});
               if (res.statusCode == 200) {
                 await _load(todayDate, todayDate, "اليوم");
               } else {
@@ -296,7 +300,7 @@ class _StorePurchasesState extends State<StorePurchases> {
             title: const Center(
                 child: Text(
               "مشتريات المطبخ",
-              style: TextStyle(fontSize: 25),
+              style: TextStyle(fontSize: 25, color: Colors.white),
             )),
             actions: const [LeadingDrawerBtn()],
             toolbarHeight: 45,
@@ -327,93 +331,13 @@ class _StorePurchasesState extends State<StorePurchases> {
                         ),
                         const SizedBox(width: 20),
                         IconButton(
-                          onPressed: _showForm,
+                          onPressed: () =>
+                              _showForm(value.user['id'].toString()),
                           icon: const Icon(
                             Icons.add_circle,
                             size: 30,
                           ),
                           tooltip: "اضافة طلب",
-                        ),
-                        const SizedBox(width: 10),
-                        const Text(
-                          "تصفية بالتاريخ: ",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        PopupMenuButton(
-                          icon: const Icon(
-                            Icons.date_range_rounded,
-                            size: 36,
-                            color: Colors.teal,
-                          ),
-                          tooltip: "تصفية",
-                          onSelected: (value) {},
-                          itemBuilder: (BuildContext context) {
-                            return [
-                              PopupMenuItem(
-                                value: 'week',
-                                onTap: () {
-                                  // Get the date of a week before the current date
-                                  DateTime weekBeforeDate = todayDate
-                                      .subtract(const Duration(days: 7));
-
-                                  //call server
-                                  _load(weekBeforeDate, todayDate, "الإسبوع");
-                                },
-                                child: const Text(
-                                  'طلبات الإسبوع',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                  value: 'month',
-                                  onTap: () {
-                                    // Get the date of a week before the current date
-                                    DateTime monthBeforeDate = todayDate
-                                        .subtract(const Duration(days: 30));
-                                    //call server
-                                    _load(monthBeforeDate, todayDate, "الشهر");
-                                  },
-                                  child: const Text(
-                                    'طلبات الشهر',
-                                    style: TextStyle(color: Colors.black),
-                                  )),
-                              PopupMenuItem(
-                                  value: 'day',
-                                  onTap: () =>
-                                      _load(todayDate, todayDate, "اليوم"),
-                                  child: const Text(
-                                    'طلبات اليوم',
-                                    style: TextStyle(color: Colors.black),
-                                  )),
-                              PopupMenuItem(
-                                value: 'search_day',
-                                child: Form(
-                                    child: Row(
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        final d = await showDatePicker(
-                                            context: context,
-                                            initialDate: DateTime.now(),
-                                            firstDate: DateTime(2000),
-                                            lastDate: DateTime(2100));
-                                        if (d != null) {
-                                          //call server
-                                          _load(d, d, "يوم محدد");
-                                        }
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text(
-                                        'تحديد يوم',
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                    ),
-                                  ],
-                                )),
-                              ),
-                            ];
-                          },
                         ),
                       ],
                     ),
@@ -491,17 +415,111 @@ class _StorePurchasesState extends State<StorePurchases> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Center(
-                                child: Text(
-                                  'طلبات الشراء: ($period)',
-                                  style: const TextStyle(fontSize: 30),
-                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'المشتريات : ($period)',
+                                    style: const TextStyle(fontSize: 30),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  PopupMenuButton(
+                                    icon: const Icon(
+                                      Icons.date_range_rounded,
+                                      size: 36,
+                                      color: Colors.teal,
+                                    ),
+                                    tooltip: "تصفية",
+                                    onSelected: (value) {},
+                                    itemBuilder: (BuildContext context) {
+                                      return [
+                                        PopupMenuItem(
+                                          value: 'week',
+                                          onTap: () {
+                                            // Get the date of a week before the current date
+                                            DateTime weekBeforeDate =
+                                                todayDate.subtract(
+                                                    const Duration(days: 7));
+
+                                            //call server
+                                            _load(weekBeforeDate, todayDate,
+                                                "الإسبوع");
+                                          },
+                                          child: const Text(
+                                            'طلبات الإسبوع',
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                            value: 'month',
+                                            onTap: () {
+                                              // Get the date of a week before the current date
+                                              DateTime monthBeforeDate =
+                                                  todayDate.subtract(
+                                                      const Duration(days: 30));
+                                              //call server
+                                              _load(monthBeforeDate, todayDate,
+                                                  "الشهر");
+                                            },
+                                            child: const Text(
+                                              'طلبات الشهر',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )),
+                                        PopupMenuItem(
+                                            value: 'day',
+                                            onTap: () => _load(
+                                                todayDate, todayDate, "اليوم"),
+                                            child: const Text(
+                                              'طلبات اليوم',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            )),
+                                        PopupMenuItem(
+                                          value: 'search_day',
+                                          child: Form(
+                                              child: Row(
+                                            children: [
+                                              ElevatedButton(
+                                                onPressed: () async {
+                                                  final d =
+                                                      await showDatePicker(
+                                                          context: context,
+                                                          initialDate:
+                                                              DateTime.now(),
+                                                          firstDate:
+                                                              DateTime(2000),
+                                                          lastDate:
+                                                              DateTime(2100));
+                                                  if (d != null) {
+                                                    //call server
+                                                    _load(d, d, "يوم محدد");
+                                                  }
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text(
+                                                  'تحديد يوم',
+                                                  style: TextStyle(
+                                                      color: Colors.black),
+                                                ),
+                                              ),
+                                            ],
+                                          )),
+                                        ),
+                                      ];
+                                    },
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 30),
                               Expanded(
                                 child: PurchaseTable(
+                                  admin: value.user,
+                                  type: 'تصنيع',
                                   items: _filtered,
-                                  onDelete: (it) => _confirmDelete(it),
+                                  onDelete: (it, adminId) =>
+                                      _confirmDelete(it, adminId),
                                 ),
                               ),
                             ],

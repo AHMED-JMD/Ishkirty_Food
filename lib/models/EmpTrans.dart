@@ -3,6 +3,7 @@ class EmpTransaction {
     required this.id,
     required this.empId,
     required this.type,
+    required this.admin,
     required this.employeeName,
     required this.amount,
     required this.date,
@@ -12,6 +13,7 @@ class EmpTransaction {
   final int id;
   final int empId;
   final String type;
+  final String admin;
   final String employeeName;
   final double amount;
   final DateTime date;
@@ -21,6 +23,7 @@ class EmpTransaction {
     return EmpTransaction(
       id: json['id'] is int ? json['id'] : int.parse(json['id'].toString()),
       type: json['type'] ?? '',
+      admin: json['admin'] ?? '',
       employeeName: json['employee_name'] ?? '',
       amount: json['amount'] is num
           ? (json['amount'] as num).toDouble()
@@ -36,6 +39,8 @@ class EmpTransaction {
     return {
       'id': id,
       'EmployeeId': empId,
+      'admin': admin,
+      'employee_name': employeeName,
       'type': type,
       'amount': amount,
       'date': date.toIso8601String(),

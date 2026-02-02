@@ -3,14 +3,23 @@ import 'package:ashkerty_food/models/PurchaseRequest.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 
 class PurchaseTable extends StatelessWidget {
+  final Map admin;
+  final String type;
   final List<PurchaseRequest> items;
-  final void Function(PurchaseRequest) onDelete;
+  final Function(PurchaseRequest, String) onDelete;
 
-  const PurchaseTable({required this.items, required this.onDelete, Key? key})
+  const PurchaseTable(
+      {required this.admin,
+      required this.type,
+      required this.items,
+      required this.onDelete,
+      Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    bool isAdmin = admin['role'] == 'admin' ? true : false;
+
     return SingleChildScrollView(
       child: DataTable(
         columns: [
@@ -30,16 +39,17 @@ class PurchaseTable extends StatelessWidget {
                               color: Colors.grey.shade300, width: 1))),
                   child: const Text('الصنف',
                       style: TextStyle(fontSize: 20, color: Colors.teal)))),
-          DataColumn(
-              label: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                              color: Colors.grey.shade300, width: 1))),
-                  child: const Text('طريقة الدفع',
-                      style: TextStyle(fontSize: 20, color: Colors.teal)))),
+          if (type == 'تصنيع')
+            DataColumn(
+                label: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(
+                                color: Colors.grey.shade300, width: 1))),
+                    child: const Text('طريقة الدفع',
+                        style: TextStyle(fontSize: 20, color: Colors.teal)))),
           DataColumn(
               label: Container(
                   padding:
@@ -60,6 +70,17 @@ class PurchaseTable extends StatelessWidget {
                               color: Colors.grey.shade300, width: 1))),
                   child: const Text('صافي الكمية',
                       style: TextStyle(fontSize: 20, color: Colors.teal)))),
+          if (type == 'تصنيع')
+            DataColumn(
+                label: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(
+                                color: Colors.grey.shade300, width: 1))),
+                    child: const Text('سعر الشراء',
+                        style: TextStyle(fontSize: 20, color: Colors.teal)))),
           DataColumn(
               label: Container(
                   padding:
@@ -68,18 +89,19 @@ class PurchaseTable extends StatelessWidget {
                       border: Border(
                           right: BorderSide(
                               color: Colors.grey.shade300, width: 1))),
-                  child: const Text('سعر الشراء',
+                  child: const Text('المستخدم',
                       style: TextStyle(fontSize: 20, color: Colors.teal)))),
-          DataColumn(
-              label: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                              color: Colors.grey.shade300, width: 1))),
-                  child: const Text('الإجراءات',
-                      style: TextStyle(fontSize: 20, color: Colors.teal)))),
+          if (isAdmin)
+            DataColumn(
+                label: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(
+                                color: Colors.grey.shade300, width: 1))),
+                    child: const Text('الإجراءات',
+                        style: TextStyle(fontSize: 20, color: Colors.teal)))),
         ],
         rows: items.map((it) {
           return DataRow(
@@ -100,15 +122,16 @@ class PurchaseTable extends StatelessWidget {
                                 color: Colors.grey.shade300, width: 1))),
                     child: Text(it.store.name,
                         style: const TextStyle(fontSize: 17)))),
-                DataCell(Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                        border: Border(
-                            right: BorderSide(
-                                color: Colors.grey.shade300, width: 1))),
-                    child: Text(it.paymentMethod,
-                        style: const TextStyle(fontSize: 17)))),
+                if (type == 'تصنيع')
+                  DataCell(Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              right: BorderSide(
+                                  color: Colors.grey.shade300, width: 1))),
+                      child: Text(it.paymentMethod,
+                          style: const TextStyle(fontSize: 17)))),
                 DataCell(Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -135,6 +158,17 @@ class PurchaseTable extends StatelessWidget {
                           : '${it.netQuantity} / قطعة',
                       style: const TextStyle(fontSize: 17)),
                 )),
+                if (type == 'تصنيع')
+                  DataCell(Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(
+                                color: Colors.grey.shade300, width: 1))),
+                    child: Text("${numberFormatter(it.buyPrice)} (جنيه)",
+                        style: const TextStyle(fontSize: 17)),
+                  )),
                 DataCell(Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -142,29 +176,29 @@ class PurchaseTable extends StatelessWidget {
                       border: Border(
                           right: BorderSide(
                               color: Colors.grey.shade300, width: 1))),
-                  child: Text("${numberFormatter(it.buyPrice)} (جنيه)",
-                      style: const TextStyle(fontSize: 17)),
+                  child: Text(it.admin, style: const TextStyle(fontSize: 17)),
                 )),
-                DataCell(Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          right: BorderSide(
-                              color: Colors.grey.shade300, width: 1))),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.delete,
-                          size: 18,
-                          color: Colors.redAccent,
+                if (isAdmin)
+                  DataCell(Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(
+                                color: Colors.grey.shade300, width: 1))),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.delete,
+                            size: 18,
+                            color: Colors.redAccent,
+                          ),
+                          onPressed: () => onDelete(it, admin['id'].toString()),
                         ),
-                        onPressed: () => onDelete(it),
-                      ),
-                    ],
-                  ),
-                )),
+                      ],
+                    ),
+                  )),
               ]);
         }).toList(),
       ),
