@@ -1,4 +1,5 @@
 import 'package:ashkerty_food/API/Auth.dart';
+import 'package:ashkerty_food/API/Store.dart' as api;
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -29,13 +30,30 @@ class _LoginState extends State<Login> {
       isLoading = false;
     });
 
-      if (response.statusCode == 200) {
+    if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
 
       //global state Provider (this also persists token)
       provider.Login(data['user'], data['token']);
 
-      Navigator.pushReplacementNamed(context, '/home');
+      //check that there is a purchase today,
+      //if not go to store acquisition page,
+      // else go to home page
+      String targetRoute = '/home';
+      final res = await api.APIStore.getPurchasesByDate({
+        'startDate': DateTime.now().toIso8601String(),
+        'endDate': DateTime.now().toIso8601String(),
+        'type': 'بيع',
+        'admin_id': data['user']['id'],
+      });
+      if (res.statusCode == 200) {
+        final purchases = jsonDecode(res.body);
+        if (purchases is List && purchases.isEmpty) {
+          targetRoute = '/store_Acq';
+        }
+      }
+
+      Navigator.pushReplacementNamed(context, targetRoute);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Center(

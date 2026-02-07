@@ -171,7 +171,9 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
       DataCell(
         Center(
             child: Text(
-          currentRowData.paymentMethod,
+          currentRowData.paymentMethod != null
+              ? currentRowData.paymentMethod!
+              : 'متعدد',
           style: const TextStyle(fontSize: 20),
         )),
       ),

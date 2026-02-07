@@ -9,9 +9,11 @@ import '../Forms/DeleteSpeicies.dart';
 import '../Forms/EditSpeiciesForm.dart';
 
 class SpeiciesTable extends StatefulWidget {
+  final Map admin;
   final List data;
 
-  const SpeiciesTable({Key? key, required this.data}) : super(key: key);
+  const SpeiciesTable({Key? key, required this.admin, required this.data})
+      : super(key: key);
 
   @override
   State<SpeiciesTable> createState() => _SpeiciesTableState();
@@ -19,8 +21,11 @@ class SpeiciesTable extends StatefulWidget {
 
 class _SpeiciesTableState extends State<SpeiciesTable> {
   var rowsPerPage = 10;
-  late final source =
-      ExampleSource(data: widget.data, context: context, delete: deleteSpieces);
+  late final source = ExampleSource(
+      admin: widget.admin,
+      data: widget.data,
+      context: context,
+      delete: deleteSpieces);
   final _searchController = TextEditingController();
 
   bool isLoading = false;
@@ -143,11 +148,15 @@ class _SpeiciesTableState extends State<SpeiciesTable> {
 }
 
 class ExampleSource extends AdvancedDataTableSource<Spieces> {
+  final Map admin;
   List data;
   BuildContext context;
   final Function(Map) delete;
   ExampleSource(
-      {required this.data, required this.context, required this.delete});
+      {required this.admin,
+      required this.data,
+      required this.context,
+      required this.delete});
 
   String lastSearchTerm = '';
 
@@ -209,18 +218,20 @@ class ExampleSource extends AdvancedDataTableSource<Spieces> {
                 ),
                 tooltip: 'تعديل',
               ),
-              IconButton(
-                  onPressed: () {
-                    DeleteSpices(
-                      delete: delete,
-                      data: currentRowData,
-                    ).deletespeices(context);
-                  },
-                  icon: const Icon(
-                    Icons.delete_rounded,
-                    color: Color(0xff65090c),
-                  ),
-                  tooltip: 'حذف'),
+              admin['role'] == 'admin'
+                  ? IconButton(
+                      onPressed: () {
+                        DeleteSpices(
+                          delete: delete,
+                          data: currentRowData,
+                        ).deletespeices(context);
+                      },
+                      icon: const Icon(
+                        Icons.delete_rounded,
+                        color: Color(0xff65090c),
+                      ),
+                      tooltip: 'حذف')
+                  : const SizedBox.shrink(),
             ],
           ),
         ),

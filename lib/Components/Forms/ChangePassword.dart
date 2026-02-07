@@ -46,97 +46,106 @@ class _ChangePasswordState extends State<ChangePassword> {
 
   change_password(BuildContext context) {
     return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: SimpleDialog(
-            title: const Center(child: Text('تغيير كلمة السر')),
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: FormBuilder(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      FormBuilderTextField(
-                        name: 'password',
-                        decoration: const InputDecoration(
-                            labelText: 'كلمة السر القديمة'),
-                        validator: FormBuilderValidators.required(
-                            errorText: 'الرجاء ادخال جميع الحقول'),
-                      ),
-                      FormBuilderTextField(
-                        name: 'new_password',
-                        onChanged: (val) {
-                          setState(() {
-                            new_password = val;
-                          });
-                        },
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                            labelText: 'كلمة السر الجديدة'),
-                        validator: FormBuilderValidators.required(
-                            errorText: 'الرجاء ادخال جميع الحقول'),
-                      ),
-                      FormBuilderTextField(
-                        name: 're_password',
-                        onChanged: (val) {
-                          setState(() {
-                            re_password = val;
-                          });
-                        },
-                        obscureText: true,
-                        decoration:
-                            const InputDecoration(labelText: 'تكرار كلمة السر'),
-                        validator: (value) {
-                          if (value != new_password) {
-                            return 'كلمة السر لا تتطابق';
-                          }
-                          return "";
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0, top: 30),
-                        child: Center(
-                          child: SizedBox(
-                            height: 30,
-                            width: 70,
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                backgroundColor: Colors.teal,
-                              ),
-                              child: const Text(
-                                'حفظ',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              onPressed: () {
-                                if (_formKey.currentState!.saveAndValidate()) {
-                                  Map data = {};
-                                  data['admin_id'] = widget.admin_id;
-                                  data['password'] =
-                                      _formKey.currentState!.value['password'];
-                                  data['newPassword'] = _formKey
-                                      .currentState!.value['new_password'];
-
-                                  //call Func
-                                  updatePassword(data);
-                                  Navigator.pop(context);
+        context: context,
+        builder: (_) => StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+              return Directionality(
+                textDirection: TextDirection.rtl,
+                child: SimpleDialog(
+                  title: const Center(child: Text('تغيير كلمة السر')),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: FormBuilder(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            FormBuilderTextField(
+                              name: 'password',
+                              decoration: const InputDecoration(
+                                  labelText: 'كلمة السر القديمة'),
+                              validator: FormBuilderValidators.required(
+                                  errorText: 'الرجاء ادخال جميع الحقول'),
+                            ),
+                            FormBuilderTextField(
+                              name: 'new_password',
+                              onChanged: (val) {
+                                setState(() {
+                                  new_password = val;
+                                });
+                              },
+                              obscureText: true,
+                              decoration: const InputDecoration(
+                                  labelText: 'كلمة السر الجديدة'),
+                              validator: FormBuilderValidators.required(
+                                  errorText: 'الرجاء ادخال جميع الحقول'),
+                            ),
+                            FormBuilderTextField(
+                              name: 're_password',
+                              onChanged: (val) {
+                                setState(() {
+                                  re_password = val;
+                                });
+                              },
+                              obscureText: true,
+                              decoration: const InputDecoration(
+                                  labelText: 'تكرار كلمة السر'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'الرجاء ادخال جميع الحقول';
                                 }
+                                final currentNewPassword = _formKey.currentState
+                                        ?.fields['new_password']?.value ??
+                                    new_password;
+                                if (value != currentNewPassword) {
+                                  return 'كلمة السر لا تتطابق';
+                                }
+                                return null;
                               },
                             ),
-                          ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(bottom: 8.0, top: 30),
+                              child: Center(
+                                child: SizedBox(
+                                  height: 30,
+                                  width: 70,
+                                  child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: Colors.teal,
+                                    ),
+                                    child: const Text(
+                                      'حفظ',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    onPressed: () {
+                                      if (_formKey.currentState!
+                                          .saveAndValidate()) {
+                                        Map data = {};
+                                        data['admin_id'] = widget.admin_id;
+                                        data['password'] = _formKey
+                                            .currentState!.value['password'];
+                                        data['newPassword'] = _formKey
+                                            .currentState!
+                                            .value['new_password'];
+
+                                        //call Func
+                                        updatePassword(data);
+                                        Navigator.pop(context);
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+              );
+            }));
   }
 
   @override
@@ -149,7 +158,7 @@ class _ChangePasswordState extends State<ChangePassword> {
             backgroundColor: Colors.teal, minimumSize: const Size(200, 50)),
         child: const Text(
           'تغيير كلمة السر?',
-          style: TextStyle(fontSize: 17),
+          style: TextStyle(fontSize: 17, color: Colors.white),
         ));
   }
 }

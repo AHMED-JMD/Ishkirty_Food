@@ -9,6 +9,7 @@ class PurchaseRequest {
   final DateTime date;
   final String paymentMethod;
   final String admin;
+  final String type;
   final StockItem store;
 
   PurchaseRequest({
@@ -20,6 +21,7 @@ class PurchaseRequest {
     required this.date,
     required this.paymentMethod,
     required this.admin,
+    required this.type,
     required this.store,
   });
 
@@ -35,6 +37,7 @@ class PurchaseRequest {
       date: DateTime.tryParse(json['date']?.toString() ?? '') ?? DateTime.now(),
       paymentMethod: json['payment_method'] ?? '',
       admin: json['admin'] ?? '',
+      type: json['type'] ?? '',
       store: StockItem.fromJson(json['Store']),
     );
   }
@@ -49,6 +52,7 @@ class PurchaseRequest {
       'date': date.toIso8601String(),
       'payment_method': paymentMethod,
       'admin': admin,
+      'type': type,
       'Store': store.toJson(),
     };
   }

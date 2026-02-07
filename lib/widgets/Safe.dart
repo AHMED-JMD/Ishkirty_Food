@@ -31,7 +31,8 @@ class _SafePageState extends State<SafePage> {
   //safe state
   double bankAmount = 0;
   double cashAmount = 0;
-  double deptAmount = 0;
+  // double deptAmount = 0;
+  double fawryAmount = 0;
   int safeId = 1;
   bool loading = true;
 
@@ -45,6 +46,7 @@ class _SafePageState extends State<SafePage> {
   TextEditingController _transferSearchController = TextEditingController();
   List<SafeDaily> _filteredDailies = [];
   List<SafeTransfer> _filteredTransfers = [];
+  bool _hideDailyAndTransfers = true;
 
   @override
   void dispose() {
@@ -58,8 +60,8 @@ class _SafePageState extends State<SafePage> {
     super.initState();
     _loadSafe();
     _loadClients();
-    _loadSafeDaily();
-    _loadSafeTransfers();
+    _loadSafeDaily(startDate, endDate);
+    _loadSafeTransfers(startDate, endDate);
     _dailySearchController.addListener(_filterDailies);
     _transferSearchController.addListener(_filterTransfers);
   }
@@ -73,7 +75,8 @@ class _SafePageState extends State<SafePage> {
       setState(() {
         bankAmount = data[0]['bank_amount'] ?? 0;
         cashAmount = data[0]['cash_amount'] ?? 0;
-        deptAmount = data[0]['dept_amount'] ?? 0;
+        // deptAmount = data[0]['dept_amount'] ?? 0;
+        fawryAmount = data[0]['fawry_amount'] ?? 0;
         safeId = data[0]['id'] ?? 1;
         loading = false;
       });
@@ -82,12 +85,12 @@ class _SafePageState extends State<SafePage> {
     }
   }
 
-  Future<void> _loadSafeTransfers() async {
+  Future<void> _loadSafeTransfers(DateTime startdate, DateTime enddate) async {
     setState(() => loadingTransfers = true);
 
     final res = await APISafeTransfer.getByDate({
-      'startDate': startDate.toIso8601String(),
-      'endDate': endDate.toIso8601String(),
+      'startDate': startdate.toIso8601String(),
+      'endDate': enddate.toIso8601String(),
     });
 
     if (res.statusCode == 200) {
@@ -104,12 +107,12 @@ class _SafePageState extends State<SafePage> {
     }
   }
 
-  Future<void> _loadSafeDaily() async {
+  Future<void> _loadSafeDaily(DateTime startdate, DateTime enddate) async {
     setState(() => loadingDailies = true);
 
     final res = await APISafeDaily.getByDate({
-      'startDate': startDate.toIso8601String(),
-      'endDate': endDate.toIso8601String(),
+      'startDate': startdate.toIso8601String(),
+      'endDate': enddate.toIso8601String(),
     });
 
     if (res.statusCode == 200) {
@@ -157,7 +160,7 @@ class _SafePageState extends State<SafePage> {
               final res = await APISafeDaily.delete({'id': safeDaily.DailyId});
               if (res.statusCode == 200) {
                 _showMessage('تم حذف اليومية بنجاح');
-                _loadSafeDaily();
+                _loadSafeDaily(startDate, endDate);
                 _loadSafe();
               } else {
                 _showMessage('فشل حذف اليومية: ${res.body}');
@@ -194,7 +197,7 @@ class _SafePageState extends State<SafePage> {
               final res = await APISafeTransfer.delete({'id': safeTransfer.id});
               if (res.statusCode == 200) {
                 _showMessage('تم حذف التحويل بنجاح');
-                _loadSafeTransfers();
+                _loadSafeTransfers(startDate, endDate);
                 _loadSafe();
               } else {
                 _showMessage('فشل حذف التحويل: ${res.body}');
@@ -263,7 +266,9 @@ class _SafePageState extends State<SafePage> {
                         DropdownMenuItem(
                             value: 'bank_amount', child: Text('بنكك')),
                         DropdownMenuItem(
-                            value: 'dept_amount', child: Text('رصيد الدين')),
+                            value: 'fawry_amount', child: Text('فوري')),
+                        // DropdownMenuItem(
+                        //     value: 'dept_amount', child: Text('رصيد الدين')),
                       ],
                       onChanged: (v) => setModalState(() => from = v!),
                       decoration: const InputDecoration(labelText: 'من'),
@@ -277,7 +282,9 @@ class _SafePageState extends State<SafePage> {
                         DropdownMenuItem(
                             value: 'bank_amount', child: Text('بنكك')),
                         DropdownMenuItem(
-                            value: 'dept_amount', child: Text('رصيد الدين')),
+                            value: 'fawry_amount', child: Text('فوري')),
+                        // DropdownMenuItem(
+                        //     value: 'dept_amount', child: Text('رصيد الدين')),
                       ],
                       onChanged: (v) => setModalState(() => to = v!),
                       decoration: const InputDecoration(labelText: 'إلى'),
@@ -338,7 +345,7 @@ class _SafePageState extends State<SafePage> {
                   if (res.statusCode == 200) {
                     Navigator.pop(context);
                     _loadSafe();
-                    _loadSafeTransfers();
+                    _loadSafeTransfers(startDate, endDate);
                     _showMessage('تم تحويل $transferAmount بنجاح');
                   } else {
                     _showMessage('فشل التحويل: ${res.body}');
@@ -381,7 +388,9 @@ class _SafePageState extends State<SafePage> {
   Map transferTranslate = {
     'cash_amount': 'كاش',
     'bank_amount': 'بنكك',
-    'dept_amount': 'رصيد الدين',
+    'fawry_amount': 'فوري',
+    'account_amount': 'حساب',
+    // 'dept_amount': 'رصيد الدين',
   };
 
   @override
@@ -444,345 +453,662 @@ class _SafePageState extends State<SafePage> {
                                 Colors.green.shade900),
                             _buildCard(
                                 'رصيد بنكك', bankAmount, Colors.red.shade800),
-                            _buildCard(
-                                'رصيد الدين', deptAmount, Colors.blue.shade800),
+                            _buildCard('رصيد فوري', fawryAmount,
+                                Colors.deepPurple.shade800),
+                            // _buildCard(
+                            //     'رصيد الدين', deptAmount, Colors.blue.shade800),
                           ],
                         ),
                         const SizedBox(height: 40),
-                        ElevatedButton.icon(
-                          onPressed: () =>
-                              _showTransferModal(value.user!['id'].toString()),
-                          icon: const Icon(
-                            Icons.compare_arrows,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          label: const Text(
-                            'تحويل بين الأرصدة',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.teal),
-                        ),
-                        const SizedBox(height: 24),
-                        // Row with two scrollable ListViews
+
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // SafeDaily List
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.45,
-                              height: 600,
-                              child: Container(
-                                decoration: BoxDecoration(
+                            Checkbox(
+                              value: _hideDailyAndTransfers,
+                              onChanged: (value) {
+                                setState(() {
+                                  _hideDailyAndTransfers = value ?? false;
+                                });
+                              },
+                              activeColor: Colors.teal,
+                            ),
+                            const Text(
+                              'اخفاء البيانات ',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        // Row with two scrollable ListViews
+                        if (!_hideDailyAndTransfers)
+                          Column(
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed: () => _showTransferModal(
+                                    value.user!['id'].toString()),
+                                icon: const Icon(
+                                  Icons.compare_arrows,
                                   color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      spreadRadius: 1,
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
+                                  size: 20,
                                 ),
-                                child: Column(
-                                  children: [
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text('اليوميات',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 22)),
-                                          SizedBox(width: 10),
-                                          Icon(Icons.badge,
-                                              color: Colors.teal, size: 28)
+                                label: const Text(
+                                  'تحويل بين الأرصدة',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.teal),
+                              ),
+                              const SizedBox(height: 25),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // SafeDaily List
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.45,
+                                    height: 600,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.2),
+                                            spreadRadius: 1,
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
                                         ],
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12.0, vertical: 4.0),
-                                      child: TextField(
-                                        controller: _dailySearchController,
-                                        decoration: InputDecoration(
-                                          hintText: 'بحث في اليوميات...',
-                                          prefixIcon: const Icon(Icons.search),
-                                          border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8)),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: loadingDailies
-                                          ? const Center(
-                                              child:
-                                                  CircularProgressIndicator())
-                                          : _filteredDailies.isNotEmpty
-                                              ? ListView.separated(
-                                                  itemCount:
-                                                      _filteredDailies.length,
-                                                  separatorBuilder: (ctx, i) =>
-                                                      const SizedBox(
-                                                          height: 15),
-                                                  itemBuilder: (ctx, i) {
-                                                    final d =
-                                                        _filteredDailies[i];
-                                                    return Card(
-                                                      elevation: 2,
-                                                      shape:
-                                                          RoundedRectangleBorder(
+                                      child: Column(
+                                        children: [
+                                          const Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text('اليوميات',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 22)),
+                                                SizedBox(width: 10),
+                                                Icon(Icons.badge,
+                                                    color: Colors.teal,
+                                                    size: 28)
+                                              ],
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 12.0,
+                                                      vertical: 4.0),
+                                                  child: TextField(
+                                                    controller:
+                                                        _dailySearchController,
+                                                    decoration: InputDecoration(
+                                                      hintText:
+                                                          'بحث في اليوميات...',
+                                                      prefixIcon: const Icon(
+                                                          Icons.search),
+                                                      border:
+                                                          OutlineInputBorder(
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
-                                                                          10)),
-                                                      margin: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 8,
-                                                          vertical: 2),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(12.0),
-                                                        child: ListTile(
-                                                          contentPadding:
-                                                              EdgeInsets.zero,
-                                                          title: Text(
-                                                              'تاريخ: ${d.date.toIso8601String().split('T').first}',
-                                                              style: const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  fontSize:
-                                                                      18)),
-                                                          subtitle: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
+                                                                          8)),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 100,
+                                                child: PopupMenuButton(
+                                                  icon: const Icon(
+                                                    Icons.date_range_rounded,
+                                                    size: 36,
+                                                    color: Colors.teal,
+                                                  ),
+                                                  tooltip: "تصفية",
+                                                  onSelected: (value) {},
+                                                  itemBuilder:
+                                                      (BuildContext context) {
+                                                    startDate = DateTime.now();
+
+                                                    return [
+                                                      PopupMenuItem(
+                                                        value: 'week',
+                                                        onTap: () {
+                                                          // Get the date of a week before the current date
+                                                          DateTime
+                                                              weekBeforeDate =
+                                                              startDate.subtract(
+                                                                  const Duration(
+                                                                      days: 7));
+
+                                                          //call server
+                                                          _loadSafeDaily(
+                                                              weekBeforeDate,
+                                                              startDate);
+                                                        },
+                                                        child: const Text(
+                                                          'الإسبوع',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black),
+                                                        ),
+                                                      ),
+                                                      PopupMenuItem(
+                                                          value: 'month',
+                                                          onTap: () {
+                                                            // Get the date of a week before the current date
+                                                            DateTime
+                                                                monthBeforeDate =
+                                                                startDate.subtract(
+                                                                    const Duration(
+                                                                        days:
+                                                                            30));
+                                                            //call server
+                                                            _loadSafeDaily(
+                                                                monthBeforeDate,
+                                                                startDate);
+                                                          },
+                                                          child: const Text(
+                                                            'الشهر',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black),
+                                                          )),
+                                                      PopupMenuItem(
+                                                          value: 'day',
+                                                          onTap: () =>
+                                                              _loadSafeDaily(
+                                                                  startDate,
+                                                                  startDate),
+                                                          child: const Text(
+                                                            'اليوم',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black),
+                                                          )),
+                                                      PopupMenuItem(
+                                                        value: 'search_day',
+                                                        child: Form(
                                                             child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceEvenly,
-                                                              children: [
-                                                                Text(
-                                                                  '(كاش: ${numberFormatter(d.totalCash)})',
-                                                                  style:
-                                                                      const TextStyle(
-                                                                    fontSize:
-                                                                        17,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                  ),
-                                                                ),
-                                                                Text(
-                                                                  '(بنكك: ${numberFormatter(d.totalBank)})',
-                                                                  style:
-                                                                      const TextStyle(
-                                                                    fontSize:
-                                                                        17,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                  ),
-                                                                ),
-                                                                Text(
-                                                                  '(دين: ${numberFormatter(d.totalDept)})',
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          17,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Colors
-                                                                          .black),
-                                                                ),
-                                                              ],
+                                                          children: [
+                                                            ElevatedButton(
+                                                              onPressed:
+                                                                  () async {
+                                                                final d = await showDatePicker(
+                                                                    context:
+                                                                        context,
+                                                                    initialDate:
+                                                                        DateTime
+                                                                            .now(),
+                                                                    firstDate:
+                                                                        DateTime(
+                                                                            2000),
+                                                                    lastDate:
+                                                                        DateTime(
+                                                                            2100));
+                                                                if (d != null) {
+                                                                  //call server
+                                                                  _loadSafeDaily(
+                                                                      d, d);
+                                                                }
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child: const Text(
+                                                                'تحديد يوم',
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .black),
+                                                              ),
                                                             ),
-                                                          ),
-                                                          trailing: isAdmin
-                                                              ? IconButton(
+                                                          ],
+                                                        )),
+                                                      ),
+                                                    ];
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Expanded(
+                                            child: loadingDailies
+                                                ? const Center(
+                                                    child:
+                                                        CircularProgressIndicator())
+                                                : _filteredDailies.isNotEmpty
+                                                    ? ListView.separated(
+                                                        itemCount:
+                                                            _filteredDailies
+                                                                .length,
+                                                        separatorBuilder:
+                                                            (ctx, i) =>
+                                                                const SizedBox(
+                                                                    height: 15),
+                                                        itemBuilder: (ctx, i) {
+                                                          final d =
+                                                              _filteredDailies[
+                                                                  i];
+                                                          return Card(
+                                                            elevation: 2,
+                                                            shape: RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10)),
+                                                            margin:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        8,
+                                                                    vertical:
+                                                                        2),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(
+                                                                      12.0),
+                                                              child: ListTile(
+                                                                contentPadding:
+                                                                    EdgeInsets
+                                                                        .zero,
+                                                                title: Text(
+                                                                    'تاريخ: ${d.date.toIso8601String().split('T').first}',
+                                                                    style: const TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        fontSize:
+                                                                            18)),
+                                                                subtitle:
+                                                                    Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .all(
+                                                                          8.0),
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceEvenly,
+                                                                    children: [
+                                                                      Text(
+                                                                        '(كاش: ${numberFormatter(d.totalCash)})',
+                                                                        style:
+                                                                            const TextStyle(
+                                                                          fontSize:
+                                                                              17,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                        ),
+                                                                      ),
+                                                                      Text(
+                                                                        '(بنكك: ${numberFormatter(d.totalBank)})',
+                                                                        style:
+                                                                            const TextStyle(
+                                                                          fontSize:
+                                                                              17,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                        ),
+                                                                      ),
+                                                                      Text(
+                                                                        '(فوري: ${numberFormatter(d.totalFawry)})',
+                                                                        style: const TextStyle(
+                                                                            fontSize:
+                                                                                17,
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            color: Colors.black),
+                                                                      ),
+                                                                      // Text(
+                                                                      //   '(دين: ${numberFormatter(d.totalDept)})',
+                                                                      //   style: const TextStyle(
+                                                                      //       fontSize:
+                                                                      //           17,
+                                                                      //       fontWeight:
+                                                                      //           FontWeight
+                                                                      //               .bold,
+                                                                      //       color: Colors
+                                                                      //           .black),
+                                                                      // ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                                trailing: isAdmin
+                                                                    ? IconButton(
+                                                                        icon: const Icon(
+                                                                            Icons
+                                                                                .delete,
+                                                                            color:
+                                                                                Colors.red),
+                                                                        onPressed: () => isAdmin
+                                                                            ? _deleteSafeDaily(d)
+                                                                            : null,
+                                                                      )
+                                                                    : null,
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                      )
+                                                    : const Center(
+                                                        child: Text(
+                                                          'لا توجد خزنة يوميات ',
+                                                          style: TextStyle(
+                                                              fontSize: 18,
+                                                              color:
+                                                                  Colors.grey),
+                                                        ),
+                                                      ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  // SafeTransfer List
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.45,
+                                    height: 600,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.2),
+                                            spreadRadius: 1,
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          const Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text('التحويلات',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 22)),
+                                                SizedBox(width: 10),
+                                                Icon(
+                                                    Icons
+                                                        .compare_arrows_rounded,
+                                                    color: Colors.teal,
+                                                    size: 28)
+                                              ],
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 12.0,
+                                                      vertical: 4.0),
+                                                  child: TextField(
+                                                    controller:
+                                                        _transferSearchController,
+                                                    decoration: InputDecoration(
+                                                      hintText:
+                                                          'بحث في التحويلات باليوم...',
+                                                      prefixIcon:
+                                                          Icon(Icons.search),
+                                                      border:
+                                                          OutlineInputBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8)),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 100,
+                                                child: PopupMenuButton(
+                                                  icon: const Icon(
+                                                    Icons.date_range_rounded,
+                                                    size: 36,
+                                                    color: Colors.teal,
+                                                  ),
+                                                  tooltip: "تصفية",
+                                                  onSelected: (value) {},
+                                                  itemBuilder:
+                                                      (BuildContext context) {
+                                                    startDate = DateTime.now();
+
+                                                    return [
+                                                      PopupMenuItem(
+                                                        value: 'week',
+                                                        onTap: () {
+                                                          // Get the date of a week before the current date
+                                                          DateTime
+                                                              weekBeforeDate =
+                                                              startDate.subtract(
+                                                                  const Duration(
+                                                                      days: 7));
+
+                                                          //call server
+                                                          _loadSafeTransfers(
+                                                              weekBeforeDate,
+                                                              startDate);
+                                                        },
+                                                        child: const Text(
+                                                          'الإسبوع',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black),
+                                                        ),
+                                                      ),
+                                                      PopupMenuItem(
+                                                          value: 'month',
+                                                          onTap: () {
+                                                            // Get the date of a week before the current date
+                                                            DateTime
+                                                                monthBeforeDate =
+                                                                startDate.subtract(
+                                                                    const Duration(
+                                                                        days:
+                                                                            30));
+                                                            //call server
+                                                            _loadSafeTransfers(
+                                                                monthBeforeDate,
+                                                                startDate);
+                                                          },
+                                                          child: const Text(
+                                                            'الشهر',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black),
+                                                          )),
+                                                      PopupMenuItem(
+                                                          value: 'day',
+                                                          onTap: () =>
+                                                              _loadSafeTransfers(
+                                                                  startDate,
+                                                                  startDate),
+                                                          child: const Text(
+                                                            'اليوم',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .black),
+                                                          )),
+                                                      PopupMenuItem(
+                                                        value: 'search_day',
+                                                        child: Form(
+                                                            child: Row(
+                                                          children: [
+                                                            ElevatedButton(
+                                                              onPressed:
+                                                                  () async {
+                                                                final d = await showDatePicker(
+                                                                    context:
+                                                                        context,
+                                                                    initialDate:
+                                                                        DateTime
+                                                                            .now(),
+                                                                    firstDate:
+                                                                        DateTime(
+                                                                            2000),
+                                                                    lastDate:
+                                                                        DateTime(
+                                                                            2100));
+                                                                if (d != null) {
+                                                                  //call server
+                                                                  _loadSafeTransfers(
+                                                                      d, d);
+                                                                }
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child: const Text(
+                                                                'تحديد يوم',
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .black),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        )),
+                                                      ),
+                                                    ];
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Expanded(
+                                            child: loadingTransfers
+                                                ? const Center(
+                                                    child:
+                                                        CircularProgressIndicator())
+                                                : _filteredTransfers.isNotEmpty
+                                                    ? ListView.separated(
+                                                        itemCount:
+                                                            _filteredTransfers
+                                                                .length,
+                                                        separatorBuilder:
+                                                            (ctx, i) =>
+                                                                const SizedBox(
+                                                                    height: 15),
+                                                        itemBuilder: (ctx, i) {
+                                                          final t =
+                                                              _filteredTransfers[
+                                                                  i];
+                                                          return Card(
+                                                            elevation: 2,
+                                                            shape: RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10)),
+                                                            margin:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        8,
+                                                                    vertical:
+                                                                        2),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(
+                                                                      12.0),
+                                                              child: ListTile(
+                                                                contentPadding:
+                                                                    EdgeInsets
+                                                                        .zero,
+                                                                title: Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .all(
+                                                                          8.0),
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                        'التاريخ: ${t.date.toIso8601String().split('T').first}',
+                                                                        style: const TextStyle(
+                                                                            fontSize:
+                                                                                18),
+                                                                      ),
+                                                                      Text(
+                                                                        'المبلغ: ${numberFormatter(t.amount)}',
+                                                                        style: const TextStyle(
+                                                                            fontSize:
+                                                                                18),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                                subtitle:
+                                                                    Center(
+                                                                  child: Text(
+                                                                      'من: ${transferTranslate[t.from]}  إلى: ${transferTranslate[t.to]}',
+                                                                      style: const TextStyle(
+                                                                          fontSize:
+                                                                              17,
+                                                                          fontWeight:
+                                                                              FontWeight.bold)),
+                                                                ),
+                                                                trailing:
+                                                                    IconButton(
                                                                   icon: const Icon(
                                                                       Icons
                                                                           .delete,
                                                                       color: Colors
                                                                           .red),
                                                                   onPressed: () =>
-                                                                      isAdmin
-                                                                          ? _deleteSafeDaily(
-                                                                              d)
-                                                                          : null,
-                                                                )
-                                                              : null,
+                                                                      _deleteSafeTransfer(
+                                                                          t),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                      )
+                                                    : const Center(
+                                                        child: Text(
+                                                          'لا توجد تحويلات ',
+                                                          style: TextStyle(
+                                                              fontSize: 18,
+                                                              color:
+                                                                  Colors.grey),
                                                         ),
                                                       ),
-                                                    );
-                                                  },
-                                                )
-                                              : const Center(
-                                                  child: Text(
-                                                    'لا توجد خزنة يوميات ',
-                                                    style: TextStyle(
-                                                        fontSize: 18,
-                                                        color: Colors.grey),
-                                                  ),
-                                                ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            // SafeTransfer List
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.45,
-                              height: 600,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
-                                      spreadRadius: 1,
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  children: [
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text('التحويلات',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 22)),
-                                          SizedBox(width: 10),
-                                          Icon(Icons.compare_arrows_rounded,
-                                              color: Colors.teal, size: 28)
+                                          ),
                                         ],
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12.0, vertical: 4.0),
-                                      child: TextField(
-                                        controller: _transferSearchController,
-                                        decoration: InputDecoration(
-                                          hintText: 'بحث في التحويلات...',
-                                          prefixIcon: Icon(Icons.search),
-                                          border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8)),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: loadingTransfers
-                                          ? const Center(
-                                              child:
-                                                  CircularProgressIndicator())
-                                          : _filteredTransfers.isNotEmpty
-                                              ? ListView.separated(
-                                                  itemCount:
-                                                      _filteredTransfers.length,
-                                                  separatorBuilder: (ctx, i) =>
-                                                      const SizedBox(
-                                                          height: 15),
-                                                  itemBuilder: (ctx, i) {
-                                                    final t =
-                                                        _filteredTransfers[i];
-                                                    return Card(
-                                                      elevation: 2,
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          10)),
-                                                      margin: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 8,
-                                                          vertical: 2),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(12.0),
-                                                        child: ListTile(
-                                                          contentPadding:
-                                                              EdgeInsets.zero,
-                                                          title: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
-                                                              children: [
-                                                                Text(
-                                                                  'التاريخ: ${t.date.toIso8601String().split('T').first}',
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          18),
-                                                                ),
-                                                                Text(
-                                                                  'المبلغ: ${numberFormatter(t.amount)}',
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          18),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          subtitle: Center(
-                                                            child: Text(
-                                                                'من: ${transferTranslate[t.from]}  إلى: ${transferTranslate[t.to]}',
-                                                                style: const TextStyle(
-                                                                    fontSize:
-                                                                        17,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold)),
-                                                          ),
-                                                          trailing: IconButton(
-                                                            icon: const Icon(
-                                                                Icons.delete,
-                                                                color:
-                                                                    Colors.red),
-                                                            onPressed: () =>
-                                                                _deleteSafeTransfer(
-                                                                    t),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                )
-                                              : const Center(
-                                                  child: Text(
-                                                    'لا توجد تحويلات ',
-                                                    style: TextStyle(
-                                                        fontSize: 18,
-                                                        color: Colors.grey),
-                                                  ),
-                                                ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
                         const SizedBox(height: 40),
                       ],
                     ),

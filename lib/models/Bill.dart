@@ -5,6 +5,7 @@ class bill {
     required this.amount,
     this.isDeleted,
     required this.paymentMethod,
+    // required this.paymentMethods,
     required this.type,
     required this.date,
     required this.shiftTime,
@@ -19,7 +20,8 @@ class bill {
   late final int id;
   late final int amount;
   late final Null isDeleted;
-  late final String paymentMethod;
+  late final String? paymentMethod;
+  // late final List<dynamic>? paymentMethods;
   late final String type;
   late final String date;
   late final String shiftTime;
@@ -36,6 +38,7 @@ class bill {
     amount = json['amount'];
     isDeleted = null;
     paymentMethod = json['paymentMethod'];
+    // paymentMethods = json['paymentMethods'];
     type = json['type'];
     date = json['date'];
     shiftTime = json['shiftTime'];
@@ -54,6 +57,7 @@ class bill {
     _data['amount'] = amount;
     _data['isDeleted'] = isDeleted;
     _data['paymentMethod'] = paymentMethod;
+    // _data['paymentMethods'] = paymentMethods;
     _data['type'] = type;
     _data['date'] = date;
     _data['shiftTime'] = shiftTime;

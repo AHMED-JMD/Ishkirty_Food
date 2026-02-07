@@ -4,6 +4,7 @@ class SafeDaily {
   final double totalCash;
   final double totalBank;
   final double totalDept;
+  final double totalFawry;
   final String safeId;
   final String DailyId;
 
@@ -13,6 +14,7 @@ class SafeDaily {
     required this.totalCash,
     required this.totalBank,
     required this.totalDept,
+    required this.totalFawry,
     required this.safeId,
     required this.DailyId,
   });
@@ -24,6 +26,7 @@ class SafeDaily {
       totalCash: (json['total_cash'] as num).toDouble(),
       totalBank: (json['total_bank'] as num).toDouble(),
       totalDept: (json['total_dept'] as num).toDouble(),
+      totalFawry: (json['total_fawry'] as num).toDouble(),
       safeId: json['SafeId'].toString(),
       DailyId: json['DailyId'].toString(),
     );
@@ -36,6 +39,7 @@ class SafeDaily {
       'total_cash': totalCash,
       'total_bank': totalBank,
       'total_dept': totalDept,
+      'total_fawry': totalFawry,
       'safeId': safeId,
     };
   }

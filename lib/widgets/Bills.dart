@@ -43,6 +43,7 @@ class _BillsState extends State<Bills> {
     final response = await APIBill.GetAll(dataBody);
 
     final datas = jsonDecode(response.body);
+
     setState(() {
       isLoading = false;
       data = datas;

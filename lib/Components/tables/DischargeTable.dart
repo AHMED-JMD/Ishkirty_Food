@@ -50,6 +50,15 @@ class DischargeTable extends StatelessWidget {
             decoration: BoxDecoration(
                 border: Border(
                     right: BorderSide(color: Colors.grey.shade300, width: 1))),
+            child: const Text('طريقة الدفع',
+                style: TextStyle(fontSize: 20, color: Colors.teal)),
+          )),
+          DataColumn(
+              label: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+                border: Border(
+                    right: BorderSide(color: Colors.grey.shade300, width: 1))),
             child: const Text('المستخدم',
                 style: TextStyle(fontSize: 20, color: Colors.teal)),
           )),
@@ -94,6 +103,16 @@ class DischargeTable extends StatelessWidget {
                           right: BorderSide(
                               color: Colors.grey.shade300, width: 1))),
                   child: Text('${numberFormatter(it.price)} (جنيه)',
+                      style: const TextStyle(fontSize: 17)),
+                )),
+                DataCell(Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                      border: Border(
+                          right: BorderSide(
+                              color: Colors.grey.shade300, width: 1))),
+                  child: Text(it.paymentMethod,
                       style: const TextStyle(fontSize: 17)),
                 )),
                 DataCell(Container(

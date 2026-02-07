@@ -162,11 +162,13 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
                       'type': type,
                       'amount': double.tryParse(amountCtrl.text) ?? 0,
                       'date': date.toIso8601String(),
-                      'paymentMethod': paymentMethod,
+                      'payment_method': paymentMethod,
                     };
                     final res = await api.APIEmployee.addTrans(dto);
                     if (res.statusCode == 200) {
-                      await fetchTransactions(todayDate, todayDate);
+                      await fetchTransactions(
+                          todayDate.subtract(const Duration(days: 7)),
+                          todayDate);
                     } else {
                       showMessage(res.body);
                     }
@@ -368,30 +370,32 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 60),
+                const SizedBox(height: 20),
                 Expanded(
                   child: loading
                       ? const Center(child: CircularProgressIndicator())
                       : Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(30),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Center(
-                                child: Text(
-                                  ' ($period)',
-                                  style: const TextStyle(fontSize: 30),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Center(
+                                  child: Text(
+                                    ' ($period)',
+                                    style: const TextStyle(fontSize: 30),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 30),
-                              EmployeeTranTable(
-                                  admin: value.user,
-                                  transactions: transactions,
-                                  confirmDelete: confirmDelete)
-                            ],
-                          ),
-                        ),
+                                const SizedBox(height: 15),
+                                EmployeeTranTable(
+                                    admin: value.user,
+                                    transactions: transactions,
+                                    confirmDelete: confirmDelete),
+                                const SizedBox(height: 20),
+                              ],
+                            ),
+                          )),
                 ),
               ],
             ),

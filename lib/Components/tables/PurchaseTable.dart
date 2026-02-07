@@ -29,6 +29,17 @@ class PurchaseTable extends StatelessWidget {
             'التاريخ',
             style: TextStyle(fontSize: 20, color: Colors.teal),
           ))),
+          if (type == 'بيع')
+            DataColumn(
+                label: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(
+                                color: Colors.grey.shade300, width: 1))),
+                    child: const Text('النوع',
+                        style: TextStyle(fontSize: 20, color: Colors.teal)))),
           DataColumn(
               label: Container(
                   padding:
@@ -106,13 +117,27 @@ class PurchaseTable extends StatelessWidget {
         rows: items.map((it) {
           return DataRow(
               color: WidgetStateProperty.resolveWith<Color?>((states) {
-                return int.parse(it.id).isEven ? Colors.grey.shade200 : null;
+                return it.type == 'خصم'
+                    ? Colors.red
+                    : int.parse(it.id).isEven
+                        ? Colors.grey.shade200
+                        : null;
               }),
               cells: [
                 DataCell(Container(
                   child: Text(it.date.toIso8601String().split('T').first,
                       style: const TextStyle(fontSize: 17)),
                 )),
+                if (type == 'بيع')
+                  DataCell(Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              right: BorderSide(
+                                  color: Colors.grey.shade300, width: 1))),
+                      child: Text(it.type == 'خصم' ? 'تالف' : 'استلام',
+                          style: const TextStyle(fontSize: 17)))),
                 DataCell(Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

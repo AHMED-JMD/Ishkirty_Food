@@ -59,7 +59,7 @@ class _UserProfileState extends State<UserProfile> {
     final confirmed = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-              title: const Text('تأكيد الحذف'),
+              title: const Center(child: Text('تأكيد الحذف')),
               content: const Text('هل تريد حذف هذه الفئة؟'),
               actions: [
                 TextButton(
@@ -321,7 +321,7 @@ class _UserProfileState extends State<UserProfile> {
                           TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(
-                      width: 10,
+                      width: 15,
                     ),
                     if (value.user['role'] == 'admin')
                       ElevatedButton.icon(
@@ -380,7 +380,7 @@ class _UserProfileState extends State<UserProfile> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Icon(
-                                          Icons.category,
+                                          Icons.restaurant_menu,
                                           color: Colors.teal.shade400,
                                           size: 28,
                                         ),

@@ -15,9 +15,10 @@ class CartProvider extends ChangeNotifier {
   }
 
   //cart logic------------------
-  void addToCart(Cart model) {
+  void addToCart(Cart model, {Cart? addonModel}) {
     //add to cart
     _cart.add(model);
+
     notifyListeners();
   }
 
@@ -45,10 +46,10 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addonsUpdate(Cart model, addon, int amount) {
-    model.total_price = model.total_price + addon['price'] * amount;
+  void addonsUpdate(Cart model, Cart addon, int amount) {
+    // model.total_price = model.total_price + addon['price'] * amount;
 
-    model.addons.add(amount.toString() + ' ' + addon['name']);
+    model.addons.add(amount.toString() + ' ' + addon.spices);
     notifyListeners();
   }
 

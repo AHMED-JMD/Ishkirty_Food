@@ -8,6 +8,7 @@ import 'package:ashkerty_food/widgets/Profile.dart';
 import 'package:ashkerty_food/widgets/Safe.dart';
 import 'package:ashkerty_food/widgets/Store-Sell.dart';
 import 'package:ashkerty_food/widgets/Store-Products.dart';
+import 'package:ashkerty_food/widgets/StoreAcquisition.dart';
 import 'package:ashkerty_food/widgets/clients.dart';
 import 'package:ashkerty_food/widgets/Employee.dart';
 import 'package:ashkerty_food/widgets/Sales.dart';
@@ -19,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:ashkerty_food/API/Auth.dart';
+import 'package:ashkerty_food/API/Store.dart' as api;
 import 'package:ashkerty_food/utils/local_storage.dart' as storage;
 
 void main() {
@@ -50,6 +52,7 @@ class MyApp extends StatelessWidget {
           '/cart': (context) => const MyCart(),
           '/sales': (context) => const Sales(),
           '/store_sell': (context) => const StorePage(),
+          '/store_Acq': (context) => const StoreAcquisitions(),
           '/store_products': (context) => const StoreProductsPage(),
           '/bills': (context) => const Bills(),
           '/del_bills': (context) => const DeletedBills(),
@@ -72,6 +75,7 @@ class AuthGate extends StatefulWidget {
 class _AuthGateState extends State<AuthGate> {
   bool _checking = true;
   bool _loggedIn = false;
+  bool _goToStoreAcq = false;
 
   @override
   void initState() {
@@ -84,11 +88,25 @@ class _AuthGateState extends State<AuthGate> {
       final token = storage.getLocal('token');
 
       if (token != null) {
+        //call user by token
         final response = await APIAuth.getByToken(token);
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
           final auth = Provider.of<AuthProvider>(context, listen: false);
           auth.Login(data['user'], token);
+
+          //check if there is a purchase today
+          final res = await api.APIStore.getPurchasesByDate({
+            'startDate': DateTime.now().toIso8601String(),
+            'endDate': DateTime.now().toIso8601String(),
+            'type': 'بيع',
+          });
+          if (res.statusCode == 200) {
+            final purchases = jsonDecode(res.body);
+            if (purchases is List && purchases.isEmpty) {
+              _goToStoreAcq = true;
+            }
+          }
           setState(() {
             _loggedIn = true;
           });
@@ -107,6 +125,12 @@ class _AuthGateState extends State<AuthGate> {
     if (_checking) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    return _loggedIn ? const MyHomePage() : const Login();
+    if (!_loggedIn) {
+      return const Login();
+    }
+    if (_goToStoreAcq) {
+      return const StoreAcquisitions();
+    }
+    return const MyHomePage();
   }
 }

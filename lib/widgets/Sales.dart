@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:ashkerty_food/models/SpiecesTableModel.dart';
+import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 import 'package:ashkerty_food/widgets/SpeciesStats.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -9,6 +11,7 @@ import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 import '../static/SalesCard.dart';
 import 'Sales_Graphs.dart';
 import 'package:ashkerty_food/Components/tables/SpiecesSalesTable.dart';
@@ -26,10 +29,11 @@ class _SalesState extends State<Sales> {
   bool isLoading = false;
   int totalCash = 0;
   int totalBank = 0;
-  int totalAccount = 0;
+  int totalFawry = 0;
+  // int totalAccount = 0;
   int total = 0;
 
-  List spieces = [];
+  List<SpiecesTableModel> spieces = [];
   String period = 'اليوم';
   DateTime todayDate = DateTime.now();
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
@@ -75,7 +79,8 @@ class _SalesState extends State<Sales> {
         isLoading = false;
         totalCash = int.parse(res["totalCash"].toString());
         totalBank = int.parse(res["totalBank"].toString());
-        totalAccount = int.parse(res["totalAccount"].toString());
+        totalFawry = int.parse(res["totalFawry"].toString());
+        // totalAccount = int.parse(res["totalAccount"].toString());
         period = sPeriod;
       });
     } else {
@@ -109,7 +114,8 @@ class _SalesState extends State<Sales> {
         isLoading = false;
         totalCash = int.parse(res["totalCash"].toString());
         totalBank = int.parse(res["totalBank"].toString());
-        totalAccount = int.parse(res["totalAccount"].toString());
+        totalFawry = int.parse(res["totalFawry"].toString());
+        // totalAccount = int.parse(res["totalAccount"].toString());
         period = 'اليوم';
       });
     } else {
@@ -135,10 +141,14 @@ class _SalesState extends State<Sales> {
     //response validity
     if (response.statusCode == 200) {
       final res = jsonDecode(response.body);
+      List<SpiecesTableModel> resList = [];
+      for (var e in res) {
+        resList.add(SpiecesTableModel.fromJson(Map<String, dynamic>.from(e)));
+      }
 
       setState(() {
         isLoading = false;
-        spieces = res;
+        spieces = resList;
       });
     } else {
       setState(() {
@@ -150,263 +160,269 @@ class _SalesState extends State<Sales> {
   @override
   Widget build(BuildContext context) {
     //getting the morning variables values
-    total = totalCash + totalBank + totalAccount;
+    total = totalCash + totalBank + totalFawry; //+ totalAccount;
 
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.teal,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.home_work,
-              size: 37,
-              color: Colors.white,
+    //ordering spice sales table by saleSum descending
+    spieces.sort((a, b) => b.saleSum.compareTo(a.saleSum));
+
+    return Consumer<AuthProvider>(builder: (context, auth, child) {
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.teal,
+            leading: IconButton(
+              icon: const Icon(
+                Icons.home_work,
+                size: 37,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/home');
+              },
             ),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, '/home');
-            },
+            title: const Center(
+              child: Text("المبيعات",
+                  style: TextStyle(
+                    fontSize: 25,
+                  )),
+            ),
+            actions: const [
+              LeadingDrawerBtn(),
+            ],
+            toolbarHeight: 45,
           ),
-          title: const Center(
-            child: Text("المبيعات",
-                style: TextStyle(
-                  fontSize: 25,
-                )),
-          ),
-          actions: const [
-            LeadingDrawerBtn(),
-          ],
-          toolbarHeight: 45,
-        ),
-        endDrawer: const MyDrawer(),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 10,
-              ),
-              SearchInDates(searchDates: searchDates),
-              if (isLoading)
-                const SpinKitCircle(
-                  color: Colors.black45,
-                  size: 50,
+          endDrawer: const MyDrawer(),
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 10,
                 ),
-              const SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    children: [
-                      Text(
-                        'إجمالي الإيرادات $period',
-                        style: const TextStyle(fontSize: 30),
-                      ),
-                      Text(
-                        "${numberFormatter(total)} / (جنيه) ",
-                        style: const TextStyle(fontSize: 30),
-                      ),
-                    ],
+                SearchInDates(searchDates: searchDates),
+                if (isLoading)
+                  const SpinKitCircle(
+                    color: Colors.black45,
+                    size: 50,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 330,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          border: Border.all(
-                            width: 2,
+                const SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          'إجمالي الإيرادات $period',
+                          style: const TextStyle(fontSize: 30),
+                        ),
+                        Text(
+                          "${numberFormatter(total)} / (جنيه) ",
+                          style: const TextStyle(fontSize: 30),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 330,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            border: Border.all(
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          borderRadius: BorderRadius.circular(12),
+                          child: SalesCard(
+                            period: 'مبيعات الوردية',
+                            cashAmount: totalCash,
+                            bankakAmount: totalBank,
+                            fawryAmount: totalFawry,
+                          ),
                         ),
-                        child: SalesCard(
-                          period: 'مبيعات الوردية',
-                          cashAmount: totalCash,
-                          bankakAmount: totalBank,
-                          accountsAmount: totalAccount,
+                        const SizedBox(
+                          width: 30,
                         ),
-                      ),
-                      const SizedBox(
-                        width: 30,
-                      ),
-                      // Container(
-                      //   width: 330,
-                      //   decoration: BoxDecoration(
-                      //     color: const Color(0xffefecec),
-                      //     border: Border.all(
-                      //       width: 2,
-                      //     ),
-                      //     borderRadius: BorderRadius.circular(12),
-                      //   ),
-                      //   child: SalesCard(
-                      //     period: 'الوردية المسائية',
-                      //     cashAmount: totalCash,
-                      //     bankakAmount: totalBank,
-                      //     accountsAmount: totalAccount,
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 90,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('الإيرادات بالصنف',
-                      style: TextStyle(fontSize: 30)),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: (spieces.isNotEmpty && !isLoading)
-                        ? () async {
-                            await printSalesReport(
-                                spieces: spieces,
-                                cashTotal: totalCash,
-                                bankTotal: totalBank,
-                                accountTotal: totalAccount,
-                                period: period);
-                          }
-                        : null,
-                    icon: const Icon(
-                      Icons.print,
-                      size: 40,
-                      color: Colors.black,
+                        // Container(
+                        //   width: 330,
+                        //   decoration: BoxDecoration(
+                        //     color: const Color(0xffefecec),
+                        //     border: Border.all(
+                        //       width: 2,
+                        //     ),
+                        //     borderRadius: BorderRadius.circular(12),
+                        //   ),
+                        //   child: SalesCard(
+                        //     period: 'الوردية المسائية',
+                        //     cashAmount: totalCash,
+                        //     bankakAmount: totalBank,
+                        //     accountsAmount: totalAccount,
+                        //   ),
+                        // ),
+                      ],
                     ),
-                    label: const Text('تقرير الوردية',
-                        style: TextStyle(fontSize: 20, color: Colors.white)),
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              spieces.isNotEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: SpiecesTable(
-                        data: spieces,
-                      ),
-                    )
-                  : const Padding(
-                      padding: EdgeInsets.only(top: 20.0),
-                      child: SpinKitCubeGrid(
-                        color: Colors.teal,
-                      ),
-                    )
-            ],
-          ),
-        ),
-        bottomNavigationBar: BottomAppBar(
-          height: 65,
-          color: const Color(0xffefecec),
-          child: OverflowBar(
-            alignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              FilledButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SalesGRaphs(),
-                    ),
-                  );
-                },
-                child: const Icon(
-                  Icons.auto_graph,
-                  color: Color(0xffffffff),
+                  ],
                 ),
-              ),
-              SizedBox(
-                width: 300,
-                height: 100,
-                child: FormBuilder(
-                  key: _formKey,
-                  child: FormBuilderTextField(
-                    name: 'name',
-                    validator: FormBuilderValidators.required(errorText: '*'),
-                    decoration: InputDecoration(
-                        labelText: 'اسم الصنف',
-                        border: const OutlineInputBorder(),
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.saveAndValidate()) {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => SpeciesStats(
-                                          name: _formKey
-                                              .currentState!.value['name'])));
+                const SizedBox(
+                  height: 90,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('الإيرادات بالصنف',
+                        style: TextStyle(fontSize: 30)),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: (spieces.isNotEmpty && !isLoading)
+                          ? () async {
+                              await printSalesReport(
+                                  admin: auth.user['username'],
+                                  spieces: spieces,
+                                  cashTotal: totalCash,
+                                  bankTotal: totalBank,
+                                  fawryTotal: totalFawry,
+                                  period: period);
                             }
-                          },
-                          icon: const Icon(Icons.search),
-                        )),
+                          : null,
+                      icon: const Icon(
+                        Icons.print,
+                        size: 35,
+                        color: Colors.black,
+                      ),
+                      label: const Text('تقرير الوردية',
+                          style: TextStyle(fontSize: 20, color: Colors.black)),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey.shade300),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                spieces.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: SpiecesSalesTable(
+                          data: spieces,
+                        ),
+                      )
+                    : const Padding(
+                        padding: EdgeInsets.only(top: 20.0),
+                        child: SpinKitCubeGrid(
+                          color: Colors.teal,
+                        ),
+                      )
+              ],
+            ),
+          ),
+          bottomNavigationBar: BottomAppBar(
+            height: 65,
+            color: const Color(0xffefecec),
+            child: OverflowBar(
+              alignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                FilledButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SalesGRaphs(),
+                      ),
+                    );
+                  },
+                  child: const Icon(
+                    Icons.auto_graph,
+                    color: Color(0xffffffff),
                   ),
                 ),
-              ),
-              PopupMenuButton(
-                icon: const Icon(
-                  Icons.menu,
-                  size: 36,
+                SizedBox(
+                  width: 300,
+                  height: 100,
+                  child: FormBuilder(
+                    key: _formKey,
+                    child: FormBuilderTextField(
+                      name: 'name',
+                      validator: FormBuilderValidators.required(errorText: '*'),
+                      decoration: InputDecoration(
+                          labelText: 'اسم الصنف',
+                          border: const OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.saveAndValidate()) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SpeciesStats(
+                                            name: _formKey
+                                                .currentState!.value['name'])));
+                              }
+                            },
+                            icon: const Icon(Icons.search),
+                          )),
+                    ),
+                  ),
                 ),
-                onSelected: (value) {},
-                itemBuilder: (BuildContext context) {
-                  return [
-                    PopupMenuItem(
-                      value: 'week',
-                      onTap: () {
-                        // Get the date of a week before the current date
-                        DateTime weekBeforeDate =
-                            todayDate.subtract(const Duration(days: 7));
+                PopupMenuButton(
+                  icon: const Icon(
+                    Icons.menu,
+                    size: 36,
+                  ),
+                  onSelected: (value) {},
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem(
+                        value: 'week',
+                        onTap: () {
+                          // Get the date of a week before the current date
+                          DateTime weekBeforeDate =
+                              todayDate.subtract(const Duration(days: 7));
 
-                        //for total sales
-                        getTotalSales(weekBeforeDate, todayDate);
-                        //for spieces sales
-                        getSpiecesSales(weekBeforeDate, todayDate);
-                      },
-                      child: const Text(
-                        'إيرادات الإسبوع',
-                        style: TextStyle(fontSize: 20, color: Colors.black),
+                          //for total sales
+                          getTotalSales(weekBeforeDate, todayDate);
+                          //for spieces sales
+                          getSpiecesSales(weekBeforeDate, todayDate);
+                        },
+                        child: const Text(
+                          'إيرادات الإسبوع',
+                          style: TextStyle(fontSize: 20, color: Colors.black),
+                        ),
                       ),
-                    ),
-                    PopupMenuItem(
-                      value: 'month',
-                      onTap: () {
-                        // Get the date of a week before the current date
-                        DateTime monthBeforeDate =
-                            todayDate.subtract(const Duration(days: 30));
-                        //for total sales
-                        getTotalSales(monthBeforeDate, todayDate);
-                        //for spieces sales
-                        getSpiecesSales(monthBeforeDate, todayDate);
-                      },
-                      child: const Text(
-                        'إيرادات الشهر',
-                        style: TextStyle(fontSize: 20, color: Colors.black),
+                      PopupMenuItem(
+                        value: 'month',
+                        onTap: () {
+                          // Get the date of a week before the current date
+                          DateTime monthBeforeDate =
+                              todayDate.subtract(const Duration(days: 30));
+                          //for total sales
+                          getTotalSales(monthBeforeDate, todayDate);
+                          //for spieces sales
+                          getSpiecesSales(monthBeforeDate, todayDate);
+                        },
+                        child: const Text(
+                          'إيرادات الشهر',
+                          style: TextStyle(fontSize: 20, color: Colors.black),
+                        ),
                       ),
-                    ),
-                    PopupMenuItem(
-                      value: 'day',
-                      onTap: () => getTotalSales(todayDate, todayDate),
-                      child: const Text(
-                        'إيرادات اليوم',
-                        style: TextStyle(fontSize: 20, color: Colors.black),
+                      PopupMenuItem(
+                        value: 'day',
+                        onTap: () => getTotalSales(todayDate, todayDate),
+                        child: const Text(
+                          'إيرادات اليوم',
+                          style: TextStyle(fontSize: 20, color: Colors.black),
+                        ),
                       ),
-                    ),
-                  ];
-                },
-              ),
-            ],
+                    ];
+                  },
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

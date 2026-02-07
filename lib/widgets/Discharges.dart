@@ -40,7 +40,6 @@ class _DischargesPageState extends State<DischargesPage> {
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
       List data = List.from(body);
-      print(data);
       _items = data.map((e) => Discharge.fromJson(e)).toList();
     }
 
@@ -377,8 +376,7 @@ class _DischargesPageState extends State<DischargesPage> {
                                               _load(weekBeforeDate, todayDate,
                                                   'الإسبوع');
                                             },
-                                            child: const Text(
-                                                'المصروفات الإسبوع',
+                                            child: const Text(' الإسبوع',
                                                 style: TextStyle(
                                                     color: Colors.black)),
                                           ),
@@ -392,16 +390,14 @@ class _DischargesPageState extends State<DischargesPage> {
                                                 _load(monthBeforeDate,
                                                     todayDate, 'الشهر');
                                               },
-                                              child: const Text(
-                                                  'المصروفات الشهر',
+                                              child: const Text(' الشهر',
                                                   style: TextStyle(
                                                       color: Colors.black))),
                                           PopupMenuItem(
                                               value: 'day',
                                               onTap: () => _load(todayDate,
                                                   todayDate, 'اليوم'),
-                                              child: const Text(
-                                                  'المصروفات اليوم',
+                                              child: const Text(' اليوم',
                                                   style: TextStyle(
                                                       color: Colors.black))),
                                           PopupMenuItem(

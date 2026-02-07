@@ -7,14 +7,14 @@ class SalesCard extends StatelessWidget {
   final String period;
   final int cashAmount;
   final int bankakAmount;
-  final int accountsAmount;
+  final int fawryAmount;
 
   SalesCard({
     super.key,
     required this.period,
     required this.cashAmount,
     required this.bankakAmount,
-    required this.accountsAmount,
+    required this.fawryAmount,
   });
 
   @override
@@ -41,7 +41,7 @@ class SalesCard extends StatelessWidget {
               const Icon(
                 Icons.attach_money_rounded,
                 color: Color(0xff1b3b0b),
-                size: 50,
+                size: 55,
               ),
               Text(
                 numberFormatter(cashAmount),
@@ -55,7 +55,7 @@ class SalesCard extends StatelessWidget {
               const Icon(
                 MyIcon.bankak,
                 color: Color(0xffc90000),
-                size: 50,
+                size: 55,
               ),
               Text(
                 numberFormatter(bankakAmount),
@@ -64,15 +64,17 @@ class SalesCard extends StatelessWidget {
             ]),
             Column(children: [
               const SizedBox(
-                height: 15,
+                height: 22,
               ),
-              const Icon(
-                Icons.person_pin,
-                size: 50,
-                color: Color(0xff0c283f),
+              //make image asset rounded shape in container
+              Image.asset(
+                'assets/images/fawry.jpeg',
+                width: 48,
+                height: 48,
               ),
+
               Text(
-                numberFormatter(accountsAmount),
+                numberFormatter(fawryAmount),
                 style: const TextStyle(fontSize: 20),
               ),
             ]),

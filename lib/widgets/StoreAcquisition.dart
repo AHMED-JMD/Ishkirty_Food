@@ -206,6 +206,19 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
                   ElevatedButton(
                     onPressed: () async {
                       if (!formKey.currentState!.validate()) return;
+                      //check quantity bigger than net quantity
+                      if (qtyCtrl.text.trim() != netQtyCtrl.text.trim()) {
+                        final q = double.tryParse(qtyCtrl.text.trim()) ?? 0;
+                        final netQ =
+                            double.tryParse(netQtyCtrl.text.trim()) ?? 0;
+
+                        if (q <= netQ) {
+                          _showError("الكمية يجب ان تكون اكبر من صافي الكمية");
+                          return;
+                        }
+                      }
+
+                      //call server and data prep
                       final dto = {
                         'store_item': storeCtrl.text.trim(),
                         'vendor': vendorCtrl.text.trim(),
@@ -214,6 +227,116 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
                         'payment_method': paymentMethod,
                         'date': pickedDate.toIso8601String(),
                         'type': 'بيع',
+                        'tran_type': 'اضافة',
+                        'admin_id': adminId,
+                      };
+                      Navigator.pop(context);
+                      final res = await api.APIStore.addPurchase(dto);
+                      if (res.statusCode == 200) {
+                        await _load(todayDate, todayDate, "اليوم");
+                      } else {
+                        _showError(res.body);
+                      }
+                    },
+                    child: const Text('اضافة',
+                        style: TextStyle(color: Colors.teal)),
+                  ),
+                ],
+              );
+            }));
+  }
+
+  void _showBadForm(String adminId) {
+    final qtyCtrl = TextEditingController();
+    final storeCtrl = TextEditingController();
+    DateTime pickedDate = todayDate;
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+        context: context,
+        builder: (_) => StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+              return AlertDialog(
+                title: const Center(child: Text('تالف المطبخ')),
+                content: Form(
+                  key: formKey,
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          DropdownButtonFormField<String>(
+                            decoration:
+                                const InputDecoration(labelText: 'اختر المخزن'),
+                            items: stores
+                                .map((s) => DropdownMenuItem(
+                                      value: s.id,
+                                      child: Text(s.name),
+                                    ))
+                                .toList(),
+                            onChanged: (val) {
+                              storeCtrl.text = val ?? '';
+                            },
+                            validator: (v) =>
+                                (v == null || v.isEmpty) ? 'Required' : null,
+                          ),
+                          TextFormField(
+                            controller: qtyCtrl,
+                            decoration:
+                                const InputDecoration(labelText: 'الكمية'),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            validator: (v) => double.tryParse(v ?? '') == null
+                                ? 'Invalid'
+                                : null,
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                    pickedDate.toString().split(' ').first),
+                              ),
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    final d = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime(2000),
+                                        lastDate: DateTime(2100));
+                                    if (d != null) {
+                                      pickedDate = d;
+                                      setState(() {});
+                                    }
+                                  },
+                                  child: const Text('تحديد'))
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('الغاء',
+                          style: TextStyle(color: Colors.black))),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (!formKey.currentState!.validate()) return;
+
+                      //call server and data prep
+                      final dto = {
+                        'store_item': storeCtrl.text.trim(),
+                        'vendor': 'التالف',
+                        'quantity': double.parse(qtyCtrl.text.trim()),
+                        'net_quantity': double.parse(qtyCtrl.text.trim()),
+                        'payment_method': 'كاش',
+                        'date': pickedDate.toIso8601String(),
+                        'type': 'بيع',
+                        'tran_type': 'خصم',
                         'admin_id': adminId,
                       };
                       Navigator.pop(context);
@@ -339,6 +462,19 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
                           ),
                           tooltip: "استلام منتج",
                         ),
+                        const SizedBox(width: 20),
+                        //elevated button called تالف المطبخ
+                        ElevatedButton(
+                          onPressed: () {
+                            _showBadForm(value.user['id'].toString());
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent),
+                          child: const Text(
+                            'تالف المطبخ',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )
                       ],
                     ),
                     Row(

@@ -28,9 +28,10 @@ class _MenucardState extends State<Menucard> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
 
   //function to specify addons to spieces
-  addonsModal(BuildContext context, List cart, cartProvider) {
+  addonsModal(BuildContext context, List<Cart> cart, Map spice, cartProvider) {
     //remove addons from addons modal
-    cart.removeWhere((element) => element.category == 'اضافات');
+    List<Cart> modCart =
+        cart.where((element) => element.category != 'اضافات').toList();
 
     return showDialog(
         context: context,
@@ -53,18 +54,16 @@ class _MenucardState extends State<Menucard> {
                           FormBuilderDropdown(
                             name: 'model',
                             decoration: const InputDecoration(
-                                labelText: 'اختر الصنف من السلة',
+                                labelText: 'اختر الصنف من السلة (اختياري)',
                                 icon: Icon(
                                   Icons.add_shopping_cart,
                                   size: 20,
                                   color: Colors.teal,
                                 )),
-                            items: cart
+                            items: modCart
                                 .map((item) => DropdownMenuItem(
                                     value: item, child: Text(item.spices)))
                                 .toList(),
-                            validator: FormBuilderValidators.required(
-                                errorText: 'الرجاء ادخال قيمة '),
                           ),
                           FormBuilderTextField(
                             name: 'amount',
@@ -99,16 +98,31 @@ class _MenucardState extends State<Menucard> {
                             ),
                             onPressed: () {
                               if (_formKey.currentState!.saveAndValidate()) {
-                                //modify cart
-                                Cart model =
+                                // create addon model
+                                model = Cart(
+                                    spices: spice['name'],
+                                    counter: 1,
+                                    category: spice['category'],
+                                    addons: [],
+                                    unit_price: spice['price'],
+                                    total_price: spice['price']);
+
+                                final selectedModel =
                                     _formKey.currentState!.value['model'];
                                 int amount = int.parse(
                                     _formKey.currentState!.value['amount']);
 
-                                //update cart item
-                                cartProvider.addonsUpdate(
-                                    model, widget.speices, amount);
+                                setState(() {
+                                  isAdded = true;
+                                });
                                 Navigator.of(context).pop();
+                                // always add the addon item to the cart
+                                cartProvider.addToCart(model);
+                                // if a model from the cart was selected, update it with the addon
+                                if (selectedModel != null) {
+                                  cartProvider.addonsUpdate(
+                                      selectedModel, model, amount);
+                                }
                               }
                             },
                             child: const Text(
@@ -151,7 +165,7 @@ class _MenucardState extends State<Menucard> {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Container(color: Colors.black.withOpacity(0.35)),
+                  Container(color: Colors.grey.shade300),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -217,7 +231,7 @@ class _MenucardState extends State<Menucard> {
                                         if (widget.speices['category'] ==
                                             'اضافات') {
                                           addonsModal(context, value.cart,
-                                              cartProvider);
+                                              widget.speices, cartProvider);
                                         } else {
                                           model = Cart(
                                               spices: widget.speices['name'],

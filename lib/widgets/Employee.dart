@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
+import 'package:ashkerty_food/static/Printing.dart';
 import 'package:ashkerty_food/widgets/EmployeeTransactions.dart';
 import 'package:ashkerty_food/Components/tables/EmployeeTable.dart';
 import 'package:flutter/material.dart';
@@ -289,7 +290,7 @@ class _EmployeePageState extends State<EmployeePage> {
                       'type': type,
                       'amount': double.tryParse(amountCtrl.text) ?? 0,
                       'date': date.toIso8601String(),
-                      'paymentMethod': paymentMethod,
+                      'payment_method': paymentMethod,
                     };
                     //call server
                     final res = await api.APIEmployee.addTrans(dto);
@@ -460,7 +461,6 @@ class _EmployeePageState extends State<EmployeePage> {
                     children: [
                       Row(
                         children: [
-                          const SizedBox(width: 0),
                           if (isAdmin)
                             ElevatedButton.icon(
                               onPressed: () {
@@ -482,6 +482,29 @@ class _EmployeePageState extends State<EmployeePage> {
                                     fontSize: 16, color: Colors.white),
                               ),
                             ),
+                          const SizedBox(width: 20),
+                          ElevatedButton.icon(
+                              onPressed: () async {
+                                await printEmployeeSalaries(
+                                    admin: value.user!['username'],
+                                    employees: employees,
+                                    totalSalaries: totalSalaries);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12.0, horizontal: 20.0),
+                                backgroundColor: Colors.grey.shade300,
+                              ),
+                              label: const Text(
+                                'طباعة المرتبات',
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.black),
+                              ),
+                              icon: const Icon(
+                                Icons.print,
+                                size: 20,
+                                color: Colors.black,
+                              )),
                           const SizedBox(width: 20),
                           ElevatedButton.icon(
                               onPressed: () {

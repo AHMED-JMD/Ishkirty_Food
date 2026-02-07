@@ -207,6 +207,19 @@ class _StorePurchasesState extends State<StorePurchases> {
                   ElevatedButton(
                     onPressed: () async {
                       if (!formKey.currentState!.validate()) return;
+                      //check quantity bigger than net quantity
+                      if (qtyCtrl.text.trim() != netQtyCtrl.text.trim()) {
+                        final q = double.tryParse(qtyCtrl.text.trim()) ?? 0;
+                        final netQ =
+                            double.tryParse(netQtyCtrl.text.trim()) ?? 0;
+
+                        if (q <= netQ) {
+                          _showError("الكمية يجب ان تكون اكبر من صافي الكمية");
+                          return;
+                        }
+                      }
+
+                      //call server and data prep
                       final dto = {
                         'store_item': storeCtrl.text.trim(),
                         'vendor': vendorCtrl.text.trim(),
@@ -215,6 +228,7 @@ class _StorePurchasesState extends State<StorePurchases> {
                         'payment_method': paymentMethod,
                         'date': pickedDate.toIso8601String(),
                         'type': 'تصنيع',
+                        'tran_type': 'اضافة',
                         'admin_id': adminId,
                       };
                       Navigator.pop(context);
@@ -446,7 +460,7 @@ class _StorePurchasesState extends State<StorePurchases> {
                                                 "الإسبوع");
                                           },
                                           child: const Text(
-                                            'طلبات الإسبوع',
+                                            ' الإسبوع',
                                             style:
                                                 TextStyle(color: Colors.black),
                                           ),
@@ -463,7 +477,7 @@ class _StorePurchasesState extends State<StorePurchases> {
                                                   "الشهر");
                                             },
                                             child: const Text(
-                                              'طلبات الشهر',
+                                              ' الشهر',
                                               style: TextStyle(
                                                   color: Colors.black),
                                             )),
@@ -472,7 +486,7 @@ class _StorePurchasesState extends State<StorePurchases> {
                                             onTap: () => _load(
                                                 todayDate, todayDate, "اليوم"),
                                             child: const Text(
-                                              'طلبات اليوم',
+                                              ' اليوم',
                                               style: TextStyle(
                                                   color: Colors.black),
                                             )),

@@ -36,7 +36,24 @@ class _NewDailyPageState extends State<NewDailyPage> {
   List<EmpTransaction> _empTrans = [];
   List<Employee> _employees = [];
   List<StockItem> _stores = [];
-  Daily? newDaily;
+  //for new daily in starting screen
+  Daily newDaily = Daily(
+      id: '',
+      Admin: {},
+      date: DateTime.now(),
+      cashSales: 0,
+      bankSales: 0,
+      fawrySales: 0,
+      accountSales: 0,
+      spiceCosts: 0,
+      cashCosts: 0,
+      bankCosts: 0,
+      fawryCosts: 0,
+      accountCosts: 0,
+      businessLocation: '',
+      isCreated: false,
+      isAddedtoSafe: false);
+  //-----------------------------
   bool _loading = true;
   double cashSales = 0.0;
   double bankSales = 0.0;
@@ -44,7 +61,8 @@ class _NewDailyPageState extends State<NewDailyPage> {
   // Sales cards state (morning / evening)
   int totalCash = 0;
   int totalBank = 0;
-  int totalAccount = 0;
+  int totalFawry = 0;
+  // int totalAccount = 0;
   int totalSales = 0;
   String period = 'اليوم';
 
@@ -58,9 +76,12 @@ class _NewDailyPageState extends State<NewDailyPage> {
   double get totalEmpTransBankak => _empTrans
       .where((e) => e.paymentMethod == 'بنكك')
       .fold(0.0, (p, e) => p + e.amount);
-  double get totalEmpTransAccount => _empTrans
-      .where((e) => e.paymentMethod == 'حساب')
+  double get totalEmpTransFawry => _empTrans
+      .where((e) => e.paymentMethod == 'فوري')
       .fold(0.0, (p, e) => p + e.amount);
+  // double get totalEmpTransAccount => _empTrans
+  //     .where((e) => e.paymentMethod == 'حساب')
+  //     .fold(0.0, (p, e) => p + e.amount);
 
   //total purchases value by payment method
   double get totalPurchaseCash => _purchases
@@ -69,9 +90,12 @@ class _NewDailyPageState extends State<NewDailyPage> {
   double get totalPurchaseBankak => _purchases
       .where((e) => e.paymentMethod == 'بنكك')
       .fold(0.0, (p, e) => p + e.buyPrice * e.quantity);
-  double get totalPurchaseAccount => _purchases
-      .where((e) => e.paymentMethod == 'حساب')
+  double get totalPurchaseFawry => _purchases
+      .where((e) => e.paymentMethod == 'فوري')
       .fold(0.0, (p, e) => p + e.buyPrice * e.quantity);
+  // double get totalPurchaseAccount => _purchases
+  //     .where((e) => e.paymentMethod == 'حساب')
+  //     .fold(0.0, (p, e) => p + e.buyPrice * e.quantity);
 
   //total Discharges value by payment method
   double get totalDischargesCash => _discharges
@@ -80,9 +104,12 @@ class _NewDailyPageState extends State<NewDailyPage> {
   double get totalDischargesBankak => _discharges
       .where((e) => e.paymentMethod == 'بنكك')
       .fold(0.0, (p, e) => p + e.price);
-  double get totalDischargesAccount => _discharges
-      .where((e) => e.paymentMethod == 'حساب')
+  double get totalDischargesFawry => _discharges
+      .where((e) => e.paymentMethod == 'فوري')
       .fold(0.0, (p, e) => p + e.price);
+  // double get totalDischargesAccount => _discharges
+  //     .where((e) => e.paymentMethod == 'حساب')
+  //     .fold(0.0, (p, e) => p + e.price);
 
   @override
   void initState() {
@@ -114,7 +141,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
       final body = jsonDecode(res.body);
       newDaily = Daily.fromJson(body);
     } else {
-      _showMessage(res.body);
+      _showMessage('خطأ', res.body);
     }
 
     setState(() => _loading = false);
@@ -136,7 +163,8 @@ class _NewDailyPageState extends State<NewDailyPage> {
         _loading = false;
         totalCash = res["totalCash"].toInt();
         totalBank = res["totalBank"].toInt();
-        totalAccount = res["totalAccount"].toInt();
+        totalFawry = res["totalFawry"].toInt();
+        // totalAccount = res["totalAccount"].toInt();
         period = 'اليوم';
       });
     } else {
@@ -176,10 +204,6 @@ class _NewDailyPageState extends State<NewDailyPage> {
       _discharges = data.map((e) => Discharge.fromJson(e)).toList();
     }
 
-    // rudimentary totals (placeholder — replace with real sales API if available)
-    cashSales = _purchases.fold(0.0, (p, e) => p + (e.buyPrice * e.quantity));
-    bankSales = 0.0;
-
     setState(() => _loading = false);
   }
 
@@ -197,10 +221,6 @@ class _NewDailyPageState extends State<NewDailyPage> {
       List data = List.from(body);
       _purchases = data.map((e) => PurchaseRequest.fromJson(e)).toList();
     }
-
-    // rudimentary totals (placeholder — replace with real sales API if available)
-    cashSales = _purchases.fold(0.0, (p, e) => p + (e.buyPrice * e.quantity));
-    bankSales = 0.0;
 
     setState(() => _loading = false);
   }
@@ -251,26 +271,30 @@ class _NewDailyPageState extends State<NewDailyPage> {
         totalDischargesCash + totalPurchaseCash + totalEmpTransCash;
     double totalBankCosts =
         totalDischargesBankak + totalPurchaseBankak + totalEmpTransBankak;
-    double totalAccountCosts =
-        totalDischargesAccount + totalPurchaseAccount + totalEmpTransAccount;
+    double totalFawryCosts =
+        totalDischargesFawry + totalPurchaseFawry + totalEmpTransFawry;
+    // double totalAccountCosts =
+    //     totalDischargesAccount + totalPurchaseAccount + totalEmpTransAccount;
 
     final today = DateTime.now();
     final res = await APIDaily.addDaily({
       'date': today.toIso8601String(),
       'cash_sales': totalCash,
       'bank_sales': totalBank,
-      'account_sales': totalAccount,
+      'fawry_sales': totalFawry,
+      // 'account_sales': totalAccount,
       'today_costs': totalCosts,
       'cash_costs': totalCashCosts,
       'bank_costs': totalBankCosts,
-      'account_costs': totalAccountCosts,
+      'fawry_costs': totalFawryCosts,
+      // 'account_costs': totalAccountCosts,
       'admin_id': adminId,
     });
     if (res.statusCode == 200) {
-      _showMessage(res.body);
+      _showMessage('نجاح', res.body);
       Navigator.pushReplacementNamed(context, '/daily');
     }
-    _showMessage(res.body);
+    _showMessage('خطأ', res.body);
     setState(() => _loading = false);
   }
 
@@ -309,6 +333,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
                         items: const [
                           DropdownMenuItem(value: 'كاش', child: Text('كاش')),
                           DropdownMenuItem(value: 'بنكك', child: Text('بنكك')),
+                          DropdownMenuItem(value: 'فوري', child: Text('فوري')),
                         ],
                         onChanged: (v) =>
                             setState(() => paymentMethod = v ?? 'كاش'),
@@ -381,6 +406,19 @@ class _NewDailyPageState extends State<NewDailyPage> {
               ElevatedButton(
                 onPressed: () async {
                   if (!formKey.currentState!.validate()) return;
+
+                  //check quantity bigger than net quantity
+                  if (qtyCtrl.text.trim() != netQtyCtrl.text.trim()) {
+                    final q = double.tryParse(qtyCtrl.text.trim()) ?? 0;
+                    final netQ = double.tryParse(netQtyCtrl.text.trim()) ?? 0;
+
+                    if (q <= netQ) {
+                      _showMessage(
+                          "خطأ", "الكمية يجب ان تكون اكبر من صافي الكمية");
+                      return;
+                    }
+                  }
+
                   final dto = {
                     'store_item': storeCtrl.text.trim(),
                     'vendor': vendorCtrl.text.trim(),
@@ -389,6 +427,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
                     'payment_method': paymentMethod,
                     'date': pickedDate.toIso8601String(),
                     'type': 'تصنيع',
+                    'tran_type': 'اضافة',
                     'admin_id': adminId
                   };
                   Navigator.pop(ctx);
@@ -445,6 +484,8 @@ class _NewDailyPageState extends State<NewDailyPage> {
                                   value: 'كاش', child: Text('كاش')),
                               DropdownMenuItem(
                                   value: 'بنكك', child: Text('بنكك')),
+                              DropdownMenuItem(
+                                  value: 'فوري', child: Text('فوري')),
                             ],
                             onChanged: (v) =>
                                 setStateSB(() => paymentMethod = v ?? 'كاش'),
@@ -511,7 +552,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
                         'price': double.parse(amountCtrl.text.trim()),
                         'date': pickedDate.toIso8601String(),
                         'isMonthly': isMonthly,
-                        'paymentMethod': paymentMethod,
+                        'payment_method': paymentMethod,
                         'admin_id': adminId
                       };
                       Navigator.pop(context);
@@ -574,6 +615,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
                       items: const [
                         DropdownMenuItem(value: 'كاش', child: Text('كاش')),
                         DropdownMenuItem(value: 'بنكك', child: Text('بنكك')),
+                        DropdownMenuItem(value: 'فوري', child: Text('فوري')),
                       ],
                       onChanged: (v) => paymentMethod = v ?? 'كاش',
                       decoration:
@@ -617,7 +659,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
                       'type': type,
                       'amount': double.tryParse(amountCtrl.text) ?? 0,
                       'date': date.toIso8601String(),
-                      'paymentMethod': paymentMethod,
+                      'payment_method': paymentMethod,
                       'admin_id': adminId,
                     };
                     final res = await emp_api.APIEmployee.addTrans(dto);
@@ -635,11 +677,11 @@ class _NewDailyPageState extends State<NewDailyPage> {
         });
   }
 
-  void _showMessage(String message) {
+  void _showMessage(String title, String message) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Center(child: Text('تم بنجاح')),
+        title: Center(child: Text(title)),
         content: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Text(
@@ -654,19 +696,22 @@ class _NewDailyPageState extends State<NewDailyPage> {
   @override
   Widget build(BuildContext context) {
     // totals
-    double totalEmployeeTran =
-        totalEmpTransAccount + totalEmpTransBankak + totalEmpTransCash;
-    double totalPurchase =
-        totalPurchaseAccount + totalPurchaseBankak + totalPurchaseCash;
-    double totalDischarges =
-        totalDischargesAccount + totalDischargesBankak + totalDischargesCash;
+    double totalEmployeeTran = totalEmpTransFawry +
+        totalEmpTransBankak +
+        totalEmpTransCash; // + totalEmpTransAccount;
+    double totalPurchase = totalPurchaseFawry +
+        totalPurchaseBankak +
+        totalPurchaseCash; // + totalPurchaseAccount;
+    double totalDischarges = totalDischargesFawry +
+        totalDischargesBankak +
+        totalDischargesCash; // + totalDischargesAccount;
     //sales and costs
     double totalCosts =
         totalSalesCosts + totalEmployeeTran + totalPurchase + totalDischarges;
-    totalSales = totalCash + totalBank + totalAccount;
+    totalSales = totalCash + totalBank + totalFawry; // + totalAccount;
 
     return Consumer<AuthProvider>(builder: (context, value, child) {
-      bool updateDaily = (newDaily != null && !newDaily!.isCreated);
+      bool updateDaily = (!newDaily.isCreated);
       bool isAdmin = value.user!['role'] == 'admin' ? true : false;
 
       return Directionality(
@@ -751,7 +796,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
                                     period: 'مبيعات الوردية',
                                     cashAmount: totalCash,
                                     bankakAmount: totalBank,
-                                    accountsAmount: totalAccount,
+                                    fawryAmount: totalFawry,
                                   ),
                                 ),
                                 const SizedBox(width: 30),
@@ -845,25 +890,61 @@ class _NewDailyPageState extends State<NewDailyPage> {
                             Row(
                               children: [
                                 const Text(
-                                  ' المرتبات كاش : ',
+                                  ' كاش : ',
                                   style: TextStyle(fontSize: 20),
                                 ),
                                 Text(
-                                  "${numberFormatter(totalEmpTransCash)} / (جنيه) ",
-                                  style: const TextStyle(fontSize: 20),
+                                  "(${numberFormatter(totalEmpTransCash)}) ",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
                                 ),
                               ],
                             ),
                             Row(
                               children: [
                                 const Text(
-                                  ' المرتبات بنكك : ',
-                                  style: TextStyle(
-                                      fontSize: 20, color: Colors.redAccent),
+                                  ' بنكك : ',
+                                  style: TextStyle(fontSize: 20),
                                 ),
                                 Text(
-                                  "${numberFormatter(totalEmpTransBankak)} / (جنيه) ",
-                                  style: const TextStyle(fontSize: 20),
+                                  "(${numberFormatter(totalEmpTransBankak)}) ",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Text(
+                                  ' فوري : ',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                Text(
+                                  "(${numberFormatter(totalEmpTransFawry)}) ",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Text(
+                                  ' الاجمالي : ',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  "(${numberFormatter(totalEmployeeTran)}) / (جنيه) ",
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ],
                             ),
@@ -926,25 +1007,55 @@ class _NewDailyPageState extends State<NewDailyPage> {
                             Row(
                               children: [
                                 const Text(
-                                  ' المشتريات كاش : ',
+                                  ' كاش : ',
                                   style: TextStyle(fontSize: 20),
                                 ),
                                 Text(
-                                  "${numberFormatter(totalPurchaseCash)} / (جنيه) ",
-                                  style: const TextStyle(fontSize: 20),
+                                  "(${numberFormatter(totalPurchaseCash)}) ",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
                                 ),
                               ],
                             ),
                             Row(
                               children: [
                                 const Text(
-                                  ' المشتريات بنكك : ',
-                                  style: TextStyle(
-                                      fontSize: 20, color: Colors.redAccent),
+                                  ' بنكك : ',
+                                  style: TextStyle(fontSize: 20),
                                 ),
                                 Text(
-                                  "${numberFormatter(totalPurchaseBankak)} / (جنيه) ",
-                                  style: const TextStyle(fontSize: 20),
+                                  "(${numberFormatter(totalPurchaseBankak)}) ",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Text(
+                                  ' فوري : ',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Text(
+                                  "(${numberFormatter(totalPurchaseFawry)}) ",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Text(
+                                  ' الاجمالي : ',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Text(
+                                  "(${numberFormatter(totalPurchase)}) / (جنيه) ",
+                                  style: const TextStyle(
+                                      fontSize: 22, color: Colors.black),
                                 ),
                               ],
                             ),
@@ -1006,25 +1117,55 @@ class _NewDailyPageState extends State<NewDailyPage> {
                             Row(
                               children: [
                                 const Text(
-                                  ' المنصرفات كاش : ',
+                                  ' كاش : ',
                                   style: TextStyle(fontSize: 20),
                                 ),
                                 Text(
-                                  "${numberFormatter(totalDischargesCash)} / (جنيه) ",
-                                  style: const TextStyle(fontSize: 20),
+                                  "(${numberFormatter(totalDischargesCash)}) ",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
                                 ),
                               ],
                             ),
                             Row(
                               children: [
                                 const Text(
-                                  ' المنصرفات بنكك : ',
-                                  style: TextStyle(
-                                      fontSize: 20, color: Colors.redAccent),
+                                  ' بنكك : ',
+                                  style: TextStyle(fontSize: 20),
                                 ),
                                 Text(
-                                  "${numberFormatter(totalDischargesBankak)} / (جنيه) ",
-                                  style: const TextStyle(fontSize: 20),
+                                  "(${numberFormatter(totalDischargesBankak)}) ",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Text(
+                                  ' فوري : ',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Text(
+                                  "(${numberFormatter(totalDischargesFawry)}) ",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Text(
+                                  ' الاجمالي : ',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Text(
+                                  "(${numberFormatter(totalDischarges)}) / (جنيه) ",
+                                  style: const TextStyle(
+                                      fontSize: 22, color: Colors.black),
                                 ),
                               ],
                             ),
@@ -1052,8 +1193,18 @@ class _NewDailyPageState extends State<NewDailyPage> {
                                 width: double.infinity,
                                 height: 40,
                                 child: ElevatedButton(
-                                    onPressed: () => _createDaily(
-                                        value.user!['id'].toString()),
+                                    onPressed: () {
+                                      if (_empTrans.isEmpty &&
+                                          _purchases.isEmpty &&
+                                          _discharges.isEmpty) {
+                                        _showMessage(
+                                            'خطأ', 'لا يمكن حفظ يومية فارغة');
+                                        return;
+                                      }
+
+                                      _createDaily(
+                                          value.user!['id'].toString());
+                                    },
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.teal),
                                     child: const Text(

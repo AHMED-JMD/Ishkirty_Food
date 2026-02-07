@@ -82,151 +82,156 @@ class MyDrawer extends StatelessWidget {
                 ),
               ),
             ),
-            Column(
-              children: [
-                const SizedBox(height: 20),
-                value.user != null && value.user['role'] == 'admin'
-                    ? Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              Navigator.pushReplacementNamed(context, '/safe');
-                            },
-                            child: const ListTile(
-                              leading: Icon(
-                                Icons.safety_check,
-                                color: Colors.teal,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    value.user != null && value.user['role'] == 'admin'
+                        ? Column(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  Navigator.pushReplacementNamed(
+                                      context, '/safe');
+                                },
+                                child: const ListTile(
+                                  leading: Icon(
+                                    Icons.safety_check,
+                                    color: Colors.teal,
+                                  ),
+                                  title: Text(
+                                    'الخزنة',
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                ),
                               ),
-                              title: Text(
-                                'الخزنة',
-                                style: TextStyle(fontSize: 18),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    : const SizedBox(),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/daily');
-                  },
-                  child: const ListTile(
-                    leading: Icon(
-                      Icons.badge,
-                      color: Colors.teal,
+                            ],
+                          )
+                        : const SizedBox(),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, '/daily');
+                      },
+                      child: const ListTile(
+                        leading: Icon(
+                          Icons.badge,
+                          color: Colors.teal,
+                        ),
+                        title: Text(
+                          'اليوميات',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
                     ),
-                    title: Text(
-                      'اليوميات',
-                      style: TextStyle(fontSize: 18),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, '/newDaily');
+                      },
+                      child: const ListTile(
+                        leading: Icon(
+                          Icons.badge,
+                          color: Colors.teal,
+                        ),
+                        title: Text(
+                          'يومية جديدة',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
                     ),
-                  ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, '/store_sell');
+                      },
+                      child: const ListTile(
+                        leading: Icon(
+                          Icons.store,
+                          color: Colors.teal,
+                        ),
+                        title: Text(
+                          'مخزن البيع',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, '/sales');
+                      },
+                      child: const ListTile(
+                        leading: Icon(
+                          Icons.local_mall,
+                          color: Colors.teal,
+                        ),
+                        title: Text(
+                          'المبيعات',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, '/bills');
+                      },
+                      child: const ListTile(
+                        leading: Icon(
+                          Icons.view_list_rounded,
+                          color: Colors.teal,
+                        ),
+                        title: Text(
+                          'الفواتير',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, '/employees');
+                      },
+                      child: const ListTile(
+                        leading: Icon(
+                          Icons.badge,
+                          color: Colors.teal,
+                        ),
+                        title: Text(
+                          'الموظفين',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, '/speices');
+                      },
+                      child: const ListTile(
+                        leading: Icon(
+                          Icons.fastfood_sharp,
+                          color: Colors.teal,
+                        ),
+                        title: Text(
+                          'الاصناف',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, '/clients');
+                      },
+                      child: const ListTile(
+                        leading: Icon(
+                          Icons.person,
+                          color: Colors.teal,
+                        ),
+                        title: Text(
+                          'العملاء',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/newDaily');
-                  },
-                  child: const ListTile(
-                    leading: Icon(
-                      Icons.badge,
-                      color: Colors.teal,
-                    ),
-                    title: Text(
-                      'يومية جديدة',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/store_sell');
-                  },
-                  child: const ListTile(
-                    leading: Icon(
-                      Icons.store,
-                      color: Colors.teal,
-                    ),
-                    title: Text(
-                      'مخزن البيع',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/sales');
-                  },
-                  child: const ListTile(
-                    leading: Icon(
-                      Icons.local_mall,
-                      color: Colors.teal,
-                    ),
-                    title: Text(
-                      'المبيعات',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/bills');
-                  },
-                  child: const ListTile(
-                    leading: Icon(
-                      Icons.view_list_rounded,
-                      color: Colors.teal,
-                    ),
-                    title: Text(
-                      'الفواتير',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/employees');
-                  },
-                  child: const ListTile(
-                    leading: Icon(
-                      Icons.badge,
-                      color: Colors.teal,
-                    ),
-                    title: Text(
-                      'الموظفين',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/speices');
-                  },
-                  child: const ListTile(
-                    leading: Icon(
-                      Icons.fastfood_sharp,
-                      color: Colors.teal,
-                    ),
-                    title: Text(
-                      'الاصناف',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(context, '/clients');
-                  },
-                  child: const ListTile(
-                    leading: Icon(
-                      Icons.person,
-                      color: Colors.teal,
-                    ),
-                    title: Text(
-                      'العملاء',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             )
           ],
         ),

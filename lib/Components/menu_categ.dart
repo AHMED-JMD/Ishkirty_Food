@@ -19,7 +19,6 @@ class _MenuCategoryState extends State<MenuCategory> {
 
   @override
   void initState() {
-    print(widget.isAll);
     widget.isAll ? getAll() : getData(widget.category);
     super.initState();
   }

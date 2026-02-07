@@ -26,6 +26,8 @@ class _CartFormState extends State<CartForm> {
   List clients = [];
   String? clientID;
   String? payment_method;
+  // for multiple payment methods
+  List<Map<String, dynamic>> paymentMethods = [];
   String type = "سفري";
   DateTime date = DateTime.now();
   String deliveryAddress = "";
@@ -38,7 +40,7 @@ class _CartFormState extends State<CartForm> {
   }
 
   //server fun add bill
-  Future addBill(data) async {
+  Future addBill(billCounter, user, data) async {
     setState(() {
       isLoading = true;
     });
@@ -49,6 +51,7 @@ class _CartFormState extends State<CartForm> {
     });
 
     if (response.statusCode == 200) {
+      //sending message
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Center(
             child: Text(
@@ -58,10 +61,14 @@ class _CartFormState extends State<CartForm> {
         backgroundColor: Colors.green,
         duration: Duration(seconds: 2),
       ));
-      await Future.delayed(const Duration(seconds: 3));
+
+      // printing here
+      await printCopies('Save to PDF', billCounter, type, user, data,
+          cashierLabel: 'كارت عميل');
+      // await Future.delayed(const Duration(seconds: 3));
       Navigator.pushReplacementNamed(context, '/home');
     } else {
-      return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Center(
             child: Text(
           "${response.body}",
@@ -70,6 +77,8 @@ class _CartFormState extends State<CartForm> {
         backgroundColor: Colors.red[900],
         duration: const Duration(seconds: 2),
       ));
+
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
@@ -182,59 +191,37 @@ class _CartFormState extends State<CartForm> {
                               value: 'سفري',
                               child: Text('سفري',
                                   style: TextStyle(
+                                      color: Colors.white,
                                       fontSize: fontSize(
-                                          desktopCalc: width / 110,
+                                          desktopCalc: width / 100,
                                           mobile: 40))),
-                              // const SizedBox(width: 10),
-                              // Icon(
-                              //   Icons.flight_takeoff_outlined,
-                              //   color: Colors.orange[900],
-                              //   size: fontSize(
-                              //       desktopCalc: width / 50, mobile: 40),
-                              // ),
                             ),
                             FormBuilderFieldOption(
                               value: 'محلي',
                               child: Text('محلي',
                                   style: TextStyle(
+                                      color: Colors.white,
                                       fontSize: fontSize(
-                                          desktopCalc: width / 110,
+                                          desktopCalc: width / 100,
                                           mobile: 40))),
-                              // const SizedBox(width: 10),
-                              // Icon(
-                              //   Icons.restaurant,
-                              //   size: fontSize(
-                              //       desktopCalc: width / 50, mobile: 40),
-                              // ),
                             ),
                             FormBuilderFieldOption(
                               value: 'استلام',
                               child: Text('استلام',
                                   style: TextStyle(
+                                      color: Colors.white,
                                       fontSize: fontSize(
-                                          desktopCalc: width / 110,
+                                          desktopCalc: width / 100,
                                           mobile: 40))),
-                              // const SizedBox(width: 10),
-                              // Icon(
-                              //   Icons.store,
-                              //   size: fontSize(
-                              //       desktopCalc: width / 50, mobile: 40),
-                              // ),
                             ),
                             FormBuilderFieldOption(
                               value: 'توصيل',
                               child: Text('توصيل',
                                   style: TextStyle(
+                                      color: Colors.white,
                                       fontSize: fontSize(
-                                          desktopCalc: width / 110,
+                                          desktopCalc: width / 100,
                                           mobile: 40))),
-                              // const SizedBox(width: 10),
-                              // Icon(
-                              //   Icons.delivery_dining,
-                              //   color: Colors.red[900],
-                              //   size: fontSize(
-                              //       desktopCalc: width / 50, mobile: 40),
-                              // ),
                             ),
                           ],
                           onChanged: (val) {
@@ -325,13 +312,38 @@ class _CartFormState extends State<CartForm> {
                                 ),
                               ),
                             ),
+                            // FormBuilderFieldOption(
+                            //   value: 'حساب',
+                            //   child: Padding(
+                            //     padding: const EdgeInsets.only(top: 10.0),
+                            //     child: Icon(
+                            //       Icons.account_box,
+                            //       color: Colors.blue[900],
+                            //       size: fontSize(
+                            //           desktopCalc: width / 50, mobile: 40),
+                            //     ),
+                            //   ),
+                            // ),
                             FormBuilderFieldOption(
-                              value: 'حساب',
+                              value: 'فوري',
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: Image.asset(
+                                  'assets/images/fawry.jpeg',
+                                  width: fontSize(
+                                      desktopCalc: width / 50, mobile: 40),
+                                  height: fontSize(
+                                      desktopCalc: width / 55, mobile: 40),
+                                ),
+                              ),
+                            ),
+                            FormBuilderFieldOption(
+                              value: 'متعدد',
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 10.0),
                                 child: Icon(
-                                  Icons.account_box,
-                                  color: Colors.blue[900],
+                                  Icons.view_list,
+                                  color: Colors.brown,
                                   size: fontSize(
                                       desktopCalc: width / 50, mobile: 40),
                                 ),
@@ -342,29 +354,160 @@ class _CartFormState extends State<CartForm> {
                             setState(() {
                               payment_method = value;
                               if (value != 'حساب') clientID = null;
+                              // reset multi payments when switching
+                              if (value != 'متعدد') paymentMethods = [];
                             });
                           },
                           validator: FormBuilderValidators.required(
                               errorText: "الرجاء اختيار طريقة الدفع"),
                         ),
-                        if (payment_method == 'حساب')
-                          FormBuilderDropdown(
-                            name: "acoount_name",
-                            decoration: InputDecoration(
-                                labelText: 'اختر الحساب',
-                                border: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.yellow.shade900))),
-                            items: clients
-                                .map((client) => DropdownMenuItem(
-                                    value: client['id'],
-                                    child: Text(client['name'])))
-                                .toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                clientID = value.toString();
-                              }
-                            },
+                        // if (payment_method == 'حساب')
+                        //   FormBuilderDropdown(
+                        //     name: "acoount_name",
+                        //     decoration: InputDecoration(
+                        //         labelText: 'اختر الحساب',
+                        //         border: OutlineInputBorder(
+                        //             borderSide: BorderSide(
+                        //                 color: Colors.yellow.shade900))),
+                        //     items: clients
+                        //         .map((client) => DropdownMenuItem(
+                        //             value: client['id'],
+                        //             child: Text(client['name'])))
+                        //         .toList(),
+                        //     onChanged: (value) {
+                        //       if (value != null) {
+                        //         clientID = value.toString();
+                        //       }
+                        //     },
+                        //   ),
+                        // Multiple payment methods UI
+                        if (payment_method == 'متعدد')
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const SizedBox(height: 8),
+                              ...paymentMethods.asMap().entries.map((entry) {
+                                final idx = entry.key;
+                                final pm = entry.value;
+                                return Card(
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 6),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: DropdownButtonFormField<
+                                                  String>(
+                                                initialValue:
+                                                    pm['method'] ?? 'كاش',
+                                                items: [
+                                                  'كاش',
+                                                  'بنكك',
+                                                  // 'حساب',
+                                                  'فوري',
+                                                ]
+                                                    .map((m) =>
+                                                        DropdownMenuItem(
+                                                            value: m,
+                                                            child: Text(m)))
+                                                    .toList(),
+                                                onChanged: (v) {
+                                                  setState(() {
+                                                    pm['method'] = v;
+                                                    // clear account if method changed
+                                                    if (v != 'حساب')
+                                                      pm['accountId'] = null;
+                                                  });
+                                                },
+                                                decoration:
+                                                    const InputDecoration(
+                                                        labelText: 'الطريقة'),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            SizedBox(
+                                              width: 120,
+                                              child: TextFormField(
+                                                initialValue:
+                                                    pm['amount']?.toString() ??
+                                                        '0',
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                decoration:
+                                                    const InputDecoration(
+                                                        labelText: 'المبلغ'),
+                                                onChanged: (v) {
+                                                  setState(() {
+                                                    pm['amount'] =
+                                                        num.tryParse(v) ?? 0;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    paymentMethods
+                                                        .removeAt(idx);
+                                                  });
+                                                },
+                                                icon: const Icon(Icons.delete,
+                                                    color: Colors.red)),
+                                          ],
+                                        ),
+                                        // if (pm['method'] == 'حساب')
+                                        //   FormBuilderDropdown(
+                                        //     name: 'multi_account_$idx',
+                                        //     decoration: const InputDecoration(
+                                        //         labelText: 'اختر الحساب'),
+                                        //     items: clients
+                                        //         .map((client) =>
+                                        //             DropdownMenuItem(
+                                        //                 value: client['id'],
+                                        //                 child: Text(
+                                        //                     client['name'])))
+                                        //         .toList(),
+                                        //     onChanged: (value) {
+                                        //       setState(() {
+                                        //         pm['accountId'] = value;
+                                        //       });
+                                        //     },
+                                        //   ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              ElevatedButton.icon(
+                                  onPressed: () {
+                                    setState(() {
+                                      if (paymentMethods.length > 2) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                          content: Center(
+                                            child: Text(
+                                              'لا يمكن اضافة اكثر من 3 طرق دفع',
+                                              style: TextStyle(fontSize: 18),
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ));
+                                        return;
+                                      }
+                                      paymentMethods.add({
+                                        'method': 'كاش',
+                                        'amount': 0,
+                                        'accountId': null
+                                      });
+                                    });
+                                  },
+                                  icon: const Icon(Icons.add),
+                                  label: const Text('اضف طريقة دفع'))
+                            ],
                           ),
                         const SizedBox(
                           height: 15,
@@ -434,7 +577,7 @@ class _CartFormState extends State<CartForm> {
                                                 children: [
                                                   Expanded(
                                                       child: Text(
-                                                    name.toString(),
+                                                    "$name ${item.addons != null && item.addons.isNotEmpty ? ' + ' + item.addons.join(', ') : ''}",
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                   )),
@@ -496,6 +639,41 @@ class _CartFormState extends State<CartForm> {
                                   if (_formKey.currentState!
                                           .saveAndValidate() &&
                                       value.cart.length != 0) {
+                                    //check payment methods not empty and amounts sum to total
+                                    if (payment_method == 'متعدد') {
+                                      if (paymentMethods.isEmpty) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                          content: Center(
+                                            child: Text(
+                                              'الرجاء اضافة طرق دفع',
+                                              style: TextStyle(fontSize: 18),
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ));
+                                        return;
+                                      }
+                                      //total payment method == totalAmount
+                                      final sumPM = paymentMethods.fold<num>(
+                                          0,
+                                          (sum, pm) =>
+                                              sum + (pm['amount'] ?? 0));
+                                      if (sumPM != totalAmount) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content: Center(
+                                            child: Text(
+                                              'مجموع مبالغ طرق الدفع يجب أن يساوي المبلغ الإجمالي للفاتورة (${numberFormatter(totalAmount)})',
+                                              style:
+                                                  const TextStyle(fontSize: 18),
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ));
+                                        return;
+                                      }
+                                    }
                                     //increment bill counter
                                     final cartProvider =
                                         context.read<CartProvider>();
@@ -514,6 +692,7 @@ class _CartFormState extends State<CartForm> {
                                     data['trans'] = value.cart;
                                     data['paymentMethod'] = _formKey
                                         .currentState!.value['payment_method'];
+                                    data['paymentMethods'] = paymentMethods;
                                     // data['shiftTime'] =
                                     //     _formKey.currentState!.value['shift'];
                                     data['shiftTime'] =
@@ -529,106 +708,8 @@ class _CartFormState extends State<CartForm> {
                                     data['delivery_address'] =
                                         isDelivery ? (deliveryAddress) : "";
 
-                                    addBill(data);
-                                    // print cashier + client copies
-                                    // PrintingFunc('XP-80C', billCounter,
-                                    //     userVal.user, data,
-                                    //     includeLabel: true,
-                                    //     labelText: 'كوبون استلام');
-                                    // small delay can help the printer process first job before sending second
-                                    // // client copy without label
-                                    // PrintingFunc('XP-80C', billCounter,
-                                    //     userVal.user, data,
-                                    //     includeLabel: false);
-
-                                    // Split cart into two groups: shawarma/juices vs others
-                                    final shawarmaCats = ['شاورما'];
-                                    final shawarmaItems =
-                                        value.cart.where((item) {
-                                      final cat = (item is Map)
-                                          ? (item['category'] ?? '')
-                                          : (item.category ?? '');
-                                      return shawarmaCats.contains(cat);
-                                    }).toList();
-
-                                    // cart for juices
-                                    final juicesCats = ['عصائر'];
-                                    final juicesItems =
-                                        value.cart.where((item) {
-                                      final cat = (item is Map)
-                                          ? (item['category'] ?? '')
-                                          : (item.category ?? '');
-                                      return juicesCats.contains(cat);
-                                    }).toList();
-
-                                    //other cart items list
-                                    final otherItems = value.cart.where((item) {
-                                      final cat = (item is Map)
-                                          ? (item['category'] ?? '')
-                                          : (item.category ?? '');
-                                      return !shawarmaCats.contains(cat) &&
-                                          !juicesCats.contains(cat);
-                                    }).toList();
-
-                                    // Prepare and print separate payloads for each group
-                                    try {
-                                      if (shawarmaItems.isNotEmpty) {
-                                        var shawData = Map.from(data);
-                                        shawData['trans'] = shawarmaItems;
-                                        shawData['amount'] =
-                                            sumTotal(shawarmaItems);
-
-                                        // printing here
-                                        await printTwoCopies(
-                                            'Save to PDF',
-                                            billCounter,
-                                            type,
-                                            userVal.user,
-                                            shawData,
-                                            cashierLabel: 'كارت عميل');
-                                      }
-
-                                      if (juicesItems.isNotEmpty) {
-                                        var juiceData = Map.from(data);
-                                        juiceData['trans'] = juicesItems;
-                                        juiceData['amount'] =
-                                            sumTotal(juicesItems);
-
-                                        await printTwoCopies(
-                                            'Save to PDF',
-                                            billCounter,
-                                            type,
-                                            userVal.user,
-                                            juiceData,
-                                            cashierLabel: 'كارت عميل');
-                                      }
-
-                                      if (otherItems.isNotEmpty) {
-                                        var otherData = Map.from(data);
-                                        otherData['trans'] = otherItems;
-                                        otherData['amount'] =
-                                            sumTotal(otherItems);
-
-                                        await printTwoCopies(
-                                            'Save to PDF',
-                                            billCounter,
-                                            type,
-                                            userVal.user,
-                                            otherData,
-                                            cashierLabel: 'كارت عميل');
-                                      }
-                                    } catch (e) {
-                                      // Common on web: cross-realm JS exceptions (Permission denied...)
-                                      // Provide a user-friendly fallback instead of letting it crash.
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              'خطأ أثناء الطباعة: ${e.toString()}. حاول حفظ الفاتورة كـ PDF أو استخدم متصفحًا مختلفًا.'),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                    }
+                                    //call server add bill function
+                                    addBill(billCounter, userVal.user, data);
                                     //reset cart
                                     cartProvider.resetCart();
                                   } else {
@@ -636,7 +717,7 @@ class _CartFormState extends State<CartForm> {
                                       const SnackBar(
                                         content: Center(
                                             child: Text(
-                                          "الرجاء اضافة اصناف الى الفاتورة",
+                                          "خطأ في اضافة الفاتورة",
                                           style: TextStyle(
                                               fontSize: 22,
                                               color: Colors.white),
@@ -656,7 +737,7 @@ class _CartFormState extends State<CartForm> {
                                 label: Text(
                                   'دفع الفاتورة',
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: Colors.white,
                                       fontSize: fontSize(
                                           desktopCalc: width / 80, mobile: 16)),
                                 ),

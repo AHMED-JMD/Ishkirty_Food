@@ -62,4 +62,16 @@ class APIDaily {
       rethrow;
     }
   }
+
+  static Future unlockDaily(data) async {
+    try {
+      Map<String, String> headers = {"Content-Type": "application/json"};
+      final url = Uri.parse('$ApiUrl/unlock');
+      Response response =
+          await post(url, headers: headers, body: jsonEncode(data));
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

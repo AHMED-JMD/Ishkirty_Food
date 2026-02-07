@@ -23,6 +23,14 @@ class _billTableState extends State<billTable> {
     super.initState();
   }
 
+  @override
+  void didUpdateWidget(covariant billTable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.data != widget.data) {
+      source.updateData(widget.data);
+    }
+  }
+
   final TextEditingController _paymentSearchController =
       TextEditingController();
 
@@ -119,6 +127,11 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
 
   String lastSearchTerm = '';
 
+  void updateData(List newData) {
+    data = newData;
+    notifyListeners();
+  }
+
   @override
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
@@ -152,7 +165,9 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
         padding: const EdgeInsets.fromLTRB(8, 8, 20, 8),
         child: Center(
             child: Text(
-          currentRowData.paymentMethod,
+          currentRowData.paymentMethod != null
+              ? currentRowData.paymentMethod!
+              : 'متعدد',
           style: const TextStyle(fontSize: 20),
         )),
       )),
@@ -219,6 +234,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
     await Future.delayed(const Duration(milliseconds: 400));
 
     if (data.isNotEmpty) {
+      print(data);
       List<bill> bills = (data).map((json) => bill.fromJson(json)).toList();
 
       final total = bills.length;

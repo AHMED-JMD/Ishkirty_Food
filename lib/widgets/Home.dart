@@ -129,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             if (!isPhone)
                               SizedBox(
                                 width: width / 4.5,
-                                height: height / 1,
+                                height: height / 0.899,
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 5.0),
                                   child: CartForm(),
