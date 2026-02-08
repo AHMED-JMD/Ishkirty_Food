@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:ashkerty_food/API/Spieces.dart';
+import 'package:ashkerty_food/API/Store.dart' as api;
 import 'package:ashkerty_food/Components/Forms/CartForm.dart';
 import 'package:ashkerty_food/models/cart_model.dart';
 import 'package:ashkerty_food/models/kebordKeys.dart';
@@ -22,11 +24,37 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List favSpieces = [];
+  bool _checkingAccess = true;
 
   @override
   void initState() {
+    _checkAccess();
     getFavs();
     super.initState();
+  }
+
+  Future<void> _checkAccess() async {
+    try {
+      final res = await api.APIStore.getPurchasesByDate({
+        'startDate': DateTime.now().toIso8601String(),
+        'endDate': DateTime.now().toIso8601String(),
+        'type': 'بيع',
+      });
+      if (!mounted) return;
+      if (res.statusCode == 200) {
+        final purchases = jsonDecode(res.body);
+        if (purchases is List && purchases.isEmpty) {
+          Navigator.pushReplacementNamed(context, '/store_sell');
+          return;
+        }
+      }
+    } catch (e) {
+      // ignore and allow access
+    }
+    if (!mounted) return;
+    setState(() {
+      _checkingAccess = false;
+    });
   }
 
   //server function to get favourites
@@ -43,6 +71,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_checkingAccess) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     final width = MediaQuery.of(context).size.width;
     final isPhone = width < 600;
 

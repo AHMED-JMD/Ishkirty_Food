@@ -4,7 +4,7 @@ class Spieces {
     required this.name,
     required this.category,
     this.categoryId,
-    required this.ImgLink,
+    this.ImgLink,
     required this.price,
     required this.spiceCost,
     required this.isFavourites,
@@ -17,7 +17,7 @@ class Spieces {
   late final String name;
   late final String category;
   late final int? categoryId;
-  late final String ImgLink;
+  late final String? ImgLink;
   late final int price;
   late final double spiceCost;
   late final bool isFavourites;
@@ -31,7 +31,7 @@ class Spieces {
     name = json['name'];
     category = json['category'];
     categoryId = json['categoryId'] != null ? json['categoryId'] : null;
-    ImgLink = json['ImgLink'];
+    ImgLink = json['ImgLink'] != null ? json['ImgLink'] : null;
     price = json['price'];
     spiceCost = json['spice_cost'];
     isFavourites = json['isFavourites'];

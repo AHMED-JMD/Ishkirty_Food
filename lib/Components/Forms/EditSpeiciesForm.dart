@@ -330,12 +330,38 @@ class _EditSpiecesState extends State<EditSpieces> {
                       child: Column(
                         children: [
                           const SizedBox(height: 5),
-                          Image.network(
-                            'http://localhost:3000/${widget.data.ImgLink}',
-                            width: 200.0,
-                            height: 150.0,
-                            fit: BoxFit.cover,
-                          ),
+                          (widget.data.ImgLink == null ||
+                                  widget.data.ImgLink.toString().trim().isEmpty)
+                              ? Container(
+                                  width: 200.0,
+                                  height: 150.0,
+                                  color: Colors.grey.shade200,
+                                  alignment: Alignment.center,
+                                  child: const Icon(
+                                    Icons.image_not_supported_outlined,
+                                    size: 48,
+                                    color: Colors.grey,
+                                  ),
+                                )
+                              : Image.network(
+                                  'http://localhost:3000/${widget.data.ImgLink}',
+                                  width: 200.0,
+                                  height: 150.0,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 200.0,
+                                      height: 150.0,
+                                      color: Colors.grey.shade200,
+                                      alignment: Alignment.center,
+                                      child: const Icon(
+                                        Icons.image_not_supported_outlined,
+                                        size: 48,
+                                        color: Colors.grey,
+                                      ),
+                                    );
+                                  },
+                                ),
                           SizedBox(
                             width: 700,
                             child: FormBuilderTextField(

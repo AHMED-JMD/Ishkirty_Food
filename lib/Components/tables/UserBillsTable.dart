@@ -1,6 +1,7 @@
 import 'package:ashkerty_food/API/Bill.dart';
 import 'package:ashkerty_food/API/Transfer.dart';
 import 'package:ashkerty_food/models/Bill.dart';
+import 'package:ashkerty_food/static/formatter.dart';
 import 'package:ashkerty_food/static/SearchDates.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
@@ -22,6 +23,7 @@ class _UserBillsTableState extends State<UserBillsTable> {
   bool isLoading = false;
   List data = [];
   int transfer = 0;
+  String _paymentFilter = 'الكل';
 
   @override
   void initState() {
@@ -125,6 +127,23 @@ class _UserBillsTableState extends State<UserBillsTable> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                DropdownButton<String>(
+                  value: _paymentFilter,
+                  items: const [
+                    DropdownMenuItem(value: 'الكل', child: Text('الكل')),
+                    DropdownMenuItem(value: 'كاش', child: Text('كاش')),
+                    DropdownMenuItem(value: 'بنكك', child: Text('بنكك')),
+                    DropdownMenuItem(value: 'فوري', child: Text('فوري')),
+                  ],
+                  onChanged: (v) {
+                    final next = v ?? 'الكل';
+                    setState(() {
+                      _paymentFilter = next;
+                    });
+                    source.setPaymentFilter(next);
+                  },
+                ),
+                const SizedBox(width: 10),
                 Container(
                   color: Colors.red[300],
                   child: Padding(
@@ -209,6 +228,43 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   BuildContext context;
   List data;
   ExampleSource({required this.context, required this.data});
+  String _paymentFilter = 'الكل';
+
+  void setPaymentFilter(String value) {
+    _paymentFilter = value;
+    setNextView();
+  }
+
+  String _paymentText(bill row) {
+    final single = row.paymentMethod;
+    if (single != null && single.trim().isNotEmpty) {
+      return single;
+    }
+    final methods = row.paymentMethods;
+    if (methods != null && methods.isNotEmpty) {
+      return methods
+          .map((m) => '${m.method}: ${numberFormatter(m.amount)}')
+          .join(' , ');
+    }
+    return 'غير محدد';
+  }
+
+  bool _matchesPaymentFilter(bill row) {
+    if (_paymentFilter == 'الكل') return true;
+    final normalizedFilter = _paymentFilter.trim();
+
+    final single = row.paymentMethod;
+    if (single != null && single.trim() == normalizedFilter) {
+      return true;
+    }
+
+    final methods = row.paymentMethods;
+    if (methods != null && methods.isNotEmpty) {
+      return methods.any((m) => m.method.trim() == normalizedFilter);
+    }
+
+    return false;
+  }
 
   String lastSearchTerm = '';
 
@@ -269,13 +325,10 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
       )),
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 20, 8),
-        child: Center(
-            child: Text(
-          currentRowData.paymentMethod != null
-              ? currentRowData.paymentMethod!
-              : 'متعدد',
+        child: Text(
+          _paymentText(currentRowData),
           style: const TextStyle(fontSize: 20),
-        )),
+        ),
       )),
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
@@ -310,10 +363,12 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
     await Future.delayed(const Duration(milliseconds: 400));
 
     if (data.isNotEmpty) {
+      final bills = (data).map((json) => bill.fromJson(json)).toList();
+      final filtered = bills.where(_matchesPaymentFilter).toList();
+
       return RemoteDataSourceDetails(
-          data.length,
-          (data)
-              .map((json) => bill.fromJson(json))
+          filtered.length,
+          filtered
               .skip(pageRequest.offset)
               .take(pageRequest.pageSize)
               .toList());

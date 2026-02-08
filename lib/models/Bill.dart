@@ -1,11 +1,14 @@
+import 'dart:convert';
+import 'package:ashkerty_food/models/PaymentMethod.dart';
+
 class bill {
   bill({
     required this.billCounter,
     required this.id,
     required this.amount,
     this.isDeleted,
-    required this.paymentMethod,
-    // required this.paymentMethods,
+    this.paymentMethod,
+    this.paymentMethods,
     required this.type,
     required this.date,
     required this.shiftTime,
@@ -21,7 +24,7 @@ class bill {
   late final int amount;
   late final Null isDeleted;
   late final String? paymentMethod;
-  // late final List<dynamic>? paymentMethods;
+  late final List<PaymentMethod>? paymentMethods;
   late final String type;
   late final String date;
   late final String shiftTime;
@@ -37,8 +40,18 @@ class bill {
     id = json['id'];
     amount = json['amount'];
     isDeleted = null;
-    paymentMethod = json['paymentMethod'];
-    // paymentMethods = json['paymentMethods'];
+    paymentMethod = json['paymentMethod'] ?? json['payment_method'];
+    final rawPaymentMethods = json['paymentMethods'] ?? json['payment_methods'];
+    final parsedPaymentMethods = rawPaymentMethods is String
+      ? (rawPaymentMethods.trim().isEmpty
+        ? null
+        : jsonDecode(rawPaymentMethods))
+      : rawPaymentMethods;
+    paymentMethods = (parsedPaymentMethods is List)
+      ? List.from(parsedPaymentMethods)
+        .map((e) => PaymentMethod.fromJson(e))
+        .toList()
+      : null;
     type = json['type'];
     date = json['date'];
     shiftTime = json['shiftTime'];
@@ -57,7 +70,7 @@ class bill {
     _data['amount'] = amount;
     _data['isDeleted'] = isDeleted;
     _data['paymentMethod'] = paymentMethod;
-    // _data['paymentMethods'] = paymentMethods;
+    _data['paymentMethods'] = paymentMethods?.map((e) => e.toJson()).toList();
     _data['type'] = type;
     _data['date'] = date;
     _data['shiftTime'] = shiftTime;

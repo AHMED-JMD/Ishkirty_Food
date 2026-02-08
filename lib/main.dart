@@ -129,7 +129,7 @@ class _AuthGateState extends State<AuthGate> {
       return const Login();
     }
     if (_goToStoreAcq) {
-      return const StoreAcquisitions();
+      return const StorePage();
     }
     return const MyHomePage();
   }

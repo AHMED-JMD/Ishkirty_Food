@@ -3,15 +3,16 @@ class PaymentMethod {
   PaymentMethod({
     required this.method,
     required this.amount,
-    required this.accountId,
+    this.accountId,
   });
   late final String method;
-  late final int amount;
+  late final num amount;
   late final int? accountId;
 
   PaymentMethod.fromJson(Map<String, dynamic> json) {
     method = json['method'];
-    amount = json['amount'];
+    final rawAmount = json['amount'];
+    amount = rawAmount is num ? rawAmount : num.tryParse(rawAmount.toString()) ?? 0;
     accountId = json['accountId'] == null ? null : json['accountId'];
   }
 

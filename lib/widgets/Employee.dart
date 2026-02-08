@@ -388,7 +388,7 @@ class _EmployeePageState extends State<EmployeePage> {
                         icon: const Icon(Icons.calendar_month,
                             color: Colors.white, size: 25),
                         label: const Text(
-                          'بداية شهر جديد',
+                          ' تجديد المرتبات ',
                           style: TextStyle(color: Colors.white, fontSize: 18),
                         )),
                   const SizedBox(height: 20),
@@ -484,6 +484,26 @@ class _EmployeePageState extends State<EmployeePage> {
                             ),
                           const SizedBox(width: 20),
                           ElevatedButton.icon(
+                              onPressed: () {
+                                showAddTrans(employees, value.user!['id']);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12.0, horizontal: 20.0),
+                                backgroundColor: Colors.teal,
+                              ),
+                              label: const Text(
+                                'خصم المرتب',
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.white),
+                              ),
+                              icon: const Icon(
+                                Icons.monetization_on,
+                                size: 20,
+                                color: Colors.black,
+                              )),
+                          const SizedBox(width: 20),
+                          ElevatedButton.icon(
                               onPressed: () async {
                                 await printEmployeeSalaries(
                                     admin: value.user!['username'],
@@ -505,26 +525,6 @@ class _EmployeePageState extends State<EmployeePage> {
                                 size: 20,
                                 color: Colors.black,
                               )),
-                          const SizedBox(width: 20),
-                          ElevatedButton.icon(
-                              onPressed: () {
-                                showAddTrans(employees, value.user!['id']);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 12.0, horizontal: 20.0),
-                                backgroundColor: Colors.teal,
-                              ),
-                              label: const Text(
-                                'خصم المرتب',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.white),
-                              ),
-                              icon: const Icon(
-                                Icons.monetization_on,
-                                size: 20,
-                                color: Colors.black,
-                              ))
                         ],
                       ),
                     ],

@@ -18,6 +18,8 @@ class billTable extends StatefulWidget {
 }
 
 class _billTableState extends State<billTable> {
+  String _paymentFilter = 'الكل';
+
   @override
   void initState() {
     super.initState();
@@ -29,15 +31,6 @@ class _billTableState extends State<billTable> {
     if (oldWidget.data != widget.data) {
       source.updateData(widget.data);
     }
-  }
-
-  final TextEditingController _paymentSearchController =
-      TextEditingController();
-
-  @override
-  void dispose() {
-    _paymentSearchController.dispose();
-    super.dispose();
   }
 
 //-------------------------------------
@@ -60,6 +53,56 @@ class _billTableState extends State<billTable> {
             const SizedBox(
               height: 20,
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Text(
+                  ' طرق الدفع : ',
+                  style: TextStyle(fontSize: 17),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                DropdownButton<String>(
+                  value: _paymentFilter,
+                  items: const [
+                    DropdownMenuItem(
+                        value: 'الكل',
+                        child: Text(
+                          'الكل',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'كاش',
+                        child: Text(
+                          'كاش',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'بنكك',
+                        child: Text(
+                          'بنكك',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'فوري',
+                        child: Text(
+                          'فوري',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                  ],
+                  onChanged: (v) {
+                    final next = v ?? 'الكل';
+                    setState(() {
+                      _paymentFilter = next;
+                    });
+                    source.setPaymentFilter(next);
+                  },
+                ),
+                const SizedBox(width: 20),
+              ],
+            ),
+            const SizedBox(height: 10),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
@@ -124,12 +167,51 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   BuildContext context;
   List data;
   ExampleSource({required this.context, required this.data});
+  String _paymentFilter = 'الكل';
+
+  void setPaymentFilter(String value) {
+    _paymentFilter = value;
+    setNextView();
+  }
+
+  String _paymentText(bill row) {
+    final single = row.paymentMethod;
+
+    if (single != null && single.trim().isNotEmpty) {
+      return single;
+    }
+    final methods = row.paymentMethods;
+
+    if (methods != null && methods.isNotEmpty) {
+      return methods
+          .map((m) => '${m.method}: ${numberFormatter(m.amount)}')
+          .join(' , ');
+    }
+    return 'غير محدد';
+  }
 
   String lastSearchTerm = '';
 
   void updateData(List newData) {
     data = newData;
     notifyListeners();
+  }
+
+  bool _matchesPaymentFilter(bill row) {
+    if (_paymentFilter == 'الكل') return true;
+    final normalizedFilter = _paymentFilter.trim();
+
+    final single = row.paymentMethod;
+    if (single != null && single.trim() == normalizedFilter) {
+      return true;
+    }
+
+    final methods = row.paymentMethods;
+    if (methods != null && methods.isNotEmpty) {
+      return methods.any((m) => m.method.trim() == normalizedFilter);
+    }
+
+    return false;
   }
 
   @override
@@ -139,7 +221,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
     var now = DateTime.parse(currentRowData.createdAt);
     String date = '${now.year}/${now.month}/${now.day}';
     String time = '${now.hour}:${now.minute}';
-    String amPm = now.hour > 12 ? 'PM' : 'AM';
+    String amPm = now.hour > 12 ? 'pm' : 'am';
 
     return DataRow(cells: [
       DataCell(Padding(
@@ -163,13 +245,10 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
       )),
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 20, 8),
-        child: Center(
-            child: Text(
-          currentRowData.paymentMethod != null
-              ? currentRowData.paymentMethod!
-              : 'متعدد',
+        child: Text(
+          _paymentText(currentRowData),
           style: const TextStyle(fontSize: 20),
-        )),
+        ),
       )),
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
@@ -234,8 +313,8 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
     await Future.delayed(const Duration(milliseconds: 400));
 
     if (data.isNotEmpty) {
-      print(data);
       List<bill> bills = (data).map((json) => bill.fromJson(json)).toList();
+      bills = bills.where(_matchesPaymentFilter).toList();
 
       final total = bills.length;
       final pageItems =

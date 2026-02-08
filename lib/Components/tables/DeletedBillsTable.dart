@@ -1,5 +1,6 @@
 import 'package:ashkerty_food/Components/Forms/DeleteBill.dart';
 import 'package:ashkerty_food/models/Bill.dart';
+import 'package:ashkerty_food/static/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:advanced_datatable/datatable.dart';
 import 'package:advanced_datatable/advanced_datatable_source.dart';
@@ -14,6 +15,7 @@ class DeletedBillsTable extends StatefulWidget {
 }
 
 class _DeletedBillsTableState extends State<DeletedBillsTable> {
+  String _paymentFilter = 'الكل';
   var rowsPerPage = 10;
   late final source = ExampleSource(data: widget.data, context: context);
   final _searchController = TextEditingController();
@@ -38,6 +40,56 @@ class _DeletedBillsTableState extends State<DeletedBillsTable> {
             const SizedBox(
               height: 20,
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Text(
+                  ' طرق الدفع : ',
+                  style: TextStyle(fontSize: 17),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                DropdownButton<String>(
+                  value: _paymentFilter,
+                  items: const [
+                    DropdownMenuItem(
+                        value: 'الكل',
+                        child: Text(
+                          'الكل',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'كاش',
+                        child: Text(
+                          'كاش',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'بنكك',
+                        child: Text(
+                          'بنكك',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'فوري',
+                        child: Text(
+                          'فوري',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                  ],
+                  onChanged: (v) {
+                    final next = v ?? 'الكل';
+                    setState(() {
+                      _paymentFilter = next;
+                    });
+                    source.setPaymentFilter(next);
+                  },
+                ),
+                const SizedBox(width: 20),
+              ],
+            ),
+            const SizedBox(height: 10),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
@@ -107,6 +159,44 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   List data;
   BuildContext context;
   ExampleSource({required this.data, required this.context});
+  String _paymentFilter = 'الكل';
+
+  void setPaymentFilter(String value) {
+    _paymentFilter = value;
+    setNextView();
+  }
+
+  String _paymentText(bill row) {
+    final single = row.paymentMethod;
+
+    if (single != null && single.trim().isNotEmpty) {
+      return single;
+    }
+    final methods = row.paymentMethods;
+    if (methods != null && methods.isNotEmpty) {
+      return methods
+          .map((m) => '${m.method}: ${numberFormatter(m.amount)}')
+          .join(' , ');
+    }
+    return 'غير محدد';
+  }
+
+  bool _matchesPaymentFilter(bill row) {
+    if (_paymentFilter == 'الكل') return true;
+    final normalizedFilter = _paymentFilter.trim();
+
+    final single = row.paymentMethod;
+    if (single != null && single.trim() == normalizedFilter) {
+      return true;
+    }
+
+    final methods = row.paymentMethods;
+    if (methods != null && methods.isNotEmpty) {
+      return methods.any((m) => m.method.trim() == normalizedFilter);
+    }
+
+    return false;
+  }
 
   String lastSearchTerm = '';
 
@@ -169,13 +259,10 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
         )),
       ),
       DataCell(
-        Center(
-            child: Text(
-          currentRowData.paymentMethod != null
-              ? currentRowData.paymentMethod!
-              : 'متعدد',
+        Text(
+          _paymentText(currentRowData),
           style: const TextStyle(fontSize: 20),
-        )),
+        ),
       ),
       DataCell(DeleteBills(
         id: currentRowData.id,
@@ -204,16 +291,13 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   Future<RemoteDataSourceDetails<bill>> getNextPage(
       NextPageRequest pageRequest) async {
     await Future.delayed(const Duration(milliseconds: 400));
+    final bills = (data).map((json) => bill.fromJson(json)).toList();
+    final filtered = bills.where(_matchesPaymentFilter).toList();
+
     return RemoteDataSourceDetails(
-      data.length,
-      (data)
-          .map((json) => bill.fromJson(json))
-          .skip(pageRequest.offset)
-          .take(pageRequest.pageSize)
-          .toList(),
-      filteredRows: lastSearchTerm.isNotEmpty
-          ? data.length
-          : null, //again in a real world example you would only get the right amount of rows
+      filtered.length,
+      filtered.skip(pageRequest.offset).take(pageRequest.pageSize).toList(),
+      filteredRows: lastSearchTerm.isNotEmpty ? filtered.length : null,
     );
   }
 }

@@ -49,7 +49,7 @@ class _LoginState extends State<Login> {
       if (res.statusCode == 200) {
         final purchases = jsonDecode(res.body);
         if (purchases is List && purchases.isEmpty) {
-          targetRoute = '/store_Acq';
+          targetRoute = '/store_sell';
         }
       }
 

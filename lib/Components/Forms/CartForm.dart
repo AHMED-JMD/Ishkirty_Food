@@ -230,6 +230,10 @@ class _CartFormState extends State<CartForm> {
                               if (type != "توصيل") {
                                 deliveryCost = 0;
                                 deliveryAddress = "";
+                              } else {
+                                setState(() {
+                                  isDelivery = true;
+                                });
                               }
                             });
                           },

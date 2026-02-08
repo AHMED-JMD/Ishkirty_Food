@@ -243,8 +243,12 @@ class _AddSpiecesState extends State<AddSpieces> {
                                 }
 
                                 //server: pass categoryId
-                                addSpieces(
-                                    name, price, selectedCategoryId, file[0]);
+                                final selectedFile =
+                                    (file is List && file.isNotEmpty)
+                                        ? file[0]
+                                        : null;
+                                addSpieces(name, price, selectedCategoryId,
+                                    selectedFile);
                                 _formKey.currentState!.reset();
                               }
                             },

@@ -63,6 +63,146 @@ class _StorePageState extends State<StorePage> {
   double get totalStockValue =>
       _items.fold(0.0, (p, e) => p + e.sellPrice * e.quantity);
 
+  void _showPurchaseForm(String adminId) {
+    final vendorCtrl = TextEditingController(text: "عام");
+    final qtyCtrl = TextEditingController();
+    final netQtyCtrl = TextEditingController();
+    final storeCtrl = TextEditingController();
+    DateTime pickedDate = DateTime.now();
+    final formKey = GlobalKey<FormState>();
+
+    String paymentMethod = 'كاش';
+    showDialog(
+        context: context,
+        builder: (_) => StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+              return AlertDialog(
+                title: const Center(child: Text('اضافة طلب شراء')),
+                content: Form(
+                  key: formKey,
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextFormField(
+                            controller: vendorCtrl,
+                            decoration:
+                                const InputDecoration(labelText: 'المورد'),
+                            validator: (v) => (v == null || v.trim().isEmpty)
+                                ? 'Required'
+                                : null,
+                          ),
+                          DropdownButtonFormField<String>(
+                            decoration:
+                                const InputDecoration(labelText: 'اختر الصنف'),
+                            items: _items
+                                .map((s) => DropdownMenuItem(
+                                      value: s.id,
+                                      child: Text(s.name),
+                                    ))
+                                .toList(),
+                            onChanged: (val) {
+                              storeCtrl.text = val ?? '';
+                            },
+                            validator: (v) =>
+                                (v == null || v.isEmpty) ? 'Required' : null,
+                          ),
+                          TextFormField(
+                            controller: qtyCtrl,
+                            decoration:
+                                const InputDecoration(labelText: 'الكمية'),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            validator: (v) => double.tryParse(v ?? '') == null
+                                ? 'Invalid'
+                                : null,
+                          ),
+                          TextFormField(
+                            controller: netQtyCtrl,
+                            decoration:
+                                const InputDecoration(labelText: 'صافي الكمية'),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            validator: (v) => double.tryParse(v ?? '') == null
+                                ? 'Invalid'
+                                : null,
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                    pickedDate.toString().split(' ').first),
+                              ),
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    final d = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime(2000),
+                                        lastDate: DateTime(2100));
+                                    if (d != null) {
+                                      pickedDate = d;
+                                      setState(() {});
+                                    }
+                                  },
+                                  child: const Text('تحديد'))
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('الغاء',
+                          style: TextStyle(color: Colors.black))),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (!formKey.currentState!.validate()) return;
+                      //check quantity bigger than net quantity
+                      if (qtyCtrl.text.trim() != netQtyCtrl.text.trim()) {
+                        final q = double.tryParse(qtyCtrl.text.trim()) ?? 0;
+                        final netQ =
+                            double.tryParse(netQtyCtrl.text.trim()) ?? 0;
+
+                        if (q <= netQ) {
+                          _showError("الكمية يجب ان تكون اكبر من صافي الكمية");
+                          return;
+                        }
+                      }
+
+                      final dto = {
+                        'store_item': storeCtrl.text.trim(),
+                        'vendor': vendorCtrl.text.trim(),
+                        'quantity': double.parse(qtyCtrl.text.trim()),
+                        'net_quantity': double.parse(netQtyCtrl.text.trim()),
+                        'payment_method': paymentMethod,
+                        'date': pickedDate.toIso8601String(),
+                        'type': 'بيع',
+                        'tran_type': 'اضافة',
+                        'admin_id': adminId,
+                      };
+                      Navigator.pop(context);
+                      final res = await api.APIStore.addPurchase(dto);
+                      if (res.statusCode == 200) {
+                        await _load();
+                      } else {
+                        _showError(res.body);
+                      }
+                    },
+                    child: const Text('اضافة',
+                        style: TextStyle(color: Colors.teal)),
+                  ),
+                ],
+              );
+            }));
+  }
+
   void _showForm({StockItem? item, String? adminId}) {
     final nameCtrl = TextEditingController(text: item?.name ?? '');
     final sellCtrl = TextEditingController(
@@ -395,6 +535,16 @@ class _StorePageState extends State<StorePage> {
                             ),
                             tooltip: "اضافة منتج",
                           ),
+                        const SizedBox(width: 10),
+                        IconButton(
+                          onPressed: () =>
+                              _showPurchaseForm(value.user['id'].toString()),
+                          icon: const Icon(
+                            Icons.shopping_basket,
+                            size: 30,
+                          ),
+                          tooltip: "اضافة استلام",
+                        ),
                         const SizedBox(width: 20),
                         ElevatedButton.icon(
                             onPressed: () {
