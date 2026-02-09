@@ -7,6 +7,7 @@ import 'package:ashkerty_food/models/kebordKeys.dart';
 import 'package:ashkerty_food/providers/cart_provider.dart';
 import 'package:ashkerty_food/static/CartButton.dart';
 import 'package:ashkerty_food/static/CheckTime.dart';
+import 'package:ashkerty_food/utils/CheckAccess.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/Components/menu_nav.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _checkAccess() async {
     try {
+      //check if daily is created not allowed to sell ---------------------------
+      await checkDailyAccess(context);
+
+      //check if there is a purchase today--------------------------------------
       final res = await api.APIStore.getPurchasesByDate({
         'startDate': DateTime.now().toIso8601String(),
         'endDate': DateTime.now().toIso8601String(),

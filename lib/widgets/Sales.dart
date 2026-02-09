@@ -40,9 +40,13 @@ class _SalesState extends State<Sales> {
 
   @override
   void initState() {
-    //initially get today's sales
-    getSpiecesSales(todayDate, todayDate);
-    getTotalSales(todayDate, todayDate);
+    //initially get sales until 3 AM next day
+    final startOfDay = DateTime(todayDate.year, todayDate.month, todayDate.day);
+    final endAt3AmNextDay =
+        DateTime(todayDate.year, todayDate.month, todayDate.day)
+            .add(const Duration(days: 1, hours: 3));
+    getSpiecesSales(startOfDay, endAt3AmNextDay);
+    getTotalSales(startOfDay, endAt3AmNextDay);
     super.initState();
   }
 

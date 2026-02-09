@@ -1,16 +1,18 @@
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'api_helpers.dart';
 
 String apiUrl = 'http://localhost:3000/api/employee';
 
 class APIEmployee {
   static Future add(data) async {
     try {
-      Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/');
-      Response response =
-          await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -20,10 +22,8 @@ class APIEmployee {
 
   static Future getAll() async {
     try {
-      Map<String, String> configHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/');
-      Response response = await get(url, headers: configHeaders);
+      Response response = await get(url, headers: buildHeaders());
 
       return response;
     } catch (e) {
@@ -33,11 +33,12 @@ class APIEmployee {
 
   static Future update(data) async {
     try {
-      Map<String, String> configHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/update');
-      Response response =
-          await post(url, headers: configHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -47,11 +48,12 @@ class APIEmployee {
 
   static Future delete(data) async {
     try {
-      Map<String, String> configHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/delete');
-      Response response =
-          await post(url, headers: configHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -61,11 +63,12 @@ class APIEmployee {
 
   static Future addTrans(data) async {
     try {
-      Map<String, String> configHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/emp_tran');
-      Response response =
-          await post(url, headers: configHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -75,11 +78,12 @@ class APIEmployee {
 
   static Future getTrans(data) async {
     try {
-      Map<String, String> configHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/get_emp_trans');
-      Response response =
-          await post(url, headers: configHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -89,11 +93,12 @@ class APIEmployee {
 
   static Future getTransByDate(data) async {
     try {
-      Map<String, String> configHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/get_emp_trans/date');
-      Response response =
-          await post(url, headers: configHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -103,11 +108,12 @@ class APIEmployee {
 
   static Future deleteTrans(data) async {
     try {
-      Map<String, String> configHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/delete_emp_tran');
-      Response response =
-          await post(url, headers: configHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -117,11 +123,12 @@ class APIEmployee {
 
   static Future runNewMonth(data) async {
     try {
-      Map<String, String> configHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/new_month');
-      Response response =
-          await post(url, headers: configHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {

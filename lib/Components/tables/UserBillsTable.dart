@@ -24,6 +24,7 @@ class _UserBillsTableState extends State<UserBillsTable> {
   List data = [];
   int transfer = 0;
   String _paymentFilter = 'الكل';
+  String _typeFilter = 'الكل';
 
   @override
   void initState() {
@@ -128,6 +129,24 @@ class _UserBillsTableState extends State<UserBillsTable> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 DropdownButton<String>(
+                  value: _typeFilter,
+                  items: const [
+                    DropdownMenuItem(value: 'الكل', child: Text('الكل')),
+                    DropdownMenuItem(value: 'سفري', child: Text('سفري')),
+                    DropdownMenuItem(value: 'محلي', child: Text('محلي')),
+                    DropdownMenuItem(value: 'توصيل', child: Text('توصيل')),
+                    DropdownMenuItem(value: 'استلام', child: Text('استلام')),
+                  ],
+                  onChanged: (v) {
+                    final next = v ?? 'الكل';
+                    setState(() {
+                      _typeFilter = next;
+                    });
+                    source.setTypeFilter(next);
+                  },
+                ),
+                const SizedBox(width: 10),
+                DropdownButton<String>(
                   value: _paymentFilter,
                   items: const [
                     DropdownMenuItem(value: 'الكل', child: Text('الكل')),
@@ -206,7 +225,7 @@ class _UserBillsTableState extends State<UserBillsTable> {
                       ),
                       DataColumn(
                           label: Text(
-                        ' الوردية',
+                        ' النوع',
                         style: TextStyle(fontSize: 20),
                       )),
                     ],
@@ -229,9 +248,15 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   List data;
   ExampleSource({required this.context, required this.data});
   String _paymentFilter = 'الكل';
+  String _typeFilter = 'الكل';
 
   void setPaymentFilter(String value) {
     _paymentFilter = value;
+    setNextView();
+  }
+
+  void setTypeFilter(String value) {
+    _typeFilter = value;
     setNextView();
   }
 
@@ -264,6 +289,14 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
     }
 
     return false;
+  }
+
+  bool _matchesTypeFilter(bill row) {
+    if (_typeFilter == 'الكل') return true;
+    final normalizedFilter = _typeFilter.trim();
+    final rowType = row.type.toString().trim();
+    if (rowType.isEmpty) return false;
+    return rowType == normalizedFilter;
   }
 
   String lastSearchTerm = '';
@@ -333,7 +366,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
         child: Text(
-          currentRowData.shiftTime,
+          currentRowData.type,
           style: const TextStyle(fontSize: 20),
         ),
       )),
@@ -364,7 +397,9 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
 
     if (data.isNotEmpty) {
       final bills = (data).map((json) => bill.fromJson(json)).toList();
-      final filtered = bills.where(_matchesPaymentFilter).toList();
+      final filtered = bills
+          .where((row) => _matchesPaymentFilter(row) && _matchesTypeFilter(row))
+          .toList();
 
       return RemoteDataSourceDetails(
           filtered.length,

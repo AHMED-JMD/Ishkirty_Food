@@ -16,6 +16,7 @@ class _ClientBillTableState extends State<ClientBillTable> {
   var rowsPerPage = 10;
   late final source = ExampleSource(data: widget.data, context: context);
   final _searchController = TextEditingController();
+  String _typeFilter = 'الكل';
 
   bool isLoading = false;
 
@@ -42,6 +43,61 @@ class _ClientBillTableState extends State<ClientBillTable> {
             const SizedBox(
               height: 20,
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Text(
+                  ' النوع : ',
+                  style: TextStyle(fontSize: 17),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                DropdownButton<String>(
+                  value: _typeFilter,
+                  items: const [
+                    DropdownMenuItem(
+                        value: 'الكل',
+                        child: Text(
+                          'الكل',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'سفري',
+                        child: Text(
+                          'سفري',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'محلي',
+                        child: Text(
+                          'محلي',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'توصيل',
+                        child: Text(
+                          'توصيل',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'استلام',
+                        child: Text(
+                          'استلام',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                  ],
+                  onChanged: (v) {
+                    final next = v ?? 'الكل';
+                    setState(() {
+                      _typeFilter = next;
+                    });
+                    source.setTypeFilter(next);
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,
@@ -78,7 +134,7 @@ class _ClientBillTableState extends State<ClientBillTable> {
                 )),
                 DataColumn(
                     label: Text(
-                  ' الوردية',
+                  ' النوع',
                   style: TextStyle(fontSize: 20),
                 )),
               ],
@@ -94,8 +150,22 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   List data;
   BuildContext context;
   ExampleSource({required this.data, required this.context});
+  String _typeFilter = 'الكل';
 
   String lastSearchTerm = '';
+
+  void setTypeFilter(String value) {
+    _typeFilter = value;
+    setNextView();
+  }
+
+  bool _matchesTypeFilter(bill row) {
+    if (_typeFilter == 'الكل') return true;
+    final normalizedFilter = _typeFilter.trim();
+    final rowType = row.type.toString().trim();
+    if (rowType.isEmpty) return false;
+    return rowType == normalizedFilter;
+  }
 
   @override
   DataRow? getRow(int index) {
@@ -149,7 +219,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
         child: Text(
-          currentRowData.shiftTime,
+          currentRowData.type,
           style: const TextStyle(fontSize: 20),
         ),
       )),
@@ -177,16 +247,17 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   Future<RemoteDataSourceDetails<bill>> getNextPage(
       NextPageRequest pageRequest) async {
     await Future.delayed(const Duration(milliseconds: 400));
+    final filtered = (data)
+        .map((json) => bill.fromJson(json))
+        .where(_matchesTypeFilter)
+        .toList();
     return RemoteDataSourceDetails(
-      data.length,
-      (data)
-          .map((json) => bill.fromJson(json))
+      filtered.length,
+      filtered
           .skip(pageRequest.offset)
           .take(pageRequest.pageSize)
           .toList(),
-      filteredRows: lastSearchTerm.isNotEmpty
-          ? data.length
-          : null, //again in a real world example you would only get the right amount of rows
+      filteredRows: lastSearchTerm.isNotEmpty ? filtered.length : null,
     );
   }
 }

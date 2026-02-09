@@ -19,6 +19,7 @@ class billTable extends StatefulWidget {
 
 class _billTableState extends State<billTable> {
   String _paymentFilter = 'الكل';
+  String _typeFilter = 'الكل';
 
   @override
   void initState() {
@@ -56,6 +57,56 @@ class _billTableState extends State<billTable> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                const Text(
+                  ' النوع : ',
+                  style: TextStyle(fontSize: 17),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                DropdownButton<String>(
+                  value: _typeFilter,
+                  items: const [
+                    DropdownMenuItem(
+                        value: 'الكل',
+                        child: Text(
+                          'الكل',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'سفري',
+                        child: Text(
+                          'سفري',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'محلي',
+                        child: Text(
+                          'محلي',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'توصيل',
+                        child: Text(
+                          'توصيل',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'استلام',
+                        child: Text(
+                          'استلام',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                  ],
+                  onChanged: (v) {
+                    final next = v ?? 'الكل';
+                    setState(() {
+                      _typeFilter = next;
+                    });
+                    source.setTypeFilter(next);
+                  },
+                ),
+                const SizedBox(width: 20),
                 const Text(
                   ' طرق الدفع : ',
                   style: TextStyle(fontSize: 17),
@@ -141,7 +192,7 @@ class _billTableState extends State<billTable> {
                 ),
                 DataColumn(
                     label: Text(
-                  ' الوردية',
+                  ' النوع',
                   style: TextStyle(fontSize: 20),
                 )),
                 DataColumn(
@@ -168,9 +219,15 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   List data;
   ExampleSource({required this.context, required this.data});
   String _paymentFilter = 'الكل';
+  String _typeFilter = 'الكل';
 
   void setPaymentFilter(String value) {
     _paymentFilter = value;
+    setNextView();
+  }
+
+  void setTypeFilter(String value) {
+    _typeFilter = value;
     setNextView();
   }
 
@@ -214,6 +271,14 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
     return false;
   }
 
+  bool _matchesTypeFilter(bill row) {
+    if (_typeFilter == 'الكل') return true;
+    final normalizedFilter = _typeFilter.trim();
+    final rowType = row.type.toString().trim();
+    if (rowType.isEmpty) return false;
+    return rowType == normalizedFilter;
+  }
+
   @override
   DataRow? getRow(int index) {
     final currentRowData = lastDetails!.rows[index];
@@ -253,7 +318,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
       DataCell(Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 5, 8),
         child: Text(
-          currentRowData.shiftTime,
+          currentRowData.type,
           style: const TextStyle(fontSize: 20),
         ),
       )),
@@ -314,7 +379,9 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
 
     if (data.isNotEmpty) {
       List<bill> bills = (data).map((json) => bill.fromJson(json)).toList();
-      bills = bills.where(_matchesPaymentFilter).toList();
+      bills = bills
+          .where((row) => _matchesPaymentFilter(row) && _matchesTypeFilter(row))
+          .toList();
 
       final total = bills.length;
       final pageItems =

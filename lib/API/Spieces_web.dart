@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:html' as html;
 import 'package:http/http.dart';
+import '../utils/businessLocation.dart';
+import 'api_helpers.dart';
 
 String apiUrl = 'http://localhost:3000/api/spieces';
 
@@ -12,6 +14,10 @@ class APIWebSpieces {
       formData.append('name', name);
       formData.append('price', price);
       formData.append('categoryid', categoryId);
+      final location = AuthContext.businessLocation?.toString().trim();
+      if (location != null && location.isNotEmpty) {
+        formData.append('business_location', location);
+      }
 
       // Support multiple possible file shapes returned by file pickers on web.
       try {
@@ -47,10 +53,8 @@ class APIWebSpieces {
 
   static Future Get() async {
     try {
-      Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/');
-      Response response = await get(url, headers: ConfigHeaders);
+      Response response = await get(url, headers: buildHeaders());
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -65,10 +69,8 @@ class APIWebSpieces {
 
   static Future GetFavs() async {
     try {
-      Map<String, String> configHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/favourites');
-      Response response = await get(url, headers: configHeaders);
+      Response response = await get(url, headers: buildHeaders());
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -83,11 +85,12 @@ class APIWebSpieces {
 
   static Future getByType(data) async {
     try {
-      Map<String, String> configHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/type');
-      Response response =
-          await post(url, headers: configHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -102,11 +105,12 @@ class APIWebSpieces {
 
   static Future findOne(data) async {
     try {
-      Map<String, String> configHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/find_one');
-      Response response =
-          await post(url, headers: configHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -121,11 +125,12 @@ class APIWebSpieces {
 
   static Future update(data) async {
     try {
-      Map<String, String> configHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/update');
-      Response response =
-          await post(url, headers: configHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       if (response.statusCode == 200) {
         return true;
@@ -139,11 +144,12 @@ class APIWebSpieces {
 
   static Future Delete(data) async {
     try {
-      Map<String, String> configHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/delete');
-      Response response =
-          await post(url, headers: configHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       if (response.statusCode == 200) {
         return true;

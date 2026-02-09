@@ -1,16 +1,18 @@
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'api_helpers.dart';
 
 String apiUrl = 'http://localhost:3000/api/bill';
 
 class APIBill {
   static Future Add(data) async {
     try {
-      Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/');
-      Response response =
-          await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -21,11 +23,12 @@ class APIBill {
   //get the bills
   static Future GetAll(data) async {
     try {
-      Map<String, String> Headers = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/by_type');
-      Response response =
-          await post(url, headers: Headers, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -36,11 +39,12 @@ class APIBill {
   //get client bills
   static Future GetClientBills(data) async {
     try {
-      Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/client_bills');
-      Response response =
-          await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -51,11 +55,12 @@ class APIBill {
   //get client bills
   static Future getAdminBills(data) async {
     try {
-      Map<String, String> Headers = {'Content-Type': 'application/json'};
-
       final url = Uri.parse('$apiUrl/admin_bills');
-      Response response =
-          await post(url, headers: Headers, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -66,11 +71,12 @@ class APIBill {
   //Saerch bills in dates
   static Future Search(data) async {
     try {
-      Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/search_dates');
-      Response response =
-          await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -81,11 +87,12 @@ class APIBill {
   //get bill transactions
   static Future GetBillTrans(data) async {
     try {
-      Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/getTrans');
-      Response response =
-          await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -96,11 +103,12 @@ class APIBill {
   //update the bills to be deleted
   static Future deleted_update(data) async {
     try {
-      Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/deletd_update');
-      Response response =
-          await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {
@@ -111,11 +119,12 @@ class APIBill {
   //delete bill
   static Future deleteBill(data) async {
     try {
-      Map<String, String> ConfigHeaders = {"Content-Type": "application/json"};
-
       final url = Uri.parse('$apiUrl/delete');
-      Response response =
-          await post(url, headers: ConfigHeaders, body: jsonEncode(data));
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
 
       return response;
     } catch (e) {

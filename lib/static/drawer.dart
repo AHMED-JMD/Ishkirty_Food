@@ -214,21 +214,21 @@ class MyDrawer extends StatelessWidget {
                         ),
                       ),
                     ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushReplacementNamed(context, '/clients');
-                      },
-                      child: const ListTile(
-                        leading: Icon(
-                          Icons.person,
-                          color: Colors.teal,
-                        ),
-                        title: Text(
-                          'العملاء',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ),
-                    ),
+                    // InkWell(
+                    //   onTap: () {
+                    //     Navigator.pushReplacementNamed(context, '/clients');
+                    //   },
+                    //   child: const ListTile(
+                    //     leading: Icon(
+                    //       Icons.person,
+                    //       color: Colors.teal,
+                    //     ),
+                    //     title: Text(
+                    //       'العملاء',
+                    //       style: TextStyle(fontSize: 18),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

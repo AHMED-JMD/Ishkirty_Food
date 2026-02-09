@@ -5,6 +5,7 @@ import 'package:ashkerty_food/models/EmpTrans.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
+import 'package:ashkerty_food/utils/CheckAccess.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../API/Employee.dart' as api;
@@ -37,6 +38,7 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
   @override
   void initState() {
     super.initState();
+    checkDailyAccess(context);
     fetchTransactions(todayDate.subtract(const Duration(days: 7)), todayDate);
   }
 
@@ -114,6 +116,7 @@ class _EmployeeTransactionsPageState extends State<EmployeeTransactionsPage> {
                       items: const [
                         DropdownMenuItem(value: 'كاش', child: Text('كاش')),
                         DropdownMenuItem(value: 'بنكك', child: Text('بنكك')),
+                        DropdownMenuItem(value: 'فوري', child: Text('فوري')),
                       ],
                       onChanged: (v) => paymentMethod = v ?? 'كاش',
                       decoration:

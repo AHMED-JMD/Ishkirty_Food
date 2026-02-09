@@ -5,6 +5,7 @@ import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:ashkerty_food/static/formatter.dart';
+import 'package:ashkerty_food/utils/CheckAccess.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../API/Store.dart' as api;
@@ -29,6 +30,7 @@ class _StorePurchasesState extends State<StorePurchases> {
   @override
   void initState() {
     super.initState();
+    checkDailyAccess(context);
     _load(todayDate, todayDate, "اليوم");
     _loadStores();
   }
@@ -121,6 +123,8 @@ class _StorePurchasesState extends State<StorePurchases> {
                                   value: 'كاش', child: Text('كاش')),
                               DropdownMenuItem(
                                   value: 'بنكك', child: Text('بنكك')),
+                              DropdownMenuItem(
+                                  value: 'فوري', child: Text('فوري')),
                             ],
                             onChanged: (v) =>
                                 setState(() => paymentMethod = v ?? 'كاش'),

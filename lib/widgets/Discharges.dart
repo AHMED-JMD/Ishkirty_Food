@@ -4,6 +4,7 @@ import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:ashkerty_food/static/formatter.dart';
+import 'package:ashkerty_food/utils/CheckAccess.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../API/Discharges.dart' as api;
@@ -27,6 +28,7 @@ class _DischargesPageState extends State<DischargesPage> {
   @override
   void initState() {
     super.initState();
+    checkDailyAccess(context);
     _load(todayDate, todayDate, 'اليوم');
   }
 

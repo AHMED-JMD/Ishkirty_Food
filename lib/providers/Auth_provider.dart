@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/businessLocation.dart';
 import '../utils/local_storage.dart' as storage;
 
 class AuthProvider extends ChangeNotifier {
@@ -8,9 +9,10 @@ class AuthProvider extends ChangeNotifier {
   get user => _user;
   get token => _token;
 
-  void Login (user, token) {
+  void Login(user, token) {
     _user = user;
     _token = token;
+    AuthContext.businessLocation = user?['business_location']?.toString();
     // persist token to browser localStorage on web
     try {
       if (token != null) storage.setLocal('token', token);
@@ -18,9 +20,10 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void Logout () {
+  void Logout() {
     _user = {};
     _token = '';
+    AuthContext.businessLocation = null;
     try {
       storage.removeLocal('token');
     } catch (e) {}

@@ -16,6 +16,7 @@ class DeletedBillsTable extends StatefulWidget {
 
 class _DeletedBillsTableState extends State<DeletedBillsTable> {
   String _paymentFilter = 'الكل';
+  String _typeFilter = 'الكل';
   var rowsPerPage = 10;
   late final source = ExampleSource(data: widget.data, context: context);
   final _searchController = TextEditingController();
@@ -43,6 +44,56 @@ class _DeletedBillsTableState extends State<DeletedBillsTable> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                const Text(
+                  ' النوع : ',
+                  style: TextStyle(fontSize: 17),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                DropdownButton<String>(
+                  value: _typeFilter,
+                  items: const [
+                    DropdownMenuItem(
+                        value: 'الكل',
+                        child: Text(
+                          'الكل',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'سفري',
+                        child: Text(
+                          'سفري',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'محلي',
+                        child: Text(
+                          'محلي',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'توصيل',
+                        child: Text(
+                          'توصيل',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    DropdownMenuItem(
+                        value: 'استلام',
+                        child: Text(
+                          'استلام',
+                          style: TextStyle(fontSize: 18),
+                        )),
+                  ],
+                  onChanged: (v) {
+                    final next = v ?? 'الكل';
+                    setState(() {
+                      _typeFilter = next;
+                    });
+                    source.setTypeFilter(next);
+                  },
+                ),
+                const SizedBox(width: 20),
                 const Text(
                   ' طرق الدفع : ',
                   style: TextStyle(fontSize: 17),
@@ -116,7 +167,7 @@ class _DeletedBillsTableState extends State<DeletedBillsTable> {
                 )),
                 DataColumn(
                     label: Text(
-                  ' الوردية',
+                  ' النوع',
                   style: TextStyle(fontSize: 20),
                 )),
                 DataColumn(
@@ -160,9 +211,15 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
   BuildContext context;
   ExampleSource({required this.data, required this.context});
   String _paymentFilter = 'الكل';
+  String _typeFilter = 'الكل';
 
   void setPaymentFilter(String value) {
     _paymentFilter = value;
+    setNextView();
+  }
+
+  void setTypeFilter(String value) {
+    _typeFilter = value;
     setNextView();
   }
 
@@ -198,6 +255,14 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
     return false;
   }
 
+  bool _matchesTypeFilter(bill row) {
+    if (_typeFilter == 'الكل') return true;
+    final normalizedFilter = _typeFilter.trim();
+    final rowType = row.type.toString().trim();
+    if (rowType.isEmpty) return false;
+    return rowType == normalizedFilter;
+  }
+
   String lastSearchTerm = '';
 
   @override
@@ -227,7 +292,7 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
       )),
       DataCell(
         Text(
-          currentRowData.shiftTime,
+          currentRowData.type,
           style: const TextStyle(fontSize: 20),
         ),
       ),
@@ -292,7 +357,9 @@ class ExampleSource extends AdvancedDataTableSource<bill> {
       NextPageRequest pageRequest) async {
     await Future.delayed(const Duration(milliseconds: 400));
     final bills = (data).map((json) => bill.fromJson(json)).toList();
-    final filtered = bills.where(_matchesPaymentFilter).toList();
+    final filtered = bills
+      .where((row) => _matchesPaymentFilter(row) && _matchesTypeFilter(row))
+      .toList();
 
     return RemoteDataSourceDetails(
       filtered.length,

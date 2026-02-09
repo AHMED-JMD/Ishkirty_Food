@@ -155,6 +155,31 @@ class _LoginState extends State<Login> {
                                     errorText: "الرجاء ادخال جميع الحقول"),
                               ),
                               const SizedBox(
+                                height: 20,
+                              ),
+                              SizedBox(
+                                width: 200,
+                                child: FormBuilderDropdown<String>(
+                                  name: 'business_location',
+                                  decoration: const InputDecoration(
+                                    labelText: 'موقع العمل',
+                                    icon: Icon(Icons.location_on),
+                                  ),
+                                  items: const [
+                                    DropdownMenuItem(
+                                      value: 'port sudan',
+                                      child: Text('بورتسودان'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'omdurman',
+                                      child: Text('امدرمان'),
+                                    ),
+                                  ],
+                                  validator: FormBuilderValidators.required(
+                                      errorText: "الرجاء ادخال جميع الحقول"),
+                                ),
+                              ),
+                              const SizedBox(
                                 height: 60,
                               ),
                               SizedBox(
@@ -169,6 +194,9 @@ class _LoginState extends State<Login> {
                                           .currentState!.value['username'];
                                       data['password'] = _formKey
                                           .currentState!.value['password'];
+                                      data['business_location'] = _formKey
+                                          .currentState!
+                                          .value['business_location'];
                                       //call to server
                                       final authProvider =
                                           context.read<AuthProvider>();

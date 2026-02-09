@@ -40,7 +40,7 @@ class _SpiecesSalesTableState extends State<SpiecesSalesTable> {
               child: TextField(
                 decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.search),
-                    hintText: 'ايجاد منتج بالاسم .....'),
+                    hintText: 'ايجاد منتج  .....'),
                 onChanged: (v) {
                   setState(() {
                     _search = v;

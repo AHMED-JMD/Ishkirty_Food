@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'api_helpers.dart';
 
 const String _baseUrl = 'http://localhost:3000/api/safe/';
 
@@ -8,15 +9,15 @@ class APISafe {
     final url = Uri.parse('$_baseUrl/dailySafe');
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(data),
+      headers: buildHeaders(),
+      body: jsonEncode(attachBusinessLocation(data)),
     );
     return response;
   }
 
   static Future<http.Response> getSafe() async {
     final url = Uri.parse(_baseUrl);
-    final response = await http.get(url);
+    final response = await http.get(url, headers: buildHeaders());
     return response;
   }
 
@@ -24,8 +25,8 @@ class APISafe {
     final url = Uri.parse("$_baseUrl/transfer");
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(data),
+      headers: buildHeaders(),
+      body: jsonEncode(attachBusinessLocation(data)),
     );
     return response;
   }

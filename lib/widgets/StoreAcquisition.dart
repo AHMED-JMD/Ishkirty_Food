@@ -4,6 +4,7 @@ import 'package:ashkerty_food/models/StockItem.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
+import 'package:ashkerty_food/utils/CheckAccess.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../API/Store.dart' as api;
@@ -28,6 +29,7 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
   @override
   void initState() {
     super.initState();
+    checkDailyAccess(context);
     _load(todayDate, todayDate, "اليوم");
     _loadStores();
   }

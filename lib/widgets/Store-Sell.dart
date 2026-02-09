@@ -77,7 +77,7 @@ class _StorePageState extends State<StorePage> {
         builder: (_) => StatefulBuilder(
                 builder: (BuildContext context, StateSetter setState) {
               return AlertDialog(
-                title: const Center(child: Text('اضافة طلب شراء')),
+                title: const Center(child: Text('استلام جديد')),
                 content: Form(
                   key: formKey,
                   child: Directionality(
@@ -536,15 +536,16 @@ class _StorePageState extends State<StorePage> {
                             tooltip: "اضافة منتج",
                           ),
                         const SizedBox(width: 10),
-                        IconButton(
-                          onPressed: () =>
-                              _showPurchaseForm(value.user['id'].toString()),
-                          icon: const Icon(
-                            Icons.shopping_basket,
-                            size: 30,
+                        if (isAdmin)
+                          IconButton(
+                            onPressed: () =>
+                                _showPurchaseForm(value.user['id'].toString()),
+                            icon: const Icon(
+                              Icons.shopping_basket,
+                              size: 30,
+                            ),
+                            tooltip: "اضافة استلام",
                           ),
-                          tooltip: "اضافة استلام",
-                        ),
                         const SizedBox(width: 20),
                         ElevatedButton.icon(
                             onPressed: () {

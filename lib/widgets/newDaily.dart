@@ -264,6 +264,55 @@ class _NewDailyPageState extends State<NewDailyPage> {
 
 //POST API'S
   Future _createDaily(String adminId) async {
+    return showDialog(
+      context: context,
+      builder: (ctx) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: AlertDialog(
+            title: const Center(
+              child: Text(
+                'تأكيد الحفظ',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            content: const Text(
+              'لايمكن حفظ اليومية اكثر من مرة هل انت متاكد',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                style: TextButton.styleFrom(backgroundColor: Colors.grey),
+                child: const Text(
+                  'الغاء',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(ctx);
+                  await _submitDaily(adminId);
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text(
+                  'تأكيد',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future _submitDaily(String adminId) async {
     setState(() => _loading = true);
 
     double totalCosts = totalSalesCosts;
@@ -297,6 +346,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
     _showMessage('خطأ', res.body);
     setState(() => _loading = false);
   }
+//------------------------
 
 //models for form control
   void _showAddPurchaseDialog(String adminId) async {
@@ -1202,8 +1252,11 @@ class _NewDailyPageState extends State<NewDailyPage> {
                                         return;
                                       }
 
-                                      _createDaily(
-                                          value.user!['id'].toString());
+                                      value.user!['role'] == 'admin'
+                                          ? _submitDaily(
+                                              value.user!['id'].toString())
+                                          : _createDaily(
+                                              value.user!['id'].toString());
                                     },
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.teal),

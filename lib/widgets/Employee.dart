@@ -237,6 +237,7 @@ class _EmployeePageState extends State<EmployeePage> {
                       items: const [
                         DropdownMenuItem(value: 'كاش', child: Text('كاش')),
                         DropdownMenuItem(value: 'بنكك', child: Text('بنكك')),
+                        DropdownMenuItem(value: 'فوري', child: Text('فوري')),
                       ],
                       onChanged: (v) => paymentMethod = v ?? 'كاش',
                       decoration:
@@ -483,25 +484,26 @@ class _EmployeePageState extends State<EmployeePage> {
                               ),
                             ),
                           const SizedBox(width: 20),
-                          ElevatedButton.icon(
-                              onPressed: () {
-                                showAddTrans(employees, value.user!['id']);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 12.0, horizontal: 20.0),
-                                backgroundColor: Colors.teal,
-                              ),
-                              label: const Text(
-                                'خصم المرتب',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.white),
-                              ),
-                              icon: const Icon(
-                                Icons.monetization_on,
-                                size: 20,
-                                color: Colors.black,
-                              )),
+                          if (isAdmin)
+                            ElevatedButton.icon(
+                                onPressed: () {
+                                  showAddTrans(employees, value.user!['id']);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 12.0, horizontal: 20.0),
+                                  backgroundColor: Colors.teal,
+                                ),
+                                label: const Text(
+                                  'خصم المرتب',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.white),
+                                ),
+                                icon: const Icon(
+                                  Icons.monetization_on,
+                                  size: 20,
+                                  color: Colors.black,
+                                )),
                           const SizedBox(width: 20),
                           ElevatedButton.icon(
                               onPressed: () async {
