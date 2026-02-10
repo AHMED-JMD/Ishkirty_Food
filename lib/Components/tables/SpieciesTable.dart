@@ -28,12 +28,51 @@ class _SpeiciesTableState extends State<SpeiciesTable> {
       delete: deleteSpieces);
   final _searchController = TextEditingController();
 
+  late List _allData;
+  List<String> _categories = [];
+  String? _selectedCategory;
+
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _searchController.text = '';
+    _allData = List.from(widget.data);
+    _initCategories();
+  }
+
+  @override
+  void didUpdateWidget(covariant SpeiciesTable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.data != widget.data) {
+      _allData = List.from(widget.data);
+      _initCategories();
+      _applyCategoryFilter(_selectedCategory);
+    }
+  }
+
+  void _initCategories() {
+    final set = <String>{};
+    for (final item in _allData) {
+      final name = item is Map ? item['category'] : null;
+      if (name != null && name.toString().trim().isNotEmpty) {
+        set.add(name.toString());
+      }
+    }
+    _categories = set.toList()..sort();
+  }
+
+  void _applyCategoryFilter(String? category) {
+    if (category == null || category == 'all') {
+      source.data = List.from(_allData);
+    } else {
+      source.data = _allData
+          .where(
+              (it) => (it is Map ? it['category'] : '')?.toString() == category)
+          .toList();
+    }
+    source.setNextView();
   }
 
   //server side Functions ------------------
@@ -82,6 +121,37 @@ class _SpeiciesTableState extends State<SpeiciesTable> {
                     size: 50.0,
                   )
                 : const Text(''),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SizedBox(
+                  width: 220,
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedCategory ?? 'all',
+                    decoration: const InputDecoration(
+                      labelText: 'فلترة بالنوع',
+                    ),
+                    items: [
+                      const DropdownMenuItem(
+                        value: 'all',
+                        child: Text('الكل'),
+                      ),
+                      ..._categories.map((c) => DropdownMenuItem(
+                            value: c,
+                            child: Text(c),
+                          ))
+                    ],
+                    onChanged: (val) {
+                      setState(() {
+                        _selectedCategory = val;
+                        _applyCategoryFilter(val);
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
             AdvancedPaginatedDataTable(
               addEmptyRows: false,
               source: source,

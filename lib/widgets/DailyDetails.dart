@@ -75,9 +75,9 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
   double get totalPurchaseBankak => _purchases
       .where((e) => e.paymentMethod == 'بنكك')
       .fold(0.0, (p, e) => p + e.buyPrice * e.quantity);
-  double get totalPurchaseFawry => _empTrans
+  double get totalPurchaseFawry => _purchases
       .where((e) => e.paymentMethod == 'فوري')
-      .fold(0.0, (p, e) => p + e.amount);
+      .fold(0.0, (p, e) => p + e.buyPrice * e.quantity);
   // double get totalPurchaseAccount => _purchases
   //     .where((e) => e.paymentMethod == 'حساب')
   //     .fold(0.0, (p, e) => p + e.buyPrice * e.quantity);

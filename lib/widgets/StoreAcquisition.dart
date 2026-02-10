@@ -4,6 +4,7 @@ import 'package:ashkerty_food/models/StockItem.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
+import 'package:ashkerty_food/static/Printing.dart';
 import 'package:ashkerty_food/utils/CheckAccess.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -561,6 +562,26 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
                                     style: const TextStyle(fontSize: 30),
                                   ),
                                   const SizedBox(width: 10),
+                                  IconButton(
+                                    onPressed:
+                                        (_filtered.isNotEmpty && !_loading)
+                                            ? () async {
+                                                await printPurchaseTable(
+                                                  admin: value.user['username']
+                                                      .toString(),
+                                                  type: 'بيع',
+                                                  items: _filtered,
+                                                  period: period,
+                                                );
+                                              }
+                                            : null,
+                                    icon: const Icon(
+                                      Icons.print,
+                                      size: 32,
+                                      color: Colors.teal,
+                                    ),
+                                    tooltip: 'طباعة',
+                                  ),
                                   PopupMenuButton(
                                     icon: const Icon(
                                       Icons.date_range_rounded,

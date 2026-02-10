@@ -84,4 +84,18 @@ class APIDaily {
       rethrow;
     }
   }
+
+  static Future syncDaily(data) async {
+    try {
+      final url = Uri.parse('$ApiUrl/sync');
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(attachBusinessLocation(data)),
+      );
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

@@ -225,12 +225,24 @@ class _AddSpiecesState extends State<AddSpieces> {
                             ),
                             onPressed: () {
                               if (_formKey.currentState!.saveAndValidate()) {
-                                String name =
+                                final name =
                                     _formKey.currentState!.value['name'];
-                                String price =
+                                final price =
                                     _formKey.currentState!.value['price'];
                                 final file =
                                     _formKey.currentState!.value['file'];
+
+                                if (name == null ||
+                                    price == null ||
+                                    name.toString().isEmpty ||
+                                    price.toString().isEmpty) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                    content: Text('الرجاء ادخال جميع الحقول'),
+                                    backgroundColor: Colors.red,
+                                  ));
+                                  return;
+                                }
 
                                 // ensure category selected
                                 if (selectedCategoryId == null) {
@@ -247,6 +259,7 @@ class _AddSpiecesState extends State<AddSpieces> {
                                     (file is List && file.isNotEmpty)
                                         ? file[0]
                                         : null;
+
                                 addSpieces(name, price, selectedCategoryId,
                                     selectedFile);
                                 _formKey.currentState!.reset();

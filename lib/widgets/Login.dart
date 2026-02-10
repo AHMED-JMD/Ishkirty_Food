@@ -1,6 +1,7 @@
 import 'package:ashkerty_food/API/Auth.dart';
 import 'package:ashkerty_food/API/Store.dart' as api;
 import 'package:ashkerty_food/providers/Auth_provider.dart';
+import 'package:ashkerty_food/utils/businessLocation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -32,6 +33,9 @@ class _LoginState extends State<Login> {
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
+
+      //persist business location from login form
+      AuthContext.businessLocation = data['business_location']?.toString();
 
       //global state Provider (this also persists token)
       provider.Login(data['user'], data['token']);

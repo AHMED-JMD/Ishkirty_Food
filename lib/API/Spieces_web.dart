@@ -20,22 +20,20 @@ class APIWebSpieces {
       }
 
       // Support multiple possible file shapes returned by file pickers on web.
-      try {
-        if (file is html.File) {
-          formData.appendBlob('file', file, file.name);
-        } else if (file != null && (file.bytes != null)) {
-          final blob = html.Blob([file.bytes]);
-          formData.appendBlob('file', blob, file.name ?? 'file');
-        } else if (file is Map && file['bytes'] != null) {
-          final blob = html.Blob([file['bytes']]);
-          formData.appendBlob('file', blob, file['name'] ?? 'file');
-        } else {
-          // Fallback: attempt to append as-is
-          formData.append('file', file);
+      if (file != null) {
+        try {
+          if (file is html.File) {
+            formData.appendBlob('file', file, file.name);
+          } else if (file.bytes != null) {
+            final blob = html.Blob([file.bytes]);
+            formData.appendBlob('file', blob, file.name ?? 'file');
+          } else if (file is Map && file['bytes'] != null) {
+            final blob = html.Blob([file['bytes']]);
+            formData.appendBlob('file', blob, file['name'] ?? 'file');
+          }
+        } catch (e) {
+          // ignore file attachment errors; proceed without file
         }
-      } catch (e) {
-        // ignore and attempt to append generically
-        formData.append('file', file);
       }
 
       final request = await html.HttpRequest.request(url,

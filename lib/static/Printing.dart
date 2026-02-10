@@ -6,6 +6,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:flutter/foundation.dart';
+import 'package:ashkerty_food/models/PurchaseRequest.dart';
 
 pw.Container createTableCell(String text) {
   return pw.Container(
@@ -263,6 +264,155 @@ printSalesReport(
 
   await Printing.layoutPdf(
       onLayout: (PdfPageFormat format) async => doc.save());
+}
+
+// Print purchases table
+printPurchaseTable(
+    {String? printerName,
+    required String admin,
+    required String type,
+    required List items,
+    String? period}) async {
+  var arabicFont =
+      pw.Font.ttf(await rootBundle.load("assets/fonts/HacenTunisia.ttf"));
+  var myTheme = pw.ThemeData.withFont(base: arabicFont);
+
+  final doc = pw.Document();
+
+  // load image
+  const imageProvider = AssetImage('assets/images/abdLogo.png');
+  final ByteData byteData = await rootBundle.load(imageProvider.assetName);
+  final Uint8List bytes = byteData.buffer.asUint8List();
+  final image = pw.Image(pw.MemoryImage(bytes));
+
+  DateTime now = DateTime.now();
+  String date = '${now.year}/${now.month}/${now.day}';
+  String time = '${now.hour}:${now.minute}:${now.second}';
+
+  String _storeName(dynamic it) {
+    if (it is PurchaseRequest) return it.store.name.toString();
+    if (it is Map) {
+      return (it['Store']?['name'] ?? it['store']?['name'] ?? '').toString();
+    }
+    return '';
+  }
+
+  bool _isKilo(dynamic it) {
+    if (it is PurchaseRequest) return it.store.isKilo;
+    if (it is Map) {
+      return (it['Store']?['is_kilo'] ?? it['store']?['isKilo'] ?? false) ==
+          true;
+    }
+    return false;
+  }
+
+  // DateTime _date(dynamic it) {
+  //   if (it is PurchaseRequest) return it.date;
+  //   if (it is Map) {
+  //     return DateTime.tryParse(it['date']?.toString() ?? '') ?? DateTime.now();
+  //   }
+  //   return DateTime.now();
+  // }
+
+  String _typeLabel(dynamic it) {
+    final value =
+        it is PurchaseRequest ? it.type : (it is Map ? it['type'] : null);
+    return value == 'خصم' ? 'تالف' : 'استلام';
+  }
+
+  String _paymentMethod(dynamic it) {
+    final value = it is PurchaseRequest
+        ? it.paymentMethod
+        : (it is Map ? (it['payment_method'] ?? it['paymentMethod']) : '');
+    return value?.toString() ?? '';
+  }
+
+  String _quantityText(dynamic it, {required bool net}) {
+    final qty = it is PurchaseRequest
+        ? (net ? it.netQuantity : it.quantity)
+        : (it is Map
+            ? (net ? it['net_quantity'] ?? it['netQuantity'] : it['quantity'])
+            : 0);
+    final unit = _isKilo(it) ? 'كجم' : '';
+    return '${qty ?? 0}  $unit';
+  }
+
+  String _buyPrice(dynamic it) {
+    final val = it is PurchaseRequest
+        ? it.buyPrice
+        : (it is Map ? it['buy_price'] ?? it['buyPrice'] : 0);
+    return '${numberFormatter(val ?? 0)} (جنيه)';
+  }
+
+  String _admin(dynamic it) {
+    final value =
+        it is PurchaseRequest ? it.admin : (it is Map ? it['admin'] : '');
+    return value?.toString() ?? '';
+  }
+
+  pw.Table buildTable(List list) {
+    return pw.Table(
+      border: pw.TableBorder.symmetric(inside: pw.BorderSide.none),
+      defaultColumnWidth: pw.IntrinsicColumnWidth(),
+      children: [
+        pw.TableRow(children: [
+          if (type == 'تصنيع') createTableCell('طريقة الدفع'),
+          if (type == 'تصنيع') createTableCell('سعر الشراء'),
+          createTableCell('المستخدم'),
+          createTableCell('الكمية'),
+          if (type == 'بيع') createTableCell('النوع'),
+          createTableCell('الصنف'),
+        ]),
+        ...list.map((it) {
+          // final d = _date(it).toIso8601String().split('T').first;
+          return pw.TableRow(children: [
+            if (type == 'تصنيع') createTableCell(_paymentMethod(it)),
+            if (type == 'تصنيع') createTableCell(_buyPrice(it)),
+            createTableCell(_admin(it)),
+            createTableCell(_quantityText(it, net: true)),
+            if (type == 'بيع') createTableCell(_typeLabel(it)),
+            createTableCell(_storeName(it)),
+          ]);
+        }).toList()
+      ],
+    );
+  }
+
+  doc.addPage(pw.Page(
+      pageFormat: PdfPageFormat.roll80,
+      theme: myTheme,
+      build: (pw.Context context) {
+        return pw.Directionality(
+            textDirection: pw.TextDirection.rtl,
+            child: pw.ListView(children: [
+              pw.Column(children: [
+                pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Container(width: 60, height: 60, child: image),
+                      pw.Column(children: [
+                        pw.Text('استلامات المطبخ',
+                            style: const pw.TextStyle(fontSize: 16)),
+                        // if (period != null) pw.Text('الفترة: $period'),
+                        pw.Text('التاريخ: $date   $time'),
+                        pw.Text('المستخدم: $admin'),
+                      ])
+                    ]),
+                pw.Divider(),
+                buildTable(items),
+                pw.Divider(),
+              ])
+            ]));
+      }));
+
+  if (!kIsWeb && printerName != null) {
+    await Printing.directPrintPdf(
+        printer: Printer(url: printerName),
+        onLayout: (PdfPageFormat format) async => doc.save());
+  } else {
+    await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => doc.save());
+  }
 }
 
 //print future function

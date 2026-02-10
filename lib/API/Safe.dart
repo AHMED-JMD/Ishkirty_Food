@@ -21,6 +21,16 @@ class APISafe {
     return response;
   }
 
+  static Future<http.Response> createSafe(Map<String, dynamic> data) async {
+    final url = Uri.parse('$_baseUrl/add');
+    final response = await http.post(
+      url,
+      headers: buildHeaders(),
+      body: jsonEncode(attachBusinessLocation(data)),
+    );
+    return response;
+  }
+
   static Future<http.Response> transfer(Map<String, dynamic> data) async {
     final url = Uri.parse("$_baseUrl/transfer");
     final response = await http.post(
