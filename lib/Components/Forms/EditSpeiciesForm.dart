@@ -289,7 +289,8 @@ class _EditSpiecesState extends State<EditSpieces> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, auth, child) {
-      bool isAdmin = auth.user['role'] == 'admin';
+      bool isAdmin = auth.user['role'] != null &&
+          auth.user['role'].toString().toLowerCase().contains('admin');
 
       return Directionality(
         textDirection: TextDirection.rtl,

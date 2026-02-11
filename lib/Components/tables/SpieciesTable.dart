@@ -288,7 +288,7 @@ class ExampleSource extends AdvancedDataTableSource<Spieces> {
                 ),
                 tooltip: 'تعديل',
               ),
-              admin['role'] == 'admin'
+              admin['role'].toString().toLowerCase().contains('admin')
                   ? IconButton(
                       onPressed: () {
                         DeleteSpices(

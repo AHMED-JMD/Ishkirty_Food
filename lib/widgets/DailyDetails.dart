@@ -660,7 +660,8 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
         totalFawry.toDouble(); // + totalAccount.toDouble();
 
     return Consumer<AuthProvider>(builder: (context, value, child) {
-      bool isAdmin = value.user!['role'] == 'admin' ? true : false;
+      bool isAdmin = value.user['role'] != null &&
+          value.user['role'].toString().toLowerCase().contains('admin');
 
       return Directionality(
         textDirection: TextDirection.rtl,

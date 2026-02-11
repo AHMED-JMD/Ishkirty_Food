@@ -130,7 +130,11 @@ class _BillsState extends State<Bills> {
                         const SizedBox(
                           width: 20,
                         ),
-                        value.user != null && value.user['role'] == 'admin'
+                        value.user['role'] != null &&
+                                value.user['role']
+                                    .toString()
+                                    .toLowerCase()
+                                    .contains('admin')
                             ? ElevatedButton.icon(
                                 onPressed: () {
                                   Navigator.push(

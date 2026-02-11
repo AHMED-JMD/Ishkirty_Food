@@ -99,9 +99,9 @@ class _DeleteBillsState extends State<DeleteBills> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, value, child) {
-      return value.user['role'] != 'admin'
-          ? const Text('')
-          : IconButton(
+      return value.user['role'] != null &&
+              value.user['role'].toString().toLowerCase().contains('admin')
+          ? IconButton(
               onPressed: () {
                 deleteModal(context);
               },
@@ -110,7 +110,8 @@ class _DeleteBillsState extends State<DeleteBills> {
                 color: Colors.red,
               ),
               tooltip: 'حذف',
-            );
+            )
+          : const Text('');
     });
   }
 }

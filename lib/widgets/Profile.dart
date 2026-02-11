@@ -277,8 +277,22 @@ class _UserProfileState extends State<UserProfile> {
                     const SizedBox(
                       height: 10,
                     ),
-                    value.user['role'] != 'admin'
+                    value.user['role'] != null &&
+                            value.user['role']
+                                .toString()
+                                .toLowerCase()
+                                .contains('admin')
                         ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ChangePassword(admin_id: value.user['id']),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Add_Admin(addAdmin: addAdmin)
+                            ],
+                          )
+                        : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               ChangePassword(admin_id: value.user!['id'] ?? ""),
@@ -287,16 +301,6 @@ class _UserProfileState extends State<UserProfile> {
                               ),
                               TransferFormModal(
                                   admin_id: value.user['id'] ?? ""),
-                            ],
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ChangePassword(admin_id: value.user['id']),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              Add_Admin(addAdmin: addAdmin)
                             ],
                           ),
                     const SizedBox(
@@ -323,7 +327,11 @@ class _UserProfileState extends State<UserProfile> {
                     const SizedBox(
                       width: 15,
                     ),
-                    if (value.user['role'] == 'admin')
+                    if (value.user['role'] != null &&
+                        value.user['role']
+                            .toString()
+                            .toLowerCase()
+                            .contains('admin'))
                       ElevatedButton.icon(
                         onPressed: addCategoryDialog,
                         icon: const Icon(
@@ -397,7 +405,11 @@ class _UserProfileState extends State<UserProfile> {
                                       ],
                                     ),
                                   ),
-                                  if (value.user['role'] == 'admin')
+                                  if (value.user['role'] != null &&
+                                      value.user['role']
+                                          .toString()
+                                          .toLowerCase()
+                                          .contains('admin'))
                                     Positioned(
                                       right: 4,
                                       top: 4,
@@ -427,23 +439,12 @@ class _UserProfileState extends State<UserProfile> {
               data.isNotEmpty || isLoading == false
                   ? Container(
                       color: Colors.grey[100],
-                      child: value.user['role'] != 'admin'
+                      child: value.user['role'] != null &&
+                              value.user['role']
+                                  .toString()
+                                  .toLowerCase()
+                                  .contains('admin')
                           ? Column(
-                              children: [
-                                const Center(
-                                  child: Text(
-                                    'الفواتير المحررة اليوم',
-                                    style: TextStyle(
-                                        fontSize: 26, color: Colors.black),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                UserBillsTable(admin_id: value.user['id']),
-                              ],
-                            )
-                          : Column(
                               children: [
                                 const Center(
                                   child: Text(
@@ -456,6 +457,21 @@ class _UserProfileState extends State<UserProfile> {
                                   height: 20,
                                 ),
                                 ManagerTable(data: managers),
+                              ],
+                            )
+                          : Column(
+                              children: [
+                                const Center(
+                                  child: Text(
+                                    'الفواتير المحررة اليوم',
+                                    style: TextStyle(
+                                        fontSize: 26, color: Colors.black),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                UserBillsTable(admin_id: value.user['id']),
                               ],
                             ))
                   : const Padding(

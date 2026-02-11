@@ -16,7 +16,8 @@ class DischargeTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isAdmin = admin['role'] == 'admin' ? true : false;
+    bool isAdmin = admin['role'] != null &&
+        admin['role'].toString().toLowerCase().contains('admin');
 
     return SingleChildScrollView(
       child: DataTable(

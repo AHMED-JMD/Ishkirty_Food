@@ -1,6 +1,7 @@
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 // import 'package:ashkerty_food/static/CheckTime.dart';
 import 'package:ashkerty_food/widgets/Profile.dart';
+import 'package:ashkerty_food/widgets/businessLocation.dart';
 import 'package:ashkerty_food/API/Daily.dart';
 import 'package:ashkerty_food/utils/businessLocation.dart';
 import 'package:flutter/material.dart';
@@ -239,7 +240,38 @@ class MyDrawer extends StatelessWidget {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    value.user != null && value.user['role'] == 'admin'
+                    // Super-admin: manage business locations
+                    value.user != null &&
+                            value.user['role'] != null &&
+                            value.user['role']
+                                .toString()
+                                .toLowerCase()
+                                .contains('super')
+                        ? InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (ctx) =>
+                                          const BusinessLocationPage()));
+                            },
+                            child: const ListTile(
+                              leading: Icon(
+                                Icons.location_on,
+                                color: Colors.teal,
+                              ),
+                              title: Text(
+                                'المواقع',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          )
+                        : const SizedBox(),
+                    value.user != null &&
+                            value.user['role']
+                                .toString()
+                                .toLowerCase()
+                                .contains('admin')
                         ? Column(
                             children: [
                               InkWell(
@@ -261,6 +293,7 @@ class MyDrawer extends StatelessWidget {
                             ],
                           )
                         : const SizedBox(),
+
                     InkWell(
                       onTap: () {
                         Navigator.pushReplacementNamed(context, '/daily');
@@ -366,6 +399,7 @@ class MyDrawer extends StatelessWidget {
                         ),
                       ),
                     ),
+
                     // InkWell(
                     //   onTap: () {
                     //     Navigator.pushReplacementNamed(context, '/clients');

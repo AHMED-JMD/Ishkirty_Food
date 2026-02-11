@@ -762,7 +762,8 @@ class _NewDailyPageState extends State<NewDailyPage> {
 
     return Consumer<AuthProvider>(builder: (context, value, child) {
       bool updateDaily = (!newDaily.isCreated);
-      bool isAdmin = value.user!['role'] == 'admin' ? true : false;
+      bool isAdmin = value.user['role'] != null &&
+          value.user['role'].toString().toLowerCase().contains('admin');
 
       return Directionality(
         textDirection: TextDirection.rtl,

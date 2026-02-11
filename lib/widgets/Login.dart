@@ -1,5 +1,7 @@
 import 'package:ashkerty_food/API/Auth.dart';
+import 'package:ashkerty_food/API/BusinessLocation.dart';
 import 'package:ashkerty_food/API/Store.dart' as api;
+import 'package:ashkerty_food/models/BusinessLocation.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/utils/businessLocation.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +19,27 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+  List<BusinessLocation> businessLocations = [];
   bool isLoading = false;
   bool hidePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchBusinessLocations();
+  }
+
+  //get business locations from server and set to state
+  Future<void> fetchBusinessLocations() async {
+    final response = await APIBusinessLocation.getAll();
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      setState(() {
+        businessLocations =
+            data.map((json) => BusinessLocation.fromJson(json)).toList();
+      });
+    }
+  }
 
   //future login
   Future Login(data, provider) async {
@@ -169,16 +190,13 @@ class _LoginState extends State<Login> {
                                     labelText: 'موقع العمل',
                                     icon: Icon(Icons.location_on),
                                   ),
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value: 'port sudan',
-                                      child: Text('بورتسودان'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'omdurman',
-                                      child: Text('امدرمان'),
-                                    ),
-                                  ],
+                                  items: businessLocations
+                                      .map((location) =>
+                                          DropdownMenuItem<String>(
+                                            value: location.name,
+                                            child: Text(location.name),
+                                          ))
+                                      .toList(),
                                   validator: FormBuilderValidators.required(
                                       errorText: "الرجاء ادخال جميع الحقول"),
                                 ),

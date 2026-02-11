@@ -11,7 +11,7 @@ Future<void> checkDailyAccess(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final userId = authProvider.user?['id']?.toString();
     final role = authProvider.user?['role']?.toString();
-    if (role != null && role.toLowerCase() == 'admin') {
+    if (role != null && role.toLowerCase().contains('admin')) {
       // Admin has access to everything
       return;
     }

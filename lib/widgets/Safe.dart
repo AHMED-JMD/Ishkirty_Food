@@ -491,7 +491,9 @@ class _SafePageState extends State<SafePage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, value, child) {
-      bool isAdmin = value.user != null && value.user!['role'] == 'admin';
+      bool isAdmin = value.user['role'] != null &&
+          value.user['role'].toString().toLowerCase().contains('admin');
+      value.user != null && value.user!['role'] == 'admin';
 
       if (!isAdmin) {
         return Scaffold(

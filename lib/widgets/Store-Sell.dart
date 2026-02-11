@@ -410,7 +410,10 @@ class _StorePageState extends State<StorePage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, value, child) {
-      bool isAdmin = value.user['role'] == 'admin' ? true : false;
+      bool isAdmin = value.user['role'] != null &&
+          value.user['role'].toString().toLowerCase().contains('admin');
+      value.user['role'] != null &&
+          value.user['role'].toString().toLowerCase().contains('admin');
 
       return Directionality(
         textDirection: TextDirection.rtl,
