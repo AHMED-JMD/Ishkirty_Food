@@ -538,17 +538,6 @@ class _StorePageState extends State<StorePage> {
                             ),
                             tooltip: "اضافة منتج",
                           ),
-                        const SizedBox(width: 10),
-                        if (isAdmin)
-                          IconButton(
-                            onPressed: () =>
-                                _showPurchaseForm(value.user['id'].toString()),
-                            icon: const Icon(
-                              Icons.shopping_basket,
-                              size: 30,
-                            ),
-                            tooltip: "اضافة استلام",
-                          ),
                         const SizedBox(width: 20),
                         ElevatedButton.icon(
                             onPressed: () {
@@ -570,6 +559,17 @@ class _StorePageState extends State<StorePage> {
                     ),
                     Row(
                       children: [
+                        const SizedBox(width: 10),
+                        if (isAdmin)
+                          IconButton(
+                            onPressed: () =>
+                                _showPurchaseForm(value.user['id'].toString()),
+                            icon: const Icon(
+                              Icons.download_for_offline,
+                              size: 30,
+                            ),
+                            tooltip: "اضافة استلام",
+                          ),
                         SizedBox(
                           height: 40,
                           child: ElevatedButton.icon(

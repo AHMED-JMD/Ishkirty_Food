@@ -9,6 +9,7 @@ import 'package:ashkerty_food/widgets/Safe.dart';
 import 'package:ashkerty_food/widgets/Store-Sell.dart';
 import 'package:ashkerty_food/widgets/Store-Products.dart';
 import 'package:ashkerty_food/widgets/StoreAcquisition.dart';
+import 'package:ashkerty_food/widgets/businessLocation.dart';
 import 'package:ashkerty_food/widgets/clients.dart';
 import 'package:ashkerty_food/widgets/Employee.dart';
 import 'package:ashkerty_food/widgets/Sales.dart';
@@ -44,6 +45,7 @@ class MyApp extends StatelessWidget {
         ),
         home: const AuthGate(),
         routes: {
+          '/locations': (context) => const BusinessLocationPage(),
           '/safe': (context) => const SafePage(),
           '/home': (context) => const MyHomePage(),
           '/daily': (context) => const DailyPage(),

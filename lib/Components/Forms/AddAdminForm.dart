@@ -100,7 +100,17 @@ class Add_Admin extends StatelessWidget {
                           onPressed: () {
                             if (_formKey.currentState!.saveAndValidate()) {
                               //call add client
-                              addAdmin(_formKey.currentState!.value);
+                              Map data = {
+                                'username':
+                                    _formKey.currentState!.value['username'],
+                                'phoneNum':
+                                    _formKey.currentState!.value['phoneNum'],
+                                'shift': _formKey.currentState!.value['shift'],
+                                'password':
+                                    _formKey.currentState!.value['password'],
+                                'role': 'manager',
+                              };
+                              addAdmin(data);
                               Navigator.of(context).pop();
                             }
                           },

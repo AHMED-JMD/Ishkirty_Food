@@ -1,4 +1,5 @@
 import 'package:ashkerty_food/static/formatter.dart';
+import 'package:ashkerty_food/utils/businessLocation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
@@ -16,6 +17,11 @@ pw.Container createTableCell(String text) {
     alignment: pw.Alignment.center,
     // verticalAlignment: pw.TableCellVerticalAlignment.middle,
   );
+}
+
+String _currentLocationLabel() {
+  final raw = AuthContext.businessLocation?.toString().trim();
+  return (raw == null || raw.isEmpty) ? 'غير محدد' : raw;
 }
 
 pw.Table createTable(data) {
@@ -83,6 +89,7 @@ printEmployeeSalaries(
   DateTime now = DateTime.now();
   String date = '${now.year}/${now.month}/${now.day}';
   String time = '${now.hour}:${now.minute}:${now.second}';
+  final locationLabel = _currentLocationLabel();
 
   // compute total
 
@@ -123,6 +130,7 @@ printEmployeeSalaries(
                             style: const pw.TextStyle(fontSize: 16)),
                         pw.Text('التاريخ: $date   $time'),
                         pw.Text('المسؤول: $admin'),
+                        pw.Text('الموقع: $locationLabel'),
                       ])
                     ]),
                 pw.Divider(),
@@ -174,6 +182,7 @@ printSalesReport(
   DateTime now = DateTime.now();
   String date = '${now.year}/${now.month}/${now.day}';
   String time = '${now.hour}:${now.minute}:${now.second}';
+  final locationLabel = _currentLocationLabel();
 
   doc.addPage(pw.Page(
       pageFormat: PdfPageFormat.roll80,
@@ -195,6 +204,7 @@ printSalesReport(
                         if (period != null) pw.Text('الفترة: $period'),
                         pw.Text('التاريخ: $date   $time'),
                         pw.Text('المستخدم: $admin'),
+                        pw.Text('الموقع: $locationLabel'),
                       ])
                     ]),
               ]),
@@ -288,6 +298,7 @@ printPurchaseTable(
   DateTime now = DateTime.now();
   String date = '${now.year}/${now.month}/${now.day}';
   String time = '${now.hour}:${now.minute}:${now.second}';
+  final locationLabel = _currentLocationLabel();
 
   String _storeName(dynamic it) {
     if (it is PurchaseRequest) return it.store.name.toString();
@@ -396,6 +407,7 @@ printPurchaseTable(
                         // if (period != null) pw.Text('الفترة: $period'),
                         pw.Text('التاريخ: $date   $time'),
                         pw.Text('المستخدم: $admin'),
+                        pw.Text('الموقع: $locationLabel'),
                       ])
                     ]),
                 pw.Divider(),
@@ -440,6 +452,7 @@ PrintingFunc(String Pname, counter, type, user, data,
   String date = '${now.year}/${now.month}/${now.day}';
   String time = '${now.hour}:${now.minute}:${now.second}';
   String amPm = now.hour < 12 ? 'AM' : 'PM';
+  final locationLabel = _currentLocationLabel();
 
   //create pdf
   doc.addPage(pw.Page(
@@ -477,6 +490,7 @@ PrintingFunc(String Pname, counter, type, user, data,
                                   style: pw.TextStyle(
                                       fontSize: 16,
                                       fontWeight: pw.FontWeight.bold)),
+                              pw.Text('الموقع: $locationLabel'),
                             ],
                           )
                         ]),
@@ -558,6 +572,7 @@ printCopies(String Pname, counter, type, user, data,
     String date = '${now.year}/${now.month}/${now.day}';
     String time = '${now.hour}:${now.minute}:${now.second}';
     String amPm = now.hour < 12 ? 'AM' : 'PM';
+    final locationLabel = _currentLocationLabel();
 
     final doc = pw.Document();
 
@@ -629,6 +644,7 @@ printCopies(String Pname, counter, type, user, data,
                                     style: pw.TextStyle(
                                         fontSize: 16,
                                         fontWeight: pw.FontWeight.bold)),
+                                pw.Text('الموقع: $locationLabel'),
                               ])
                             ]),
                         pw.Divider(thickness: 2),
@@ -685,7 +701,8 @@ printCopies(String Pname, counter, type, user, data,
                                 pw.Text(counter,
                                     style: pw.TextStyle(
                                         fontSize: 16,
-                                        fontWeight: pw.FontWeight.bold))
+                                        fontWeight: pw.FontWeight.bold)),
+                                pw.Text('الموقع: $locationLabel'),
                               ])
                             ]),
                         pw.Divider(thickness: 2),
@@ -785,6 +802,7 @@ printDailyComponents({
   DateTime now = DateTime.now();
   String date = '${now.year}/${now.month}/${now.day}';
   String time = '${now.hour}:${now.minute}:${now.second}';
+  final locationLabel = _currentLocationLabel();
 
   pw.Table buildGenericTable(
       List list, List<String> headers, List<Function> accessors) {
@@ -826,6 +844,7 @@ printDailyComponents({
                         if (period != null) pw.Text('الفترة: $period'),
                         pw.Text('التاريخ: $date   $time'),
                         pw.Text('المستخدم: $admin'),
+                        pw.Text('الموقع: $locationLabel'),
                       ])
                     ])
               ]),

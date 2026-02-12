@@ -5,10 +5,12 @@ import 'api_helpers.dart';
 String ApiUrl = 'http://localhost:3000/api/daily';
 
 class APIDaily {
-  static Future getAll() async {
+  static Future getLocsDailies(data) async {
     try {
-      final url = Uri.parse('$ApiUrl/');
-      Response response = await get(url, headers: buildHeaders());
+      final url = Uri.parse('$ApiUrl//locs-dailies');
+      Response response = await post(url,
+          headers: buildHeaders(),
+          body: jsonEncode(attachBusinessLocation(data)));
       return response;
     } catch (e) {
       rethrow;

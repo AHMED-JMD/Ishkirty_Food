@@ -29,6 +29,20 @@ class APIBusinessLocation {
     }
   }
 
+  static Future dailyLocation(data) async {
+    try {
+      final url = Uri.parse('$ApiUrl/daily');
+      Response response = await post(
+        url,
+        headers: buildHeaders(),
+        body: jsonEncode(data),
+      );
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   static Future deleteLocation(data) async {
     try {
       final url = Uri.parse('$ApiUrl/delete');

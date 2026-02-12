@@ -5,8 +5,9 @@ import 'package:ashkerty_food/Components/menu_categ.dart';
 // use the default icon when generating pages.
 final Map<String, IconData> arabicIconMap = {
   'الكل': Icons.restaurant_menu,
-  'لحوم': Icons.no_meals,
+  'كفتة': Icons.no_meals,
   'شاورما': Icons.set_meal,
+  'اقاشي': Icons.set_meal_outlined,
   'عصائر': Icons.local_drink,
   'اضافات': Icons.add_circle,
 };
@@ -93,7 +94,7 @@ List generateMenuPages(List categories) {
 
     if (name.trim().isEmpty) continue;
 
-    final icon = arabicIconMap[name] ?? Icons.category;
+    final icon = arabicIconMap[name] ?? Icons.table_restaurant;
 
     pages.add({
       'widget': Container(

@@ -1,7 +1,6 @@
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 // import 'package:ashkerty_food/static/CheckTime.dart';
 import 'package:ashkerty_food/widgets/Profile.dart';
-import 'package:ashkerty_food/widgets/businessLocation.dart';
 import 'package:ashkerty_food/API/Daily.dart';
 import 'package:ashkerty_food/utils/businessLocation.dart';
 import 'package:flutter/material.dart';
@@ -249,11 +248,8 @@ class MyDrawer extends StatelessWidget {
                                 .contains('super')
                         ? InkWell(
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (ctx) =>
-                                          const BusinessLocationPage()));
+                              Navigator.pushReplacementNamed(
+                                  context, '/locations');
                             },
                             child: const ListTile(
                               leading: Icon(

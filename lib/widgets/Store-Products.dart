@@ -104,6 +104,17 @@ class _StoreProductsPageState extends State<StoreProductsPage> {
                                 ? 'Required'
                                 : null,
                           ),
+                          const SizedBox(height: 10),
+                          if (typeCtrl.text == 'تصنيع')
+                            CheckboxListTile(
+                              title: const Text('الكمية بالكيلو'),
+                              value: isKilo,
+                              onChanged: (val) {
+                                isKilo = val!;
+                                setState(() {});
+                              },
+                              controlAffinity: ListTileControlAffinity.leading,
+                            ),
                           TextFormField(
                             controller: typeCtrl,
                             readOnly: true,
@@ -146,17 +157,6 @@ class _StoreProductsPageState extends State<StoreProductsPage> {
                                 ? 'Invalid'
                                 : null,
                           ),
-                          const SizedBox(height: 10),
-                          if (typeCtrl.text == 'تصنيع')
-                            CheckboxListTile(
-                              title: const Text('الكمية بالكيلو'),
-                              value: isKilo,
-                              onChanged: (val) {
-                                isKilo = val!;
-                                setState(() {});
-                              },
-                              controlAffinity: ListTileControlAffinity.leading,
-                            ),
                           const SizedBox(height: 10),
                         ],
                       ),
