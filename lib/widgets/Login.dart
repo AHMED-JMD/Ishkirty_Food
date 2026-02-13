@@ -46,6 +46,7 @@ class _LoginState extends State<Login> {
     setState(() {
       isLoading = true;
     });
+    final selectedLocation = data['business_location']?.toString();
     //
     final response = await APIAuth.Login(data);
     setState(() {
@@ -53,13 +54,13 @@ class _LoginState extends State<Login> {
     });
 
     if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
+      var responseData = jsonDecode(response.body);
 
       //persist business location from login form
-      AuthContext.businessLocation = data['business_location']?.toString();
+      AuthContext.businessLocation = selectedLocation;
 
       //global state Provider (this also persists token)
-      provider.Login(data['user'], data['token']);
+      provider.Login(responseData['user'], responseData['token']);
 
       //check that there is a purchase today,
       //if not go to store acquisition page,
@@ -69,7 +70,7 @@ class _LoginState extends State<Login> {
         'startDate': DateTime.now().toIso8601String(),
         'endDate': DateTime.now().toIso8601String(),
         'type': 'بيع',
-        'admin_id': data['user']['id'],
+        'admin_id': responseData['user']['id'],
       });
       if (res.statusCode == 200) {
         final purchases = jsonDecode(res.body);

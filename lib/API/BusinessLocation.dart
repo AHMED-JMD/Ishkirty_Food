@@ -43,12 +43,12 @@ class APIBusinessLocation {
     }
   }
 
-  static Future deleteLocation(data) async {
+  static Future deleteLocation(data, token) async {
     try {
       final url = Uri.parse('$ApiUrl/delete');
       Response response = await post(
         url,
-        headers: buildHeaders(),
+        headers: buildHeaders(extra: {"Authorization": token}),
         body: jsonEncode(data),
       );
       return response;

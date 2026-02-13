@@ -89,7 +89,7 @@ class _LocationsDailyTableState extends State<LocationsDailyTable> {
       children: [
         Row(
           children: [
-            const Text('فلترة الموقع:'),
+            const Text(' الموقع:'),
             const SizedBox(width: 8),
             SizedBox(
               width: 200,
@@ -115,26 +115,7 @@ class _LocationsDailyTableState extends State<LocationsDailyTable> {
             ),
           ],
         ),
-        const SizedBox(height: 10),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.teal.shade50,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.teal.shade100),
-            ),
-            child: Text(
-              'إجمالي صافي الربح: ${numberFormatter(totalProfit)}',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.teal.shade800,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 20),
         Expanded(
           child: rows.isEmpty
               ? const Center(child: Text('لا توجد سجلات'))
@@ -263,6 +244,25 @@ class _LocationsDailyTableState extends State<LocationsDailyTable> {
                     );
                   },
                 ),
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.teal.shade50,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.teal.shade100),
+            ),
+            child: Text(
+              'إجمالي صافي الربح: ${numberFormatter(totalProfit)}',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
         ),
       ],
     );

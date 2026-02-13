@@ -141,7 +141,7 @@ class Add_Admin extends StatelessWidget {
               backgroundColor: Colors.transparent,
               minimumSize: const Size(200, 50)),
           child: const Text(
-            'اضافة كاشير جديد',
+            'اضافة مستخدم جديد',
             style: TextStyle(color: Colors.black),
           )),
     );

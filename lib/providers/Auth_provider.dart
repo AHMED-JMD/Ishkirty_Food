@@ -12,7 +12,6 @@ class AuthProvider extends ChangeNotifier {
   void Login(user, token) {
     _user = user;
     _token = token;
-    AuthContext.businessLocation = user?['business_location']?.toString();
     // persist token to browser localStorage on web
     try {
       if (token != null) storage.setLocal('token', token);
