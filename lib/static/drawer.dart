@@ -12,6 +12,10 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(builder: (context, value, child) {
+      bool isAdmin = value.user != null &&
+          value.user['role'].toString().toLowerCase().contains('admin');
+      bool isSuperAdmin = value.user != null &&
+          value.user['role'].toString().toLowerCase().contains('super');
       return Drawer(
         child: Column(
           children: [
@@ -240,12 +244,7 @@ class MyDrawer extends StatelessWidget {
                   children: [
                     const SizedBox(height: 20),
                     // Super-admin: manage business locations
-                    value.user != null &&
-                            value.user['role'] != null &&
-                            value.user['role']
-                                .toString()
-                                .toLowerCase()
-                                .contains('super')
+                    isSuperAdmin
                         ? InkWell(
                             onTap: () {
                               Navigator.pushReplacementNamed(
@@ -263,11 +262,7 @@ class MyDrawer extends StatelessWidget {
                             ),
                           )
                         : const SizedBox(),
-                    value.user != null &&
-                            value.user['role']
-                                .toString()
-                                .toLowerCase()
-                                .contains('admin')
+                    isAdmin || isSuperAdmin
                         ? Column(
                             children: [
                               InkWell(
@@ -330,7 +325,7 @@ class MyDrawer extends StatelessWidget {
                           color: Colors.teal,
                         ),
                         title: Text(
-                          'مخزن البيع',
+                          'المطبخ',
                           style: TextStyle(fontSize: 18),
                         ),
                       ),
@@ -365,21 +360,24 @@ class MyDrawer extends StatelessWidget {
                         ),
                       ),
                     ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushReplacementNamed(context, '/employees');
-                      },
-                      child: const ListTile(
-                        leading: Icon(
-                          Icons.badge,
-                          color: Colors.teal,
-                        ),
-                        title: Text(
-                          'الموظفين',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ),
-                    ),
+                    isAdmin
+                        ? InkWell(
+                            onTap: () {
+                              Navigator.pushReplacementNamed(
+                                  context, '/employees');
+                            },
+                            child: const ListTile(
+                              leading: Icon(
+                                Icons.badge,
+                                color: Colors.teal,
+                              ),
+                              title: Text(
+                                'الموظفين',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          )
+                        : const SizedBox(),
                     InkWell(
                       onTap: () {
                         Navigator.pushReplacementNamed(context, '/speices');

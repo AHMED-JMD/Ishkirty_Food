@@ -89,6 +89,9 @@ class _SpeicesState extends State<Speices> {
     extractName(data);
 
     return Consumer<AuthProvider>(builder: (context, auth, child) {
+      bool isAdmin = auth.user != null &&
+          auth.user['role'].toString().toLowerCase().contains('admin');
+
       return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
@@ -221,22 +224,25 @@ class _SpeicesState extends State<Speices> {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 10),
-                      child: ElevatedButton.icon(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const AddSpieces()));
-                          },
-                          label: const Text('صنف جديد'),
-                          icon: const Icon(
-                            Icons.add_box_sharp,
-                            color: Color(0xff090c2d),
-                            size: 25,
-                          )),
-                    ),
+                    isAdmin
+                        ? Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 10),
+                            child: ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const AddSpieces()));
+                                },
+                                label: const Text('صنف جديد'),
+                                icon: const Icon(
+                                  Icons.add_box_sharp,
+                                  color: Color(0xff090c2d),
+                                  size: 25,
+                                )),
+                          )
+                        : const SizedBox(),
                   ],
                 ),
                 data.length != 0 || isLoading == false

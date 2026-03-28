@@ -39,6 +39,8 @@ class _BillsState extends State<Bills> {
     Map dataBody = {};
     dataBody['isDeleted'] = false;
     dataBody['todayDate'] = '${now.year}-${now.month}-${now.day}';
+    dataBody['admin_id'] =
+        Provider.of<AuthProvider>(context, listen: false).user['id'];
 
     final response = await APIBill.GetAll(dataBody);
 
@@ -62,6 +64,8 @@ class _BillsState extends State<Bills> {
     mod_datas['start_date'] = datas['start_date'];
     mod_datas['end_date'] = datas['end_date'];
     mod_datas['isDeleted'] = false;
+    mod_datas['admin_id'] =
+        Provider.of<AuthProvider>(context, listen: false).user['id'];
 
     final response = await APIBill.Search(mod_datas);
     //response validity

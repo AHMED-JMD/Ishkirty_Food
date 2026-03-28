@@ -155,6 +155,9 @@ class _NewDailyPageState extends State<NewDailyPage> {
     Map datas = {};
     datas['start_date'] = startDate.toIso8601String();
     datas['end_date'] = endDate.toIso8601String();
+    datas['admin_id'] = Provider.of<AuthProvider>(context, listen: false)
+        .user!['id']
+        .toString();
 
     final response = await sales_api.APISales.TodaySales(datas);
     if (response.statusCode == 200) {
@@ -196,7 +199,8 @@ class _NewDailyPageState extends State<NewDailyPage> {
     final today = DateTime.now();
     final res = await APIDischarges.getByDate({
       'startDate': today.toIso8601String(),
-      'endDate': today.toIso8601String()
+      'endDate': today.toIso8601String(),
+      'admin_id': Provider.of<AuthProvider>(context, listen: false).user['id'],
     });
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
@@ -215,6 +219,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
       'startDate': today.toIso8601String(),
       'endDate': today.toIso8601String(),
       'type': 'تصنيع',
+      'admin_id': Provider.of<AuthProvider>(context, listen: false).user['id'],
     });
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
@@ -252,7 +257,8 @@ class _NewDailyPageState extends State<NewDailyPage> {
     final today = DateTime.now();
     final res = await emp_api.APIEmployee.getTransByDate({
       'startDate': today.toIso8601String(),
-      'endDate': today.toIso8601String()
+      'endDate': today.toIso8601String(),
+      'admin_id': Provider.of<AuthProvider>(context, listen: false).user['id'],
     });
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);

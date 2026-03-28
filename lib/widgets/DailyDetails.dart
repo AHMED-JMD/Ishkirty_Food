@@ -116,6 +116,7 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
     Map datas = {};
     datas['start_date'] = widget.daily.date.toIso8601String();
     datas['end_date'] = widget.daily.date.toIso8601String();
+    datas['admin_id'] = widget.daily.Admin['admin_id'].toString();
 
     final response = await sales_api.APISales.TodaySales(datas);
     if (response.statusCode == 200) {
@@ -155,7 +156,8 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
     // load today's purchases as sample
     final res = await APIDischarges.getByDate({
       'startDate': widget.daily.date.toIso8601String(),
-      'endDate': widget.daily.date.toIso8601String()
+      'endDate': widget.daily.date.toIso8601String(),
+      'admin_id': widget.daily.Admin['admin_id'].toString(),
     });
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
@@ -173,6 +175,7 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
       'startDate': widget.daily.date.toIso8601String(),
       'endDate': widget.daily.date.toIso8601String(),
       'type': 'تصنيع',
+      'admin_id': widget.daily.Admin['admin_id'].toString(),
     });
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
@@ -210,7 +213,8 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
 
     final res = await emp_api.APIEmployee.getTransByDate({
       'startDate': widget.daily.date.toIso8601String(),
-      'endDate': widget.daily.date.toIso8601String()
+      'endDate': widget.daily.date.toIso8601String(),
+      'admin_id': widget.daily.Admin['admin_id'].toString(),
     });
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body);
@@ -704,10 +708,23 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
                                         fontSize: 26,
                                         fontWeight: FontWeight.bold),
                                   ),
-                                  const Icon(Icons.monetization_on)
+                                  const Icon(Icons.monetization_on),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "  المستخدم :  ${widget.daily.Admin['username']}",
+                                        style: const TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      const Icon(Icons.person_2)
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
+
                             const SizedBox(
                               height: 60,
                             ),

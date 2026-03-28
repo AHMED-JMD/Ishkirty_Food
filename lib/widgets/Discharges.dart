@@ -36,7 +36,8 @@ class _DischargesPageState extends State<DischargesPage> {
     setState(() => _loading = true);
     final res = await api.APIDischarges.getByDate({
       'startDate': startDate.toIso8601String(),
-      'endDate': endDate.toIso8601String()
+      'endDate': endDate.toIso8601String(),
+      'admin_id': Provider.of<AuthProvider>(context, listen: false).user['id'],
     });
 
     if (res.statusCode == 200) {

@@ -102,6 +102,7 @@ class _AuthGateState extends State<AuthGate> {
             'startDate': DateTime.now().toIso8601String(),
             'endDate': DateTime.now().toIso8601String(),
             'type': 'بيع',
+            'admin_id': auth.user?.id,
           });
           if (res.statusCode == 200) {
             final purchases = jsonDecode(res.body);

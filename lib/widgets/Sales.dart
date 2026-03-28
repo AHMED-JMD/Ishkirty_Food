@@ -60,6 +60,9 @@ class _SalesState extends State<Sales> {
     Map modDatas = {};
     modDatas['start_date'] = datas['start_date'];
     modDatas['end_date'] = datas['end_date'];
+    modDatas['admin_id'] = Provider.of<AuthProvider>(context, listen: false)
+        .user!['id']
+        .toString();
 
     final response = await APISales.TodaySales(modDatas);
     //response validity
@@ -109,6 +112,10 @@ class _SalesState extends State<Sales> {
     Map datas = {};
     datas['start_date'] = startDate.toIso8601String();
     datas['end_date'] = endDate.toIso8601String();
+    datas['admin_id'] = Provider.of<AuthProvider>(context, listen: false)
+        .user!['id']
+        .toString();
+
     final response = await APISales.TodaySales(datas);
     //response validity
     if (response.statusCode == 200) {
@@ -140,6 +147,9 @@ class _SalesState extends State<Sales> {
     Map data = {};
     data['start_date'] = startDtae.toIso8601String();
     data['end_date'] = endDate.toIso8601String();
+    data['admin_id'] = Provider.of<AuthProvider>(context, listen: false)
+        .user!['id']
+        .toString();
 
     final response = await APISales.allSpeicesSales(data);
     //response validity

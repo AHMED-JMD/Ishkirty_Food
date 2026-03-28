@@ -20,14 +20,18 @@ class CartForm extends StatefulWidget {
 
 class _CartFormState extends State<CartForm> {
   final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+
   bool isLoading = false;
   bool isSecondPrinter = false;
   bool isDelivery = false;
   List clients = [];
   String? clientID;
   String? payment_method;
+
   // for multiple payment methods
   List<Map<String, dynamic>> paymentMethods = [];
+  final List<TextEditingController> _paymentAmountControllers = [];
+
   String type = "سفري";
   DateTime date = DateTime.now();
   String deliveryAddress = "";
@@ -37,6 +41,50 @@ class _CartFormState extends State<CartForm> {
   void initState() {
     getClients();
     super.initState();
+  }
+
+  void _resetPaymentMethods() {
+    for (final controller in _paymentAmountControllers) {
+      controller.dispose();
+    }
+    _paymentAmountControllers.clear();
+    paymentMethods.clear();
+  }
+
+  void _recalculateRemaining({
+    required int changedIndex,
+    required num total,
+    bool force = false,
+  }) {
+    if (paymentMethods.length < 2) return;
+    if (paymentMethods.length == 2) {
+      final targetIndex = changedIndex == 0 ? 1 : 0;
+      if (!force && changedIndex == targetIndex) return;
+      final entered = paymentMethods[changedIndex]['amount'] ?? 0;
+      final remaining = total - entered;
+      final adjusted = remaining < 0 ? 0 : remaining;
+      paymentMethods[targetIndex]['amount'] = adjusted;
+      if (_paymentAmountControllers.length > targetIndex) {
+        _paymentAmountControllers[targetIndex].text = adjusted.toString();
+      }
+      return;
+    }
+
+    final lastIndex = paymentMethods.length - 1;
+    if (!force && changedIndex == lastIndex) return;
+
+    num sumOthers = 0;
+    for (int i = 0; i < paymentMethods.length; i++) {
+      if (i == lastIndex) continue;
+      sumOthers += paymentMethods[i]['amount'] ?? 0;
+    }
+
+    final remaining = total - sumOthers;
+    final adjusted = remaining < 0 ? 0 : remaining;
+    paymentMethods[lastIndex]['amount'] = adjusted;
+    if (_paymentAmountControllers.length > lastIndex) {
+      _paymentAmountControllers[lastIndex].text = adjusted.toString();
+    }
   }
 
   //server fun add bill
@@ -359,7 +407,7 @@ class _CartFormState extends State<CartForm> {
                               payment_method = value;
                               if (value != 'حساب') clientID = null;
                               // reset multi payments when switching
-                              if (value != 'متعدد') paymentMethods = [];
+                              if (value != 'متعدد') _resetPaymentMethods();
                             });
                           },
                           validator: FormBuilderValidators.required(
@@ -393,6 +441,8 @@ class _CartFormState extends State<CartForm> {
                               ...paymentMethods.asMap().entries.map((entry) {
                                 final idx = entry.key;
                                 final pm = entry.value;
+                                final amountController =
+                                    _paymentAmountControllers[idx];
                                 return Card(
                                   margin:
                                       const EdgeInsets.symmetric(vertical: 6),
@@ -435,9 +485,7 @@ class _CartFormState extends State<CartForm> {
                                             SizedBox(
                                               width: 120,
                                               child: TextFormField(
-                                                initialValue:
-                                                    pm['amount']?.toString() ??
-                                                        '0',
+                                                controller: amountController,
                                                 keyboardType:
                                                     TextInputType.number,
                                                 decoration:
@@ -447,6 +495,9 @@ class _CartFormState extends State<CartForm> {
                                                   setState(() {
                                                     pm['amount'] =
                                                         num.tryParse(v) ?? 0;
+                                                    _recalculateRemaining(
+                                                        changedIndex: idx,
+                                                        total: totalAmount);
                                                   });
                                                 },
                                               ),
@@ -455,8 +506,24 @@ class _CartFormState extends State<CartForm> {
                                             IconButton(
                                                 onPressed: () {
                                                   setState(() {
+                                                    if (idx <
+                                                        _paymentAmountControllers
+                                                            .length) {
+                                                      _paymentAmountControllers[
+                                                              idx]
+                                                          .dispose();
+                                                      _paymentAmountControllers
+                                                          .removeAt(idx);
+                                                    }
                                                     paymentMethods
                                                         .removeAt(idx);
+                                                    if (paymentMethods
+                                                        .isNotEmpty) {
+                                                      _recalculateRemaining(
+                                                          changedIndex: 0,
+                                                          total: totalAmount,
+                                                          force: true);
+                                                    }
                                                   });
                                                 },
                                                 icon: const Icon(Icons.delete,
@@ -507,6 +574,12 @@ class _CartFormState extends State<CartForm> {
                                         'amount': 0,
                                         'accountId': null
                                       });
+                                      _paymentAmountControllers.add(
+                                          TextEditingController(text: '0'));
+                                      _recalculateRemaining(
+                                          changedIndex: 0,
+                                          total: totalAmount,
+                                          force: true);
                                     });
                                   },
                                   icon: const Icon(Icons.add),

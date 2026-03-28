@@ -310,7 +310,7 @@ class _EditSpiecesState extends State<EditSpieces> {
             title: const Center(
                 child: Text(
               "تعديل الصنف",
-              style: TextStyle(fontSize: 25),
+              style: TextStyle(fontSize: 25, color: Colors.white),
             )),
             actions: const [
               LeadingDrawerBtn(),
@@ -367,6 +367,7 @@ class _EditSpiecesState extends State<EditSpieces> {
                             width: 700,
                             child: FormBuilderTextField(
                               name: 'name',
+                              readOnly: isAdmin ? false : true,
                               decoration:
                                   const InputDecoration(labelText: 'الأسم'),
                               initialValue: widget.data.name,
@@ -378,6 +379,7 @@ class _EditSpiecesState extends State<EditSpieces> {
                             width: 700,
                             child: FormBuilderTextField(
                               name: 'price',
+                              readOnly: isAdmin ? false : true,
                               decoration:
                                   const InputDecoration(labelText: 'السعر'),
                               initialValue: '${widget.data.price}',
@@ -407,11 +409,13 @@ class _EditSpiecesState extends State<EditSpieces> {
                                           value: id?.toString(),
                                           child: Text(name));
                                     }).toList(),
-                                    onChanged: (val) {
-                                      setState(() {
-                                        selectedCategoryId = val;
-                                      });
-                                    },
+                                    onChanged: isAdmin
+                                        ? (val) {
+                                            setState(() {
+                                              selectedCategoryId = val;
+                                            });
+                                          }
+                                        : null,
                                     validator: (v) {
                                       if (v == null || v.isEmpty) {
                                         return 'الرجاء ادخال جميع الحقول';
@@ -590,11 +594,14 @@ class _EditSpiecesState extends State<EditSpieces> {
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold),
                                 ),
-                                IconButton(
-                                  onPressed: () => _showForm(storeType: 'بيع'),
-                                  icon: const Icon(Icons.add),
-                                  tooltip: "اضافة ارتباط جديد",
-                                )
+                                isAdmin
+                                    ? IconButton(
+                                        onPressed: () =>
+                                            _showForm(storeType: 'بيع'),
+                                        icon: const Icon(Icons.add),
+                                        tooltip: "اضافة ارتباط جديد",
+                                      )
+                                    : Container(),
                               ],
                             ),
                             const SizedBox(height: 12),

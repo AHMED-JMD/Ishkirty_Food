@@ -43,6 +43,7 @@ class _StorePurchasesState extends State<StorePurchases> {
       'startDate': startDate.toIso8601String(),
       'endDate': endDate.toIso8601String(),
       'type': 'تصنيع',
+      'admin_id': Provider.of<AuthProvider>(context, listen: false).user['id'],
     });
 
     if (res.statusCode == 200) {

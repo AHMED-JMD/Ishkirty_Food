@@ -4,10 +4,10 @@ import 'package:ashkerty_food/API/Store.dart' as api;
 import 'package:ashkerty_food/Components/Forms/CartForm.dart';
 import 'package:ashkerty_food/models/cart_model.dart';
 import 'package:ashkerty_food/models/kebordKeys.dart';
+import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/providers/cart_provider.dart';
 import 'package:ashkerty_food/static/CartButton.dart';
 import 'package:ashkerty_food/static/CheckTime.dart';
-import 'package:ashkerty_food/utils/CheckAccess.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/Components/menu_nav.dart';
 import 'package:flutter/material.dart';
@@ -29,25 +29,31 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    super.initState();
     _checkAccess();
     getFavs();
-    super.initState();
   }
 
   Future<void> _checkAccess() async {
     try {
-      //check if daily is created not allowed to sell ---------------------------
-      await checkDailyAccess(context);
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      final adminId = auth.user['id'];
 
-      //check if there is a purchase today--------------------------------------
+      //check if daily is created not allowed to sell ---------------------------
+      // await checkDailyAccess(context);
+
+      //check if there is a purchase by admin today--------------------------------------
       final res = await api.APIStore.getPurchasesByDate({
         'startDate': DateTime.now().toIso8601String(),
         'endDate': DateTime.now().toIso8601String(),
         'type': 'بيع',
+        'admin_id': adminId,
       });
+
       if (!mounted) return;
       if (res.statusCode == 200) {
         final purchases = jsonDecode(res.body);
+
         if (purchases is List && purchases.isEmpty) {
           Navigator.pushReplacementNamed(context, '/store_sell');
           return;
