@@ -23,12 +23,15 @@ class _SpiecesSalesTableState extends State<SpiecesSalesTable> {
   Widget build(BuildContext context) {
     final String q = _search.trim().toLowerCase();
     final List<SpiecesTableModel> filtered = q.isEmpty
-        ? widget.data
+        ? List<SpiecesTableModel>.from(widget.data)
         : widget.data
             .where((it) =>
                 it.name.toLowerCase().contains(q) ||
                 it.category.toLowerCase().contains(q))
             .toList();
+
+    //order by sale sum
+    filtered.sort((a, b) => b.saleSum.compareTo(a.saleSum));
 
     return Column(
       children: [

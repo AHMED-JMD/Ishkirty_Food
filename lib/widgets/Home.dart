@@ -10,6 +10,7 @@ import 'package:ashkerty_food/static/CartButton.dart';
 import 'package:ashkerty_food/static/CheckTime.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/Components/menu_nav.dart';
+import 'package:ashkerty_food/utils/purchase_store_names.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../static/HomeDrawerbut.dart';
@@ -53,8 +54,8 @@ class _MyHomePageState extends State<MyHomePage> {
       if (!mounted) return;
       if (res.statusCode == 200) {
         final purchases = jsonDecode(res.body);
-
-        if (purchases is List && purchases.isEmpty) {
+        final requiredStores = getRequiredPurchaseStoreNames();
+        if (!purchasesContainRequiredStores(purchases, requiredStores)) {
           Navigator.pushReplacementNamed(context, '/store_sell');
           return;
         }

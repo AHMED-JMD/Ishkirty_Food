@@ -78,11 +78,11 @@ class _MenuNavState extends State<MenuNav> {
       children: [
         // Vertical list of small clickable cards
         SizedBox(
-          height: 110, // card height + padding
+          height: 100, // card height + padding
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
               scrollDirection: Axis.horizontal,
               itemCount: menuPages.length,
               separatorBuilder: (_, __) => const SizedBox(width: 10),

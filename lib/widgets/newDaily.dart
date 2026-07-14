@@ -359,6 +359,7 @@ class _NewDailyPageState extends State<NewDailyPage> {
     final vendorCtrl = TextEditingController(text: "عام");
     final qtyCtrl = TextEditingController();
     final netQtyCtrl = TextEditingController();
+    final priceCtrl = TextEditingController();
     final storeCtrl = TextEditingController();
     DateTime pickedDate = DateTime.now();
     final formKey = GlobalKey<FormState>();
@@ -428,6 +429,13 @@ class _NewDailyPageState extends State<NewDailyPage> {
                         validator: (v) =>
                             double.tryParse(v ?? '') == null ? 'Invalid' : null,
                       ),
+                      TextFormField(
+                        controller: priceCtrl,
+                        decoration:
+                            const InputDecoration(labelText: 'سعر الشراء'),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                      ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -480,6 +488,9 @@ class _NewDailyPageState extends State<NewDailyPage> {
                     'vendor': vendorCtrl.text.trim(),
                     'quantity': double.parse(qtyCtrl.text.trim()),
                     'net_quantity': double.parse(netQtyCtrl.text.trim()),
+                    'price': priceCtrl.text.trim().isEmpty
+                        ? null
+                        : double.tryParse(priceCtrl.text.trim()),
                     'payment_method': paymentMethod,
                     'date': pickedDate.toIso8601String(),
                     'type': 'تصنيع',

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:ashkerty_food/models/Discharge.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
+import 'package:ashkerty_food/static/date_filter_menu.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:ashkerty_food/static/formatter.dart';
@@ -363,76 +364,27 @@ class _DischargesPageState extends State<DischargesPage> {
                                     Text('المصروفات: ($period)',
                                         style: const TextStyle(fontSize: 30)),
                                     const SizedBox(width: 10),
-                                    PopupMenuButton(
-                                      icon: const Icon(Icons.date_range_rounded,
-                                          size: 36, color: Colors.teal),
-                                      tooltip: 'تصفية',
-                                      onSelected: (value) {},
-                                      itemBuilder: (BuildContext context) {
-                                        return [
-                                          PopupMenuItem(
-                                            value: 'week',
-                                            onTap: () {
-                                              DateTime weekBeforeDate =
-                                                  todayDate.subtract(
-                                                      const Duration(days: 7));
-                                              _load(weekBeforeDate, todayDate,
-                                                  'الإسبوع');
-                                            },
-                                            child: const Text(' الإسبوع',
-                                                style: TextStyle(
-                                                    color: Colors.black)),
-                                          ),
-                                          PopupMenuItem(
-                                              value: 'month',
-                                              onTap: () {
-                                                DateTime monthBeforeDate =
-                                                    todayDate.subtract(
-                                                        const Duration(
-                                                            days: 30));
-                                                _load(monthBeforeDate,
-                                                    todayDate, 'الشهر');
-                                              },
-                                              child: const Text(' الشهر',
-                                                  style: TextStyle(
-                                                      color: Colors.black))),
-                                          PopupMenuItem(
-                                              value: 'day',
-                                              onTap: () => _load(todayDate,
-                                                  todayDate, 'اليوم'),
-                                              child: const Text(' اليوم',
-                                                  style: TextStyle(
-                                                      color: Colors.black))),
-                                          PopupMenuItem(
-                                            value: 'search_day',
-                                            child: Form(
-                                                child: Row(
-                                              children: [
-                                                ElevatedButton(
-                                                  onPressed: () async {
-                                                    final d =
-                                                        await showDatePicker(
-                                                            context: context,
-                                                            initialDate:
-                                                                DateTime.now(),
-                                                            firstDate:
-                                                                DateTime(2000),
-                                                            lastDate:
-                                                                DateTime(2100));
-                                                    if (d != null) {
-                                                      _load(d, d, 'يوم محدد');
-                                                    }
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: const Text('تحديد يوم',
-                                                      style: TextStyle(
-                                                          color: Colors.black)),
-                                                ),
-                                              ],
-                                            )),
-                                          ),
-                                        ];
-                                      },
+                                    DateFilterMenuButton(
+                                      icon: const Icon(
+                                        Icons.date_range_rounded,
+                                        size: 36,
+                                        color: Colors.teal,
+                                      ),
+                                      weekLabel: ' الإسبوع',
+                                      monthLabel: ' الشهر',
+                                      dayLabel: ' اليوم',
+                                      pickDayLabel: 'تحديد يوم',
+                                      rangeLabel: 'تحديد فترة',
+                                      onWeek: (start, end) =>
+                                          _load(start, end, 'الإسبوع'),
+                                      onMonth: (start, end) =>
+                                          _load(start, end, 'الشهر'),
+                                      onDay: (start, end) =>
+                                          _load(start, end, 'اليوم'),
+                                      onPickDay: (day) =>
+                                          _load(day, day, 'يوم محدد'),
+                                      onRange: (start, end) =>
+                                          _load(start, end, 'فترة محددة'),
                                     ),
                                   ]),
                               const SizedBox(height: 30),

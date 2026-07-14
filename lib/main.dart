@@ -23,6 +23,7 @@ import 'dart:convert';
 import 'package:ashkerty_food/API/Auth.dart';
 import 'package:ashkerty_food/API/Store.dart' as api;
 import 'package:ashkerty_food/utils/local_storage.dart' as storage;
+import 'package:ashkerty_food/utils/purchase_store_names.dart';
 
 void main() {
   runApp(const MyApp());
@@ -102,11 +103,12 @@ class _AuthGateState extends State<AuthGate> {
             'startDate': DateTime.now().toIso8601String(),
             'endDate': DateTime.now().toIso8601String(),
             'type': 'بيع',
-            'admin_id': auth.user?.id,
+            'admin_id': auth.user['id'],
           });
           if (res.statusCode == 200) {
             final purchases = jsonDecode(res.body);
-            if (purchases is List && purchases.isEmpty) {
+            final requiredStores = getRequiredPurchaseStoreNames();
+            if (!purchasesContainRequiredStores(purchases, requiredStores)) {
               _goToStoreAcq = true;
             }
           }

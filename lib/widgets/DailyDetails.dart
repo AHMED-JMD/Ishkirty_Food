@@ -2,11 +2,14 @@ import 'dart:convert';
 import 'package:ashkerty_food/API/Daily.dart';
 import 'package:ashkerty_food/API/Discharges.dart';
 import 'package:ashkerty_food/API/Employee.dart' as emp_api;
+import 'package:ashkerty_food/API/Sales.dart';
 import 'package:ashkerty_food/API/Store.dart' as api;
 import 'package:ashkerty_food/Components/tables/DischargeTable.dart';
 import 'package:ashkerty_food/Components/tables/EmployeeTransTable.dart';
 import 'package:ashkerty_food/Components/tables/PurchaseTable.dart';
+import 'package:ashkerty_food/Components/tables/SpiecesSalesTable.dart';
 import 'package:ashkerty_food/models/Employee.dart';
+import 'package:ashkerty_food/models/SpiecesTableModel.dart';
 import 'package:ashkerty_food/models/StockItem.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/Printing.dart';
@@ -18,6 +21,7 @@ import 'package:ashkerty_food/models/EmpTrans.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:ashkerty_food/static/formatter.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import '../static/SalesCard.dart';
 import 'package:ashkerty_food/API/Sales.dart' as sales_api;
@@ -45,6 +49,7 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
   List<EmpTransaction> _empTrans = [];
   List<Employee> _employees = [];
   List<StockItem> _stores = [];
+  List<SpiecesTableModel> spieces = [];
 
   bool _loading = true;
   int totalCash = 0;
@@ -101,6 +106,7 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
     super.initState();
     _loadSales();
     _loadSalesCosts();
+    _getSpiecesSales();
     _loadEmpTrans();
     _loadEmployees();
     _loadPurchases();
@@ -149,6 +155,39 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
       });
     }
     setState(() => _loading = false);
+  }
+
+  //get spieces sales
+  Future _getSpiecesSales() async {
+    setState(() {
+      _loading = true;
+      spieces = [];
+    });
+
+    //server call
+    Map data = {};
+    data['start_date'] = widget.daily.date.toIso8601String();
+    data['end_date'] = widget.daily.date.toIso8601String();
+    data['admin_id'] = widget.daily.Admin['admin_id'].toString();
+
+    final response = await APISales.allSpeicesSales(data);
+    //response validity
+    if (response.statusCode == 200) {
+      final res = jsonDecode(response.body);
+      List<SpiecesTableModel> resList = [];
+      for (var e in res) {
+        resList.add(SpiecesTableModel.fromJson(Map<String, dynamic>.from(e)));
+      }
+
+      setState(() {
+        _loading = false;
+        spieces = resList;
+      });
+    } else {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   Future _loadDischarges() async {
@@ -266,6 +305,7 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
     final vendorCtrl = TextEditingController(text: "عام");
     final qtyCtrl = TextEditingController();
     final netqtyCtrl = TextEditingController();
+    final priceCtrl = TextEditingController();
     final storeCtrl = TextEditingController();
     DateTime pickedDate = widget.daily.date;
     final formKey = GlobalKey<FormState>();
@@ -335,6 +375,15 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
                         validator: (v) =>
                             double.tryParse(v ?? '') == null ? 'Invalid' : null,
                       ),
+                      TextFormField(
+                        controller: priceCtrl,
+                        decoration:
+                            const InputDecoration(labelText: 'سعر الشراء'),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        validator: (v) =>
+                            double.tryParse(v ?? '') == null ? 'Invalid' : null,
+                      ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -374,6 +423,9 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
                     'vendor': vendorCtrl.text.trim(),
                     'quantity': double.parse(qtyCtrl.text.trim()),
                     'net_quantity': double.parse(netqtyCtrl.text.trim()),
+                    'price': priceCtrl.text.trim().isEmpty
+                        ? null
+                        : double.tryParse(priceCtrl.text.trim()),
                     'payment_method': paymentMethod,
                     'date': pickedDate.toIso8601String(),
                     'type': 'تصنيع',
@@ -1191,8 +1243,30 @@ class _DailyDetailsPageState extends State<DailyDetailsPage> {
                                   }),
                             ),
                             const Divider(),
-                            const SizedBox(height: 40),
+                            const SizedBox(height: 80),
+                            // section 4 : spices sales
 
+                            const Center(
+                              child: Text('المبيعات الاصناف',
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                            spieces.isNotEmpty
+                                ? Padding(
+                                    padding: const EdgeInsets.all(15.0),
+                                    child: SpiecesSalesTable(
+                                      data: spieces,
+                                    ),
+                                  )
+                                : const Padding(
+                                    padding: EdgeInsets.only(top: 20.0),
+                                    child: SpinKitCubeGrid(
+                                      color: Colors.teal,
+                                    ),
+                                  ),
+                            const Divider(),
+                            const SizedBox(height: 40),
                             SizedBox(
                               width: double.infinity,
                               height: 40,

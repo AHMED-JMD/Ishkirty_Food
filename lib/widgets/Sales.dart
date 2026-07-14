@@ -324,12 +324,23 @@ class _SalesState extends State<Sales> {
                           data: spieces,
                         ),
                       )
-                    : const Padding(
-                        padding: EdgeInsets.only(top: 20.0),
-                        child: SpinKitCubeGrid(
-                          color: Colors.teal,
-                        ),
-                      )
+                    : isLoading
+                        ? const Padding(
+                            padding: EdgeInsets.only(top: 20.0),
+                            child: SpinKitCubeGrid(
+                              color: Colors.teal,
+                            ),
+                          )
+                        : const Padding(
+                            padding: EdgeInsets.only(top: 20.0),
+                            child: Center(
+                              child: Text(
+                                'لا توجد مبيعات',
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.black45),
+                              ),
+                            ),
+                          ),
               ],
             ),
           ),

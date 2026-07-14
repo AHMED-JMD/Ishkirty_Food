@@ -3,6 +3,7 @@ import 'package:ashkerty_food/Components/tables/StoreTable.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
+import 'package:ashkerty_food/utils/purchase_store_names.dart';
 import 'package:ashkerty_food/widgets/Discharges.dart';
 import 'package:ashkerty_food/widgets/StoreAcquisition.dart';
 import 'package:flutter/material.dart';
@@ -448,6 +449,131 @@ class _StorePageState extends State<StorePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    SizedBox(
+                      width: 200,
+                      child: Card(
+                        color: Colors.white,
+                        elevation: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12.0, horizontal: 8.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.restaurant_menu,
+                                  color: Colors.blueGrey),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'الاصناف الاساسية',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.black),
+                              ),
+                              const SizedBox(height: 6),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  final items =
+                                      _items.map((e) => e.name).toList();
+                                  final selected =
+                                      getRequiredPurchaseStoreNames().toSet();
+                                  await showDialog(
+                                    context: context,
+                                    builder: (_) => StatefulBuilder(
+                                      builder: (context, setState) =>
+                                          AlertDialog(
+                                        title: const Center(
+                                            child: Text('الاصناف الاساسية')),
+                                        content: SizedBox(
+                                          width: 350,
+                                          child: SingleChildScrollView(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                if (selected.isNotEmpty) ...[
+                                                  const Text('المحدد حالياً:'),
+                                                  const SizedBox(height: 8),
+                                                  Wrap(
+                                                    spacing: 6,
+                                                    runSpacing: 6,
+                                                    children: selected
+                                                        .map(
+                                                          (name) => Chip(
+                                                            label: Text(name),
+                                                            onDeleted: () {
+                                                              setState(() {
+                                                                selected.remove(
+                                                                    name);
+                                                                setRequiredPurchaseStoreNames(
+                                                                    selected
+                                                                        .toList());
+                                                              });
+                                                            },
+                                                          ),
+                                                        )
+                                                        .toList(),
+                                                  ),
+                                                  const Divider(),
+                                                ],
+                                                ListView.builder(
+                                                  shrinkWrap: true,
+                                                  physics:
+                                                      const NeverScrollableScrollPhysics(),
+                                                  itemCount: items.length,
+                                                  itemBuilder: (context, i) {
+                                                    final name = items[i];
+                                                    final isChecked =
+                                                        selected.contains(name);
+                                                    return CheckboxListTile(
+                                                      value: isChecked,
+                                                      title: Text(name),
+                                                      onChanged: (v) {
+                                                        setState(() {
+                                                          if (v == true) {
+                                                            selected.add(name);
+                                                          } else {
+                                                            selected
+                                                                .remove(name);
+                                                          }
+                                                          setRequiredPurchaseStoreNames(
+                                                              selected
+                                                                  .toList());
+                                                        });
+                                                      },
+                                                    );
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: const Text('اغلاق'),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.teal),
+                                child: const Text(
+                                  'التفاصيل',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
                     SizedBox(
                       width: 160,
                       child: Card(

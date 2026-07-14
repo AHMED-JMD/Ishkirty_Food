@@ -607,6 +607,7 @@ printCopies(String Pname, counter, type, user, data,
       return s;
     }
 
+    //styling the two pdfs pages
     void addPairFor(List list, {String? label}) {
       final local = Map<String, dynamic>.from(data);
       local['trans'] = list;
@@ -644,7 +645,6 @@ printCopies(String Pname, counter, type, user, data,
                                     style: pw.TextStyle(
                                         fontSize: 16,
                                         fontWeight: pw.FontWeight.bold)),
-                                pw.Text('الموقع: $locationLabel'),
                               ])
                             ]),
                         pw.Divider(thickness: 2),
@@ -676,6 +676,9 @@ printCopies(String Pname, counter, type, user, data,
                                   pw.Text(numberFormatter(local['amount']))
                                 ])),
                         pw.Divider(),
+                        pw.Text('الموقع: $locationLabel',
+                            style: const pw.TextStyle(
+                                fontSize: 10, color: PdfColors.grey)),
                       ])
                 ]));
           }));
@@ -702,7 +705,7 @@ printCopies(String Pname, counter, type, user, data,
                                     style: pw.TextStyle(
                                         fontSize: 16,
                                         fontWeight: pw.FontWeight.bold)),
-                                pw.Text('الموقع: $locationLabel'),
+                                // pw.Text('الموقع: $locationLabel'),
                               ])
                             ]),
                         pw.Divider(thickness: 2),
@@ -734,6 +737,9 @@ printCopies(String Pname, counter, type, user, data,
                                   pw.Text('${local['amount']}')
                                 ])),
                         pw.Divider(),
+                        pw.Text('الموقع: $locationLabel',
+                            style: const pw.TextStyle(
+                                fontSize: 10, color: PdfColors.grey)),
                       ])
                 ]));
           }));

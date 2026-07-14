@@ -122,123 +122,127 @@ class _LocationsDailyTableState extends State<LocationsDailyTable> {
               : LayoutBuilder(
                   builder: (context, constraints) {
                     return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: ConstrainedBox(
-                        constraints:
-                            BoxConstraints(minWidth: constraints.maxWidth),
-                        child: DataTable(
-                          border: TableBorder.all(
-                            color: Colors.teal.shade100,
-                            width: 1,
-                          ),
-                          columnSpacing: 18,
-                          headingRowHeight: 42,
-                          dataRowMinHeight: 40,
-                          dataRowMaxHeight: 48,
-                          headingRowColor:
-                              MaterialStateProperty.all(Colors.teal.shade50),
-                          dataRowColor: MaterialStateProperty.resolveWith(
-                            (states) => states.contains(MaterialState.selected)
-                                ? Colors.teal.shade50
-                                : Colors.white,
-                          ),
-                          columns: const [
-                            DataColumn(
-                                label: Text(
-                              'التاريخ',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            )),
-                            DataColumn(
-                                label: Text(
-                              'مجموع المبيعات',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            )),
-                            DataColumn(
-                                label: Text(
-                              'التكاليف',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            )),
-                            DataColumn(
-                                label: Text(
-                              'صافي الربح',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            )),
-                            DataColumn(
-                                label: Text(
-                              'الموقع',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            )),
-                            DataColumn(
-                                label: Text(
-                              'عرض',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            )),
-                          ],
-                          rows: [
-                            ...rows.map((d) {
-                              final sales = _totalSales(d);
-                              final costs = _totalCosts(d);
-                              final profit = sales - costs;
-                              return DataRow(cells: [
-                                DataCell(Text(
-                                  d.date.toIso8601String().split('T').first,
-                                  style: const TextStyle(fontSize: 17),
-                                )),
-                                DataCell(Text(
-                                  numberFormatter(sales),
-                                  style: const TextStyle(fontSize: 17),
-                                )),
-                                DataCell(Text(
-                                  numberFormatter(costs),
-                                  style: const TextStyle(fontSize: 17),
-                                )),
-                                DataCell(Text(
-                                  numberFormatter(profit),
-                                  style: const TextStyle(fontSize: 17),
-                                )),
-                                DataCell(Text(
-                                  d.businessLocation,
-                                  style: const TextStyle(fontSize: 17),
-                                )),
-                                DataCell(IconButton(
-                                  icon: const Icon(Icons.visibility,
-                                      color: Colors.teal),
-                                  onPressed: () => _showDetails(d),
-                                  tooltip: 'عرض',
-                                )),
-                              ]);
-                            }).toList(),
-                            DataRow(
-                              color: MaterialStateProperty.all(
-                                  Colors.teal.shade50),
-                              cells: [
-                                const DataCell(Text('الإجمالي',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17))),
-                                DataCell(Text(numberFormatter(totalSales),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17))),
-                                DataCell(Text(numberFormatter(totalCosts),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17))),
-                                DataCell(Text(numberFormatter(totalProfit),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17))),
-                                const DataCell(Text('-')),
-                                const DataCell(Text('-')),
-                              ],
+                      scrollDirection: Axis.vertical,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: ConstrainedBox(
+                          constraints:
+                              BoxConstraints(minWidth: constraints.maxWidth),
+                          child: DataTable(
+                            border: TableBorder.all(
+                              color: Colors.teal.shade100,
+                              width: 1,
                             ),
-                          ],
+                            columnSpacing: 18,
+                            headingRowHeight: 42,
+                            dataRowMinHeight: 40,
+                            dataRowMaxHeight: 48,
+                            headingRowColor:
+                                MaterialStateProperty.all(Colors.teal.shade50),
+                            dataRowColor: MaterialStateProperty.resolveWith(
+                              (states) =>
+                                  states.contains(MaterialState.selected)
+                                      ? Colors.teal.shade50
+                                      : Colors.white,
+                            ),
+                            columns: const [
+                              DataColumn(
+                                  label: Text(
+                                'التاريخ',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              )),
+                              DataColumn(
+                                  label: Text(
+                                'مجموع المبيعات',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              )),
+                              DataColumn(
+                                  label: Text(
+                                'التكاليف',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              )),
+                              DataColumn(
+                                  label: Text(
+                                'صافي الربح',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              )),
+                              DataColumn(
+                                  label: Text(
+                                'الموقع',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              )),
+                              DataColumn(
+                                  label: Text(
+                                'عرض',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              )),
+                            ],
+                            rows: [
+                              ...rows.map((d) {
+                                final sales = _totalSales(d);
+                                final costs = _totalCosts(d);
+                                final profit = sales - costs;
+                                return DataRow(cells: [
+                                  DataCell(Text(
+                                    d.date.toIso8601String().split('T').first,
+                                    style: const TextStyle(fontSize: 17),
+                                  )),
+                                  DataCell(Text(
+                                    numberFormatter(sales),
+                                    style: const TextStyle(fontSize: 17),
+                                  )),
+                                  DataCell(Text(
+                                    numberFormatter(costs),
+                                    style: const TextStyle(fontSize: 17),
+                                  )),
+                                  DataCell(Text(
+                                    numberFormatter(profit),
+                                    style: const TextStyle(fontSize: 17),
+                                  )),
+                                  DataCell(Text(
+                                    d.businessLocation,
+                                    style: const TextStyle(fontSize: 17),
+                                  )),
+                                  DataCell(IconButton(
+                                    icon: const Icon(Icons.visibility,
+                                        color: Colors.teal),
+                                    onPressed: () => _showDetails(d),
+                                    tooltip: 'عرض',
+                                  )),
+                                ]);
+                              }).toList(),
+                              DataRow(
+                                color: MaterialStateProperty.all(
+                                    Colors.teal.shade50),
+                                cells: [
+                                  const DataCell(Text('الإجمالي',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 17))),
+                                  DataCell(Text(numberFormatter(totalSales),
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 17))),
+                                  DataCell(Text(numberFormatter(totalCosts),
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 17))),
+                                  DataCell(Text(numberFormatter(totalProfit),
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 17))),
+                                  const DataCell(Text('-')),
+                                  const DataCell(Text('-')),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

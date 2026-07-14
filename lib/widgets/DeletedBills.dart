@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:ashkerty_food/API/Bill.dart';
+import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/static/SearchDates.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/dropDownBtn.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 import '../Components/tables/DeletedBillsTable.dart';
 
 class DeletedBills extends StatefulWidget {
@@ -36,7 +38,8 @@ class _DeletedBillsState extends State<DeletedBills> {
     Map datas = {};
     datas['isDeleted'] = true;
     datas['todayDate'] = '${now.year}-${now.month}-${now.day}';
-
+    datas['admin_id'] =
+        Provider.of<AuthProvider>(context, listen: false).user['id'];
     final response = await APIBill.GetAll(
       datas,
     );
@@ -67,6 +70,8 @@ class _DeletedBillsState extends State<DeletedBills> {
     mod_datas['start_date'] = datas['start_date'];
     mod_datas['end_date'] = datas['end_date'];
     mod_datas['isDeleted'] = true;
+    mod_datas['admin_id'] =
+        Provider.of<AuthProvider>(context, listen: false).user['id'];
 
     final response = await APIBill.Search(mod_datas);
     //response validity

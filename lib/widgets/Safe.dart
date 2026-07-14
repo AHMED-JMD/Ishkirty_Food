@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:ashkerty_food/static/drawer.dart';
+import 'package:ashkerty_food/static/date_filter_menu.dart';
 import 'package:ashkerty_food/static/formatter.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:flutter/material.dart';
@@ -695,118 +696,33 @@ class _SafePageState extends State<SafePage> {
                                                   ),
                                                   SizedBox(
                                                     width: 100,
-                                                    child: PopupMenuButton(
+                                                    child: DateFilterMenuButton(
                                                       icon: const Icon(
                                                         Icons
                                                             .date_range_rounded,
                                                         size: 36,
                                                         color: Colors.teal,
                                                       ),
-                                                      tooltip: "تصفية",
-                                                      onSelected: (value) {},
-                                                      itemBuilder: (BuildContext
-                                                          context) {
-                                                        startDate =
-                                                            DateTime.now();
-
-                                                        return [
-                                                          PopupMenuItem(
-                                                            value: 'week',
-                                                            onTap: () {
-                                                              // Get the date of a week before the current date
-                                                              DateTime
-                                                                  weekBeforeDate =
-                                                                  startDate.subtract(
-                                                                      const Duration(
-                                                                          days:
-                                                                              7));
-
-                                                              //call server
-                                                              _loadSafeDaily(
-                                                                  weekBeforeDate,
-                                                                  startDate);
-                                                            },
-                                                            child: const Text(
-                                                              'الإسبوع',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .black),
-                                                            ),
-                                                          ),
-                                                          PopupMenuItem(
-                                                              value: 'month',
-                                                              onTap: () {
-                                                                // Get the date of a week before the current date
-                                                                DateTime
-                                                                    monthBeforeDate =
-                                                                    startDate.subtract(
-                                                                        const Duration(
-                                                                            days:
-                                                                                30));
-                                                                //call server
-                                                                _loadSafeDaily(
-                                                                    monthBeforeDate,
-                                                                    startDate);
-                                                              },
-                                                              child: const Text(
-                                                                'الشهر',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .black),
-                                                              )),
-                                                          PopupMenuItem(
-                                                              value: 'day',
-                                                              onTap: () =>
-                                                                  _loadSafeDaily(
-                                                                      startDate,
-                                                                      startDate),
-                                                              child: const Text(
-                                                                'اليوم',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .black),
-                                                              )),
-                                                          PopupMenuItem(
-                                                            value: 'search_day',
-                                                            child: Form(
-                                                                child: Row(
-                                                              children: [
-                                                                ElevatedButton(
-                                                                  onPressed:
-                                                                      () async {
-                                                                    final d = await showDatePicker(
-                                                                        context:
-                                                                            context,
-                                                                        initialDate:
-                                                                            DateTime
-                                                                                .now(),
-                                                                        firstDate:
-                                                                            DateTime(
-                                                                                2000),
-                                                                        lastDate:
-                                                                            DateTime(2100));
-                                                                    if (d !=
-                                                                        null) {
-                                                                      //call server
-                                                                      _loadSafeDaily(
-                                                                          d, d);
-                                                                    }
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  },
-                                                                  child:
-                                                                      const Text(
-                                                                    'تحديد يوم',
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            )),
-                                                          ),
-                                                        ];
-                                                      },
+                                                      weekLabel: 'الإسبوع',
+                                                      monthLabel: 'الشهر',
+                                                      dayLabel: 'اليوم',
+                                                      pickDayLabel: 'تحديد يوم',
+                                                      rangeLabel: 'تحديد فترة',
+                                                      onWeek: (start, end) =>
+                                                          _loadSafeDaily(
+                                                              start, end),
+                                                      onMonth: (start, end) =>
+                                                          _loadSafeDaily(
+                                                              start, end),
+                                                      onDay: (start, end) =>
+                                                          _loadSafeDaily(
+                                                              start, end),
+                                                      onPickDay: (day) =>
+                                                          _loadSafeDaily(
+                                                              day, day),
+                                                      onRange: (start, end) =>
+                                                          _loadSafeDaily(
+                                                              start, end),
                                                     ),
                                                   ),
                                                 ],
@@ -1006,118 +922,33 @@ class _SafePageState extends State<SafePage> {
                                                   ),
                                                   SizedBox(
                                                     width: 100,
-                                                    child: PopupMenuButton(
+                                                    child: DateFilterMenuButton(
                                                       icon: const Icon(
                                                         Icons
                                                             .date_range_rounded,
                                                         size: 36,
                                                         color: Colors.teal,
                                                       ),
-                                                      tooltip: "تصفية",
-                                                      onSelected: (value) {},
-                                                      itemBuilder: (BuildContext
-                                                          context) {
-                                                        startDate =
-                                                            DateTime.now();
-
-                                                        return [
-                                                          PopupMenuItem(
-                                                            value: 'week',
-                                                            onTap: () {
-                                                              // Get the date of a week before the current date
-                                                              DateTime
-                                                                  weekBeforeDate =
-                                                                  startDate.subtract(
-                                                                      const Duration(
-                                                                          days:
-                                                                              7));
-
-                                                              //call server
-                                                              _loadSafeTransfers(
-                                                                  weekBeforeDate,
-                                                                  startDate);
-                                                            },
-                                                            child: const Text(
-                                                              'الإسبوع',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .black),
-                                                            ),
-                                                          ),
-                                                          PopupMenuItem(
-                                                              value: 'month',
-                                                              onTap: () {
-                                                                // Get the date of a week before the current date
-                                                                DateTime
-                                                                    monthBeforeDate =
-                                                                    startDate.subtract(
-                                                                        const Duration(
-                                                                            days:
-                                                                                30));
-                                                                //call server
-                                                                _loadSafeTransfers(
-                                                                    monthBeforeDate,
-                                                                    startDate);
-                                                              },
-                                                              child: const Text(
-                                                                'الشهر',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .black),
-                                                              )),
-                                                          PopupMenuItem(
-                                                              value: 'day',
-                                                              onTap: () =>
-                                                                  _loadSafeTransfers(
-                                                                      startDate,
-                                                                      startDate),
-                                                              child: const Text(
-                                                                'اليوم',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .black),
-                                                              )),
-                                                          PopupMenuItem(
-                                                            value: 'search_day',
-                                                            child: Form(
-                                                                child: Row(
-                                                              children: [
-                                                                ElevatedButton(
-                                                                  onPressed:
-                                                                      () async {
-                                                                    final d = await showDatePicker(
-                                                                        context:
-                                                                            context,
-                                                                        initialDate:
-                                                                            DateTime
-                                                                                .now(),
-                                                                        firstDate:
-                                                                            DateTime(
-                                                                                2000),
-                                                                        lastDate:
-                                                                            DateTime(2100));
-                                                                    if (d !=
-                                                                        null) {
-                                                                      //call server
-                                                                      _loadSafeTransfers(
-                                                                          d, d);
-                                                                    }
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  },
-                                                                  child:
-                                                                      const Text(
-                                                                    'تحديد يوم',
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .black),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            )),
-                                                          ),
-                                                        ];
-                                                      },
+                                                      weekLabel: 'الإسبوع',
+                                                      monthLabel: 'الشهر',
+                                                      dayLabel: 'اليوم',
+                                                      pickDayLabel: 'تحديد يوم',
+                                                      rangeLabel: 'تحديد فترة',
+                                                      onWeek: (start, end) =>
+                                                          _loadSafeTransfers(
+                                                              start, end),
+                                                      onMonth: (start, end) =>
+                                                          _loadSafeTransfers(
+                                                              start, end),
+                                                      onDay: (start, end) =>
+                                                          _loadSafeTransfers(
+                                                              start, end),
+                                                      onPickDay: (day) =>
+                                                          _loadSafeTransfers(
+                                                              day, day),
+                                                      onRange: (start, end) =>
+                                                          _loadSafeTransfers(
+                                                              start, end),
                                                     ),
                                                   ),
                                                 ],

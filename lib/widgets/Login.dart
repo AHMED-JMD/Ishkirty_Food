@@ -4,6 +4,7 @@ import 'package:ashkerty_food/API/Store.dart' as api;
 import 'package:ashkerty_food/models/BusinessLocation.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
 import 'package:ashkerty_food/utils/businessLocation.dart';
+import 'package:ashkerty_food/utils/purchase_store_names.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -74,7 +75,8 @@ class _LoginState extends State<Login> {
       });
       if (res.statusCode == 200) {
         final purchases = jsonDecode(res.body);
-        if (purchases is List && purchases.isEmpty) {
+          final requiredStores = getRequiredPurchaseStoreNames();
+          if (!purchasesContainRequiredStores(purchases, requiredStores)) {
           targetRoute = '/store_sell';
         }
       }

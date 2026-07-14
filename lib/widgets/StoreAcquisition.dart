@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:ashkerty_food/models/PurchaseRequest.dart';
 import 'package:ashkerty_food/models/StockItem.dart';
 import 'package:ashkerty_food/providers/Auth_provider.dart';
+import 'package:ashkerty_food/static/date_filter_menu.dart';
 import 'package:ashkerty_food/static/drawer.dart';
 import 'package:ashkerty_food/static/leadinButton.dart';
 import 'package:ashkerty_food/static/Printing.dart';
@@ -86,9 +87,9 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
 
   void _showForm(String adminId) {
     final vendorCtrl = TextEditingController(text: "عام");
-    final qtyCtrl = TextEditingController();
+    final qtyCtrl = TextEditingController(text: "0");
 
-    final netQtyCtrl = TextEditingController();
+    final netQtyCtrl = TextEditingController(text: "0");
     // final priceCtrl = TextEditingController();
     final storeCtrl = TextEditingController();
     DateTime pickedDate = todayDate;
@@ -583,92 +584,27 @@ class _StoreAcquisitionsState extends State<StoreAcquisitions> {
                                     ),
                                     tooltip: 'طباعة',
                                   ),
-                                  PopupMenuButton(
+                                  DateFilterMenuButton(
                                     icon: const Icon(
                                       Icons.date_range_rounded,
                                       size: 36,
                                       color: Colors.teal,
                                     ),
-                                    tooltip: "تصفية",
-                                    onSelected: (value) {},
-                                    itemBuilder: (BuildContext context) {
-                                      return [
-                                        PopupMenuItem(
-                                          value: 'week',
-                                          onTap: () {
-                                            // Get the date of a week before the current date
-                                            DateTime weekBeforeDate =
-                                                todayDate.subtract(
-                                                    const Duration(days: 7));
-
-                                            //call server
-                                            _load(weekBeforeDate, todayDate,
-                                                "الإسبوع");
-                                          },
-                                          child: const Text(
-                                            'استلامات الإسبوع',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                        ),
-                                        PopupMenuItem(
-                                            value: 'month',
-                                            onTap: () {
-                                              // Get the date of a week before the current date
-                                              DateTime monthBeforeDate =
-                                                  todayDate.subtract(
-                                                      const Duration(days: 30));
-                                              //call server
-                                              _load(monthBeforeDate, todayDate,
-                                                  "الشهر");
-                                            },
-                                            child: const Text(
-                                              'استلامات الشهر',
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                            )),
-                                        PopupMenuItem(
-                                            value: 'day',
-                                            onTap: () => _load(
-                                                todayDate, todayDate, "اليوم"),
-                                            child: const Text(
-                                              'استلامات اليوم',
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                            )),
-                                        PopupMenuItem(
-                                          value: 'search_day',
-                                          child: Form(
-                                              child: Row(
-                                            children: [
-                                              ElevatedButton(
-                                                onPressed: () async {
-                                                  final d =
-                                                      await showDatePicker(
-                                                          context: context,
-                                                          initialDate:
-                                                              DateTime.now(),
-                                                          firstDate:
-                                                              DateTime(2000),
-                                                          lastDate:
-                                                              DateTime(2100));
-                                                  if (d != null) {
-                                                    //call server
-                                                    _load(d, d, "يوم محدد");
-                                                  }
-                                                  Navigator.pop(context);
-                                                },
-                                                child: const Text(
-                                                  'تحديد يوم',
-                                                  style: TextStyle(
-                                                      color: Colors.black),
-                                                ),
-                                              ),
-                                            ],
-                                          )),
-                                        ),
-                                      ];
-                                    },
+                                    weekLabel: 'استلامات الإسبوع',
+                                    monthLabel: 'استلامات الشهر',
+                                    dayLabel: 'استلامات اليوم',
+                                    pickDayLabel: 'تحديد يوم',
+                                    rangeLabel: 'تحديد فترة',
+                                    onWeek: (start, end) =>
+                                        _load(start, end, 'الإسبوع'),
+                                    onMonth: (start, end) =>
+                                        _load(start, end, 'الشهر'),
+                                    onDay: (start, end) =>
+                                        _load(start, end, 'اليوم'),
+                                    onPickDay: (day) =>
+                                        _load(day, day, 'يوم محدد'),
+                                    onRange: (start, end) =>
+                                        _load(start, end, 'فترة محددة'),
                                   ),
                                 ],
                               ),
