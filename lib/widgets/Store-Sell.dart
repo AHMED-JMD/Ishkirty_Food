@@ -413,8 +413,6 @@ class _StorePageState extends State<StorePage> {
     return Consumer<AuthProvider>(builder: (context, value, child) {
       bool isAdmin = value.user['role'] != null &&
           value.user['role'].toString().toLowerCase().contains('admin');
-      value.user['role'] != null &&
-          value.user['role'].toString().toLowerCase().contains('admin');
 
       return Directionality(
         textDirection: TextDirection.rtl,
@@ -485,66 +483,93 @@ class _StorePageState extends State<StorePage> {
                                             child: Text('الاصناف الاساسية')),
                                         content: SizedBox(
                                           width: 350,
-                                          child: SingleChildScrollView(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                if (selected.isNotEmpty) ...[
-                                                  const Text('المحدد حالياً:'),
-                                                  const SizedBox(height: 8),
-                                                  Wrap(
-                                                    spacing: 6,
-                                                    runSpacing: 6,
-                                                    children: selected
-                                                        .map(
-                                                          (name) => Chip(
-                                                            label: Text(name),
-                                                            onDeleted: () {
-                                                              setState(() {
-                                                                selected.remove(
-                                                                    name);
-                                                                setRequiredPurchaseStoreNames(
-                                                                    selected
-                                                                        .toList());
-                                                              });
-                                                            },
-                                                          ),
+                                          child: Directionality(
+                                            textDirection: TextDirection.rtl,
+                                            child: SingleChildScrollView(
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  if (selected.isNotEmpty) ...[
+                                                    const Text(
+                                                        'المحدد حالياً:'),
+                                                    const SizedBox(height: 8),
+                                                    Wrap(
+                                                      spacing: 6,
+                                                      runSpacing: 6,
+                                                      children: selected
+                                                          .map(
+                                                            (name) => Chip(
+                                                              label: Text(name),
+                                                              onDeleted: isAdmin
+                                                                  ? () {
+                                                                      setState(
+                                                                          () {
+                                                                        selected
+                                                                            .remove(name);
+                                                                        setRequiredPurchaseStoreNames(
+                                                                            selected.toList());
+                                                                      });
+                                                                    }
+                                                                  : null,
+                                                            ),
+                                                          )
+                                                          .toList(),
+                                                    ),
+                                                    const Divider(),
+                                                  ],
+                                                  isAdmin
+                                                      ? ListView.builder(
+                                                          shrinkWrap: true,
+                                                          physics:
+                                                              const NeverScrollableScrollPhysics(),
+                                                          itemCount:
+                                                              items.length,
+                                                          itemBuilder:
+                                                              (context, i) {
+                                                            final name =
+                                                                items[i];
+                                                            final isChecked =
+                                                                selected
+                                                                    .contains(
+                                                                        name);
+                                                            return CheckboxListTile(
+                                                              value: isChecked,
+                                                              title: Text(name),
+                                                              onChanged: isAdmin
+                                                                  ? (v) {
+                                                                      setState(
+                                                                          () {
+                                                                        if (v ==
+                                                                            true) {
+                                                                          selected
+                                                                              .add(name);
+                                                                        } else {
+                                                                          selected
+                                                                              .remove(name);
+                                                                        }
+                                                                        setRequiredPurchaseStoreNames(
+                                                                            selected.toList());
+                                                                      });
+                                                                    }
+                                                                  : null,
+                                                            );
+                                                          },
                                                         )
-                                                        .toList(),
-                                                  ),
-                                                  const Divider(),
+                                                      : const SizedBox(
+                                                          height: 100,
+                                                          child: Center(
+                                                            child: Text(
+                                                              'لا يمكن التعديل',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .red),
+                                                            ),
+                                                          ),
+                                                        ),
                                                 ],
-                                                ListView.builder(
-                                                  shrinkWrap: true,
-                                                  physics:
-                                                      const NeverScrollableScrollPhysics(),
-                                                  itemCount: items.length,
-                                                  itemBuilder: (context, i) {
-                                                    final name = items[i];
-                                                    final isChecked =
-                                                        selected.contains(name);
-                                                    return CheckboxListTile(
-                                                      value: isChecked,
-                                                      title: Text(name),
-                                                      onChanged: (v) {
-                                                        setState(() {
-                                                          if (v == true) {
-                                                            selected.add(name);
-                                                          } else {
-                                                            selected
-                                                                .remove(name);
-                                                          }
-                                                          setRequiredPurchaseStoreNames(
-                                                              selected
-                                                                  .toList());
-                                                        });
-                                                      },
-                                                    );
-                                                  },
-                                                ),
-                                              ],
+                                              ),
                                             ),
                                           ),
                                         ),

@@ -85,155 +85,161 @@ class MyDrawer extends StatelessWidget {
                     ),
                     // CheckTime(),
                     const SizedBox(height: 10),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () async {
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (ctx) => AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                              content: SizedBox(
-                                width: 300,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                        color: Colors.teal.shade700,
-                                        shape: BoxShape.circle,
+                    isAdmin
+                        ? SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () async {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (ctx) => AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
+                                    content: SizedBox(
+                                      width: 300,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(12),
+                                            decoration: BoxDecoration(
+                                              color: Colors.teal.shade700,
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: const Icon(
+                                              Icons.sync,
+                                              size: 36,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          const Text(
+                                            'جاري مزامنة بيانات اليوم',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          const Text(
+                                            'الرجاء الانتظار حتى اكتمال العملية',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                          const SizedBox(height: 20),
+                                          const SizedBox(
+                                            height: 36,
+                                            width: 36,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 3,
+                                              color: Colors.teal,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      child: const Icon(
-                                        Icons.sync,
-                                        size: 36,
-                                        color: Colors.white,
+                                    ),
+                                  ),
+                                );
+                                final adminId = value.user['id']?.toString();
+                                final location = AuthContext.businessLocation;
+                                final res = await APIDaily.syncDaily({
+                                  'admin_id': adminId,
+                                  'date': DateTime.now().toIso8601String(),
+                                  'business_location': location,
+                                });
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop();
+                                if (res.statusCode == 200) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      content: SizedBox(
+                                        width: 300,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                color: Colors.teal.shade700,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: const Icon(
+                                                Icons.check_circle,
+                                                size: 36,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 12),
+                                            const Text(
+                                              'تمت المزامنة بنجاح اليوم',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            const SizedBox(height: 8),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                    const SizedBox(height: 12),
-                                    const Text(
-                                      'جاري مزامنة بيانات اليوم',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    const Text(
-                                      'الرجاء الانتظار حتى اكتمال العملية',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 14),
-                                    ),
-                                    const SizedBox(height: 20),
-                                    const SizedBox(
-                                      height: 36,
-                                      width: 36,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 3,
-                                        color: Colors.teal,
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                      content: SizedBox(
+                                        width: 300,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: const BoxDecoration(
+                                                color: Color.fromARGB(
+                                                    255, 219, 227, 226),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: const Icon(
+                                                Icons.cancel,
+                                                size: 36,
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 12),
+                                            Text(
+                                              'خطأ ${res.body}',
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            const SizedBox(height: 8),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  );
+                                }
+                              },
+                              icon: const Icon(Icons.sync, color: Colors.white),
+                              label: const Text(
+                                'مزامنة البيانات اليومية',
+                                style: TextStyle(color: Colors.white),
                               ),
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.teal.shade700),
                             ),
-                          );
-                          final adminId = value.user['id']?.toString();
-                          final location = AuthContext.businessLocation;
-                          final res = await APIDaily.syncDaily({
-                            'admin_id': adminId,
-                            'date': DateTime.now().toIso8601String(),
-                            'business_location': location,
-                          });
-                          Navigator.of(context, rootNavigator: true).pop();
-                          if (res.statusCode == 200) {
-                            showDialog(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12)),
-                                content: SizedBox(
-                                  width: 300,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: Colors.teal.shade700,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(
-                                          Icons.check_circle,
-                                          size: 36,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 12),
-                                      const Text(
-                                        'تمت المزامنة بنجاح اليوم',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      const SizedBox(height: 8),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          } else {
-                            showDialog(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12)),
-                                content: SizedBox(
-                                  width: 300,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: const BoxDecoration(
-                                          color: Color.fromARGB(
-                                              255, 219, 227, 226),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: const Icon(
-                                          Icons.cancel,
-                                          size: 36,
-                                          color: Colors.red,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Text(
-                                        'خطأ ${res.body}',
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      const SizedBox(height: 8),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        icon: const Icon(Icons.sync, color: Colors.white),
-                        label: const Text(
-                          'مزامنة البيانات اليومية',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal.shade700),
-                      ),
-                    ),
+                          )
+                        : const SizedBox(),
                   ],
                 ),
               ),
